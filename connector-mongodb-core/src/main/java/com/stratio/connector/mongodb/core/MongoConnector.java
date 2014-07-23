@@ -3,12 +3,19 @@ package com.stratio.connector.mongodb.core;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.MongoClient;
-import com.mongodb.MongoException;
-import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
+import com.stratio.connector.meta.ConnectionConfiguration;
 import com.stratio.connector.meta.IMetadataProvider;
+import com.stratio.connector.mongodb.core.configuration.ConnectionConfigurationCreator;
+import com.stratio.connector.mongodb.core.configuration.MongoClientConfiguration;
+import com.stratio.connector.mongodb.core.configuration.SupportedOperationsCreator;
 import com.stratio.connector.mongodb.core.engine.MongoMetaProvider;
 import com.stratio.connector.mongodb.core.engine.MongoQueryEngine;
 import com.stratio.connector.mongodb.core.engine.MongoStorageEngine;
@@ -16,7 +23,7 @@ import com.stratio.meta.common.connector.IConfiguration;
 import com.stratio.meta.common.connector.IConnector;
 import com.stratio.meta.common.connector.IQueryEngine;
 import com.stratio.meta.common.connector.IStorageEngine;
-import com.stratio.meta.common.exceptions.ConnectionException;
+import com.stratio.meta.common.connector.Operations;
 import com.stratio.meta.common.exceptions.InitializationException;
 import com.stratio.meta.common.security.ICredentials;
 
@@ -37,12 +44,12 @@ public class MongoConnector implements IConnector {
 	/**
 	 * The connector's configuration.
 	 */
-	private MongoConfiguration mongoConfiguration = null;
+	private MongoClientConfiguration mongoConfiguration = null;
 
 	/**
 	 * The supported operations.
 	 */
-	private static final MongoConnectorSupportOperation supportedOperations = new MongoConnectorSupportOperation();
+	private static final Map<Operations, Boolean> supportedOperations = null;
 	
 	/**
 	 * The StorageEngine.
@@ -58,6 +65,9 @@ public class MongoConnector implements IConnector {
 	 * The QueryEngine.
 	 */
 	private MongoQueryEngine mongoQueryEngine = null;
+	
+	
+	final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * Create a connection to Mongo.
@@ -79,7 +89,7 @@ public class MongoConnector implements IConnector {
 				
 				if(!isConnected()){
 
-					mongoConfiguration = new MongoConfiguration(configuration);
+					mongoConfiguration = new MongoClientConfiguration(configuration);
 					
 					ArrayList<ServerAddress> seeds = new ArrayList<ServerAddress>(3);
 					
@@ -90,16 +100,14 @@ public class MongoConnector implements IConnector {
 							else seeds.add(new ServerAddress(array[0],Integer.decode(array[1])));
 							
 						}catch(UnknownHostException e){
-							e.printStackTrace();
-							throw new InitializationException("Connection failed");
+							throw new InitializationException("connection failed");
 						}
 					}
 					
 					createClient(seeds, credentials);
 
 				}else {
-					//nothing
-					//throw new ConnectionException("connection already exist");
+					throw new InitializationException("connection already exist");
 				}
 
 				
@@ -115,12 +123,15 @@ public class MongoConnector implements IConnector {
 * @param credentials   the security credentials.
 * @throws InitializationException in case the connection fail.
 */
-    private synchronized void createClient(List<ServerAddress> seeds, ICredentials credentials) throws InitializationException, MongoException {
+    private synchronized void createClient(List<ServerAddress> seeds, ICredentials credentials) throws InitializationException {
         if (mongoClient == null ) {
 		
 				if (credentials == null) {
 							mongoClient = new MongoClient(seeds,mongoConfiguration.getMongoClientOptions());//Excep
+							logger.info("MongoDB connection established ");
 					} else {
+						
+						throw new InitializationException("Credentials are not supported");
 			
 						// deprecated boolean auth = db.authenticate(myUserName,
 						// myPassword);
@@ -151,9 +162,12 @@ public class MongoConnector implements IConnector {
 	 * Close the Aerospike's connection.
 	 * 
 	 */
-	public void close() throws ConnectionException {
+	public void close() {
 
-		if(mongoClient != null) mongoClient.close();
+		if(mongoClient != null){
+			mongoClient.close();
+			logger.info("Disconnected from Mongo");
+		}
 		mongoClient = null;
 		mongoStorageEngine = null;
 		mongoQueryEngine = null;
@@ -195,7 +209,6 @@ public class MongoConnector implements IConnector {
 	 */
 	@Override
 	public IQueryEngine getQueryEngine(){
-		//no null ensuereConnectionIsOpen();
 		createSingeltonQueryEngine();
 		mongoQueryEngine.setConnection(mongoClient);
 		return mongoQueryEngine;
@@ -220,8 +233,12 @@ public class MongoConnector implements IConnector {
      *
      * @return the supported operations.
      */
-    public MongoConnectorSupportOperation getMongoConnectorSupportedOperation() {
-        return supportedOperations;
+    public Map<Operations, Boolean> getSupportededOperations() {
+        return SupportedOperationsCreator.getSupportedOperations();
+    }
+    
+    public Set<ConnectionConfiguration> getConnectionConfiguration(){
+    	return ConnectionConfigurationCreator.getConfiguration();
     }
 	
 	

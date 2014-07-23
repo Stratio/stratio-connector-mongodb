@@ -27,7 +27,7 @@ public class ConfigurationImplem implements IConfiguration{
     private static List<String> seeds;
     
     static{
-    	Arrays.asList("localhost:27017", "localhost:27018", "localhost:27019");
+    	seeds = Arrays.asList("localhost:27017", "localhost:27018", "localhost:27019");
     }
     
     //Credentials...

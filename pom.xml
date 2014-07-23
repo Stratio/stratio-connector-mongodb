@@ -11,6 +11,18 @@
    	 <module>connector-mongodb-core</module>
   </modules>
 
+
+<profiles>
+        <profile>
+            <id>functional</id>
+            <modules>
+                <module>connector-mongodb-core</module>
+                <module>connector-mongodb-ftest</module>
+            </modules>
+        </profile>
+    </profiles>
+
+
     <build>
         <plugins>
             <plugin>

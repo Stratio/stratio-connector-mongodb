@@ -33,6 +33,7 @@ public class MongoMetaProvider implements IMetadataProvider {
         mongoClient.dropDatabase(catalog);
     }
 
+ 
     @Override
     public void dropTable(String catalog, String table) throws UnsupportedOperationException {
     	 DB db = mongoClient.getDB(catalog);
@@ -41,11 +42,8 @@ public class MongoMetaProvider implements IMetadataProvider {
     }
 	
 
-
 	@Override
-	public void createIndex(String catalog, String tableName, String field)
-			throws UnsupportedOperationException {
-		// TODO check
+	public void createIndex(String catalog, String tableName, String field) throws UnsupportedOperationException {
 		DBObject keys = new BasicDBObject();
 		keys.put(field, 1);
 		mongoClient.getDB(catalog).getCollection(tableName).createIndex(keys);
@@ -55,20 +53,18 @@ public class MongoMetaProvider implements IMetadataProvider {
 	@Override
 	public void dropIndex(String catalog, String tableName, String field)
 			throws UnsupportedOperationException {
-		// TODO check
-		mongoClient.getDB(catalog).getCollection(tableName).dropIndex(field);
+		mongoClient.getDB(catalog).getCollection(tableName).dropIndex(new BasicDBObject(field, 1));
 		
 	}
 
 	@Override
 	public void dropIndexes(String catalog, String tableName)
 			throws UnsupportedOperationException {
-		// TODO check
 		mongoClient.getDB(catalog).getCollection(tableName).dropIndexes();
 		
 	}
 		
-		//TextIndexes??
+	//TextIndexes??
 		
    /**
 	* Set the connection.
