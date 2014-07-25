@@ -130,7 +130,7 @@ public class MongoStorageEngine implements IStorageEngine {
 	* @param filterSet filters to restrict the set of documents.
 	*/
 	
-	public void delete(String catalog, String tableName, Collection<Filter> filterSet)
+	public void delete(String catalog, String tableName, Filter... filterSet)
 			throws UnsupportedOperationException {
 		//TODO list Filter.  And, Or, etc...
 		
