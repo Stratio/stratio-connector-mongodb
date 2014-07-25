@@ -20,6 +20,7 @@ import com.stratio.connector.mongodb.core.engine.utils.FilterDBObjectBuilder;
 import com.stratio.meta.common.connector.IStorageEngine;
 import com.stratio.meta.common.data.Cell;
 import com.stratio.meta.common.data.Row;
+import com.stratio.meta.common.exceptions.InitializationException;
 import com.stratio.meta.common.logicalplan.Filter;
 
 
@@ -122,7 +123,13 @@ public class MongoStorageEngine implements IStorageEngine {
 						
 	}
 
-
+	/* Delete a set of documents.
+	*
+	* @param catalog the catalog.
+	* @param tableName   the collection.
+	* @param filterSet filters to restrict the set of documents.
+	*/
+	
 	public void delete(String catalog, String tableName, Collection<Filter> filterSet)
 			throws UnsupportedOperationException {
 		//TODO list Filter.  And, Or, etc...
@@ -134,7 +141,7 @@ public class MongoStorageEngine implements IStorageEngine {
 			FilterDBObjectBuilder filterBuilder = new FilterDBObjectBuilder(false);
 			
 			for(Filter filter: filterSet){
-				filterBuilder.addFilter(filter);
+				filterBuilder.add(filter);
 			}
 
 			coll.remove(filterBuilder.build());	

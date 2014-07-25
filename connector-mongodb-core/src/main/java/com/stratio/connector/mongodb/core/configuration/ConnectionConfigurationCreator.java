@@ -20,6 +20,11 @@ public class ConnectionConfigurationCreator {
         configuration.add(new ConnectionConfiguration(ConnectionOption.HOST_PORT, false, true));
     }
 
+    /**
+	 * Return the connectionConfiguration options.
+	 * 
+	 * @return the connectionConfiguration options.
+	 */
     public static Set<ConnectionConfiguration> getConfiguration() {
         return configuration;
     }

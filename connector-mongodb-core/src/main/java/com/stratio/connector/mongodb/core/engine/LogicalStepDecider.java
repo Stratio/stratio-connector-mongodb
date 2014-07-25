@@ -3,9 +3,10 @@ package com.stratio.connector.mongodb.core.engine;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.AggregationOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mongodb.AggregationOutput;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -17,21 +18,22 @@ import com.stratio.connector.meta.Limit;
 import com.stratio.connector.meta.MongoResultSet;
 import com.stratio.connector.meta.Sort;
 import com.stratio.connector.mongodb.core.engine.utils.FilterDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.utils.GroupByDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.utils.LimitDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.utils.ProjectDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.utils.SortDBObjectBuilder;
 import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
 import com.stratio.connector.mongodb.core.exceptions.MongoUnsupportedOperationException;
 import com.stratio.meta.common.data.Cell;
 import com.stratio.meta.common.data.Row;
-import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.logicalplan.Filter;
 import com.stratio.meta.common.logicalplan.LogicalPlan;
 import com.stratio.meta.common.logicalplan.LogicalStep;
 import com.stratio.meta.common.logicalplan.Project;
-import com.stratio.meta.common.metadata.structures.ColumnMetadata;
-import com.stratio.meta.common.statements.structures.selectors.SelectorIdentifier;
-import com.stratio.meta.common.statements.structures.selectors.SelectorMeta;
 
 public class LogicalStepDecider {
+	
+	final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private Project projection = null;
 	private ArrayList<Sort> sortList = null;
@@ -43,6 +45,8 @@ public class LogicalStepDecider {
 											// mejora de rendimiento y no
 											// necesario => check
 
+	
+	
 	private List<DBObject> query = null;
 
 	public LogicalStepDecider(LogicalPlan logicalPlan)
@@ -88,10 +92,11 @@ public class LogicalStepDecider {
 				else
 					throw new MongoQueryException(" # GroupBy > 1", null);
 			} else {
-				throw new UnsupportedOperationException(
-				/* lStep.getType()+ */"type unsupported");
+				throw new UnsupportedOperationException("type unsupported");
 			}
 		}
+		
+		if (projection == null) throw new MongoQueryException("no projection founded",null);
 
 	}
 
@@ -103,97 +108,89 @@ public class LogicalStepDecider {
 		query = new ArrayList<DBObject>();
 
 		if (mandatoryAggregation) {
-
-			if (filterList != null || !filterList.isEmpty()) {
-
-				FilterDBObjectBuilder filterDBObject = new FilterDBObjectBuilder(
-						true);
-
-				for (Filter f : filterList) {
-					filterDBObject.addFilter(f);
-				}
-
-				System.out.println("ConsultaAgg" + filterDBObject.build());
-				query.add(filterDBObject.build());
-			}
-
-			// TODO Orden actual: project y después group by => si llegarán =>
-			// comprobar
-			ProjectDBObjectBuilder projectDBObject = new ProjectDBObjectBuilder(
-					true, projection);
-			query.add(projectDBObject.build());
-
-			// GROUP(con avg, sum, max, etc...) , SORT, LIMIT ....(comprobar
-			// rendimiento...)
-
-			//
-			if (groupBy != null) {// CAMBIAR A GROUPDBObjectBuilder
-				SelectorIdentifier selIdentifier = groupBy
-						.getSelectorIdentifier();
-				if (selIdentifier.getType() == SelectorMeta.TYPE_GROUPBY) {
-					final String field = selIdentifier.getField();
-
-					// dBObject (group, new DBObject(id, new
-					// DBObject(campo1:$campo1,campo2:$campo2, agregación(como
-					// abajo) ) =>EJ donde se agrupa por muchos campos
-					// dbObject (group, new DBObject(id, (contador, new
-					// DBObject( $sum: 1)), (sumaValores: new DBObject( $sum:
-					// $campoasumar)))
-					// count =>group con id_:null
-
-					// DBObject groupBy = new BasicDBObject();//asc o desc, y
-					// varios sort posibles =>
-					// int sortType;
-					// for(Sort sortElem: sortList){ //varios sort
-					// sortType = (sortElem.getType()== Sort.ASC) ? 1 : -1;
-					// orderBy.put(sortElem.getField(), sortType);
-					// }
-					// System.out.println(new
-					// BasicDBObject("$sort",orderBy).toString());
-					// pipeline.add(new BasicDBObject("$sort",orderBy));
-				}
-			}
-
-			//
-			if (!sortList.isEmpty()) { // CAMBIAR A SORTDBObjectBuilder
-				DBObject orderBy = new BasicDBObject();// asc o desc, y varios
-														// sort posibles =>
-				int sortType;
-				for (Sort sortElem : sortList) { // varios sort
-					sortType = (sortElem.getType() == Sort.ASC) ? 1 : -1;
-					orderBy.put(sortElem.getField(), sortType);
-				}
-
-				System.out.println(new BasicDBObject("$sort", orderBy)
-						.toString());
-				query.add(new BasicDBObject("$sort", orderBy));
-			}
-			if (limitValue != null) {// CAMBIAR A LIMITDBObjectBuilder
-				query.add(new BasicDBObject("$limit", limitValue.getLimit()));
-			}
+			if(!filterList.isEmpty()) query.add(buildFilter());
+			// TODO Orden actual: project y después group by => si llegarán =>comprobar
+			query.add(buildProject());
+			if (groupBy != null) query.add(buildGroupBy());
+			if (!sortList.isEmpty()) query.add(buildSort());
+			if (limitValue != null) query.add(buildLimit());
 
 		}
 
 		// comprobar que el orden sea el correcto?? comprobar si aggregate?
 		// //SOLO AÑADIR LA QUERY
-		// else=> sin usar el framework de agregación
+		// else=> sin usar el framework de agregación.
 		else {
-
-			if (filterList != null | !filterList.isEmpty()) {
-
-				FilterDBObjectBuilder filterDBObject = new FilterDBObjectBuilder(
-						false);
-
-				for (Filter f : filterList) {
-					filterDBObject.addFilter(f);
-				}
-
-				System.out.println("ConsultaAgg" + filterDBObject.build());
-				query.add(filterDBObject.build());
-			}
-
+				query.add(buildFilter());
 		}
 
+		
+
+	}
+
+	private DBObject buildLimit() {
+		LimitDBObjectBuilder limitDBObject = new LimitDBObjectBuilder(limitValue);	
+		return limitDBObject.build();
+	}
+
+	private DBObject buildSort() {
+		SortDBObjectBuilder sortDBObject = new SortDBObjectBuilder(mandatoryAggregation);							
+		for (Sort sortElem : sortList) { 
+			sortDBObject.add(sortElem);
+		}
+		return sortDBObject.build();
+	}
+
+	private DBObject buildGroupBy() {
+		// GROUP(con avg, sum, max, etc...) , SORT, LIMIT ....(comprobar
+		// rendimiento...)
+
+		GroupByDBObjectBuilder groupDBObject = new GroupByDBObjectBuilder(
+				groupBy);
+
+		// SelectorIdentifier selIdentifier = groupBy
+		// .getSelectorIdentifier();
+		// selIdentifier.getType()
+
+		// if (selIdentifier.getType() == SelectorMeta.TYPE_GROUPBY) {
+		// final String field = selIdentifier.getField();
+		//
+		// dBObject (group, new DBObject(id, new
+		// DBObject(campo1:$campo1,campo2:$campo2, agregación(como abajo) ) =>EJ
+		// donde se agrupa por muchos campos
+		// dbObject (group, new DBObject(id, (contador, new DBObject( $sum: 1)),
+		// (sumaValores: new DBObject( $sum:$campoasumar)))
+		// count =>group con id_:null
+		//
+		// DBObject groupBy = new BasicDBObject();//asc o desc, y
+		// varios sort posibles =>
+		// int sortType;
+		// for(Sort sortElem: sortList){ //varios sort
+		// sortType = (sortElem.getType()== Sort.ASC) ? 1 : -1;
+		// orderBy.put(sortElem.getField(), sortType);
+		// }
+		// System.out.println(new
+		// BasicDBObject("$sort",orderBy).toString());
+		// pipeline.add(new BasicDBObject("$sort",orderBy));
+		// }
+
+		return groupDBObject.build();
+	}
+
+	private DBObject buildProject() {
+		ProjectDBObjectBuilder projectDBObject = new ProjectDBObjectBuilder(
+				mandatoryAggregation, projection);
+		return projectDBObject.build();
+	}
+
+	private DBObject buildFilter() {
+
+			FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(mandatoryAggregation);
+			for (Filter f : filterList) {
+				filterDBObjectBuilder.add(f);
+			}
+			logger.debug("ConsultaAgg" + filterDBObjectBuilder.build());
+			return filterDBObjectBuilder.build();
 	}
 
 	/**
@@ -222,17 +219,19 @@ public class LogicalStepDecider {
 			resultSet = new MongoResultSet();
 
 			for (DBObject result : aggOutput.results()) {
-				System.out.println("AggResult: " + result);
+				logger.debug("AggResult: " + result);
 				resultSet.add(createRow(result));
 
 			}
 
 		} else {
 
-			ProjectDBObjectBuilder projectDBObject = new ProjectDBObjectBuilder(
-					false, projection);
-			DBObject fields = projectDBObject.build();
-
+//			ProjectDBObjectBuilder projectDBObject = new ProjectDBObjectBuilder(
+//					false, projection);
+//			DBObject fields = projectDBObject.build();
+			DBObject fields = buildProject();
+			
+			
 			// if !isCount
 			// if !isDistinct
 			// if !groupBy
@@ -242,13 +241,14 @@ public class LogicalStepDecider {
 
 			// sort, skip and limit
 			if (!sortList.isEmpty()) {
-				DBObject orderBy = new BasicDBObject();// asc o desc, y varios
-														// sort posibles =>
-				int sortType;
-				for (Sort sortElem : sortList) { // varios sort
-					sortType = (sortElem.getType() == Sort.ASC) ? 1 : -1;
-					orderBy.put(sortElem.getField(), sortType);
-				}
+//				DBObject orderBy = new BasicDBObject();// asc o desc, y varios
+//														// sort posibles =>
+//				int sortType;
+//				for (Sort sortElem : sortList) { // varios sort
+//					sortType = (sortElem.getType() == Sort.ASC) ? 1 : -1;
+//					orderBy.put(sortElem.getField(), sortType);
+//				}
+				DBObject orderBy = buildSort();
 
 				cursor = cursor.sort(orderBy);
 			}
@@ -258,10 +258,9 @@ public class LogicalStepDecider {
 
 			// iterate over the cursor
 			try {
-				while (cursor.hasNext()) {
+				while (cursor.hasNext()) { //Si no hay resultados => excepción..
 					rowDBObject = cursor.next();
 					resultSet.add(createRow(rowDBObject));
-					System.out.println(rowDBObject);
 				}
 			} catch (MongoException e) {
 				// throw new ExecutionException("MongoException: "
@@ -273,7 +272,9 @@ public class LogicalStepDecider {
 		return resultSet;
 
 	}
-
+	
+	
+	
 	/**
 	 * This method creates a row from a mongoResult
 	 *

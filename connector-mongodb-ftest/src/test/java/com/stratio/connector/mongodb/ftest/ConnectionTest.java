@@ -51,6 +51,7 @@ public class ConnectionTest {
 			}
             
             mongoClient = new MongoClient(seeds);
+            
             deleteSet();
 
         } catch (MongoException | InitializationException e) {

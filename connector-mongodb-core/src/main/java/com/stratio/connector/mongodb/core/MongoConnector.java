@@ -45,11 +45,6 @@ public class MongoConnector implements IConnector {
 	 * The connector's configuration.
 	 */
 	private MongoClientConfiguration mongoConfiguration = null;
-
-	/**
-	 * The supported operations.
-	 */
-	private static final Map<Operations, Boolean> supportedOperations = null;
 	
 	/**
 	 * The StorageEngine.
@@ -66,7 +61,9 @@ public class MongoConnector implements IConnector {
 	 */
 	private MongoQueryEngine mongoQueryEngine = null;
 	
-	
+	/**
+	* The Log.
+	*/
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
@@ -123,7 +120,7 @@ public class MongoConnector implements IConnector {
 * @param credentials   the security credentials.
 * @throws InitializationException in case the connection fail.
 */
-    private synchronized void createClient(List<ServerAddress> seeds, ICredentials credentials) throws InitializationException {
+    private void createClient(List<ServerAddress> seeds, ICredentials credentials) throws InitializationException {
         if (mongoClient == null ) {
 		
 				if (credentials == null) {
@@ -159,7 +156,7 @@ public class MongoConnector implements IConnector {
 
 	
 	/**
-	 * Close the Aerospike's connection.
+	 * Close the Mongo's connection.
 	 * 
 	 */
 	public void close() {
@@ -190,11 +187,7 @@ public class MongoConnector implements IConnector {
 	/**
 	 * Return the MetadataProvider.
 	 * 
-	 * @throws ConnectionException
-	 *             in case that the connection is not initialized or is not
-	 *             open.
 	 * @return the MetadataProvider
-	 *
 	 */
 	public IMetadataProvider getMedatadaProvider(){
 		createSingeltonMetaProvider();
@@ -237,15 +230,21 @@ public class MongoConnector implements IConnector {
         return SupportedOperationsCreator.getSupportedOperations();
     }
     
+    
+    /**
+     * Return the supported configuration options
+     *
+     * @return the the supported configuration options.
+     */
     public Set<ConnectionConfiguration> getConnectionConfiguration(){
     	return ConnectionConfigurationCreator.getConfiguration();
     }
 	
 	
 	/**
-	 * Create a Singleton StorageEngine.
+	 * Create a StorageEngine.
 	 */
-	private synchronized void createSingeltonStorageEngine() {
+	private void createSingeltonStorageEngine() {
 		if (mongoStorageEngine == null) {
 			mongoStorageEngine = new MongoStorageEngine();
 		}
@@ -253,25 +252,25 @@ public class MongoConnector implements IConnector {
 
 
 	/**
-	 * Create a Singleton QueryEngine.
+	 * Create a QueryEngine.
 	 */
-	private synchronized void createSingeltonQueryEngine() {
+	private void createSingeltonQueryEngine() {
 		if (mongoQueryEngine == null) {
 			mongoQueryEngine = new MongoQueryEngine();
 		}
 	}
 
 	/**
-	 * Create a Singleton MetaProvider.
+	 * Create a MetaProvider.
 	 */
-	private synchronized void createSingeltonMetaProvider() {
+	private void createSingeltonMetaProvider() {
 		if (mongoMetaProvider == null) {
 			mongoMetaProvider = new MongoMetaProvider();
 		}
 	}
 	
 	
-	  /**
+	/**
 	* Return the DataStore Name.
 	* @return DataStore Name
 	*/
@@ -280,16 +279,22 @@ public class MongoConnector implements IConnector {
 		return "Mongo";
 	}
 
+	/**
+	* The connection status.
+	*
+	* @return true if the driver's client is not null.
+	*/
 	@Override
 	public boolean isConnected() {
-		
 		return mongoClient != null;
 //		boolean connected=false;
-//		if(mongoClient != null){
-//			connected=true;
-//			//mongoClient.getReplicaSetStatus().
+//		ReplicaSetStatus rsStatus;
+//		if ( mongoClient != null ) {
+//			if( (rsStatus= mongoClient.getReplicaSetStatus()) == null) connected = true; //mongo getRSStatus?
+//			else connected = (rsStatus.getMaster() != null); //TODO canRead(RP) and canWrite(WC) //puede ser proceso de failover
 //		}
 //		return connected;
+
 	}
 
 	

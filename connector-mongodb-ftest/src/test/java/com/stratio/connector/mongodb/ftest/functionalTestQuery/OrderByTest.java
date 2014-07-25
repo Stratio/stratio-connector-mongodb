@@ -72,6 +72,8 @@ public class OrderByTest extends ConnectionTest {
     }
 
     
+    
+    
     private LogicalPlan createLogicalPlan(int sortAge) {
     	Collection<Filter> coll = new HashSet<Filter>();
    	 
@@ -98,40 +100,6 @@ public class OrderByTest extends ConnectionTest {
 	}
 
 
-
-private Filter createNotEqualsFilter(int filterType, Object object) throws Exception {
-	RelationCompare relCom;
-	if(object instanceof String) relCom = new RelationCompare(COLUMN_TEXT, "!=", new StringTerm((String)object));
-	else if(object instanceof Integer) relCom = new RelationCompare(COLUMN_AGE, "<>", new IntegerTerm(String.valueOf(object)));
-	else throw new Exception("unsupported type"+ object.getClass());
-
-	Filter f = new Filter(Operations.SELECT_WHERE_MATCH, RelationType.COMPARE, relCom);
-	return f;
-}
-
-
-private Filter createBetweenFilter(int min, int max) {
-	
-	 Relation relation = new RelationBetween(COLUMN_MONEY);
-     relation.setType(Relation.TYPE_BETWEEN);
-     List<Term<?>> terms = new ArrayList<>();
-     terms.add(new IntegerTerm(String.valueOf(min)));
-     terms.add(new IntegerTerm(String.valueOf(max)));
-     relation.setTerms(terms);
-     Filter f = new Filter(Operations.SELECT_WHERE_BETWEEN,RelationType.BETWEEN, relation);
-     return f;
-}
-
-
-private Filter createEqualsFilter(int filterType, Object object) throws Exception {
-	RelationCompare relCom;
-	if(object instanceof String) relCom = new RelationCompare(COLUMN_TEXT, "=", new StringTerm((String)object));
-	else if(object instanceof Integer) relCom = new RelationCompare(COLUMN_AGE, "=", new IntegerTerm(String.valueOf(object)));
-	else throw new Exception("unsupported type"+ object.getClass());
-
-	Filter f = new Filter(Operations.SELECT_WHERE_MATCH,RelationType.COMPARE, relCom);
-	return f;
-}
 
 
 private void insertRow(int ikey, String texto, int money, int age) throws MongoException {

@@ -151,8 +151,6 @@ public class QueryFilterTest extends ConnectionTest{
         Set<Object> proveSet = new HashSet<>();
         for (Row row :queryResult.getRows()){
             for (String cell:row.getCells().keySet()){
-            	System.out.println(cell+""+row.getCell(cell).getValue());
-            	System.out.flush();
                 proveSet.add(cell+row.getCell(cell).getValue());
             }
         }

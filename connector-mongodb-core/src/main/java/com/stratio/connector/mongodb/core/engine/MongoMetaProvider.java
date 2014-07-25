@@ -9,8 +9,8 @@ import com.stratio.connector.meta.exception.UnsupportedOperationException;
 
 /**
 * This class represents a MetaInfo Provider for Mongo.
-* Created by darroyo on 10/07/14.
 */
+
 public class MongoMetaProvider implements IMetadataProvider {
 	 /**
 	* The connection.
@@ -43,17 +43,29 @@ public class MongoMetaProvider implements IMetadataProvider {
 	
 
 	@Override
-	public void createIndex(String catalog, String tableName, String field) throws UnsupportedOperationException {
-		DBObject keys = new BasicDBObject();
-		keys.put(field, 1);
-		mongoClient.getDB(catalog).getCollection(tableName).createIndex(keys);
+	public void createIndex(String catalog, String tableName, String... fields) throws UnsupportedOperationException {
+		
+		DBObject indexDBObject = new BasicDBObject();
+		//indice text, hash =>1
+		for(int i = 0; i< fields.length;i++){
+			indexDBObject.put(fields[i], 1);
+		}
+
+		mongoClient.getDB(catalog).getCollection(tableName).
+		createIndex(indexDBObject);
 		
 	}
 
 	@Override
-	public void dropIndex(String catalog, String tableName, String field)
+	public void dropIndex(String catalog, String tableName, String... fields)
 			throws UnsupportedOperationException {
-		mongoClient.getDB(catalog).getCollection(tableName).dropIndex(new BasicDBObject(field, 1));
+		
+		DBObject indexDBObject = new BasicDBObject();
+
+		for(int i = 0; i< fields.length;i++){
+			indexDBObject.put(fields[i], 1);
+		}
+		mongoClient.getDB(catalog).getCollection(tableName).dropIndex(indexDBObject);
 		
 	}
 

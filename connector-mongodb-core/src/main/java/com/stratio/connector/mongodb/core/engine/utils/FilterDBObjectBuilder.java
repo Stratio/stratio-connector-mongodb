@@ -24,7 +24,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 			
 	}
 
-	public void addFilter(Filter filter) {
+	public void add(Filter filter) {
 		
 		//add booleanType o logicalType
 		

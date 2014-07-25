@@ -22,7 +22,6 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
 		
 		if(columnMetadata == null || columnMetadata.isEmpty() ) {
     		//throw new ValidationException? select *
-    		System.out.println("ValidException");
     	}else{
     		
 			for(ColumnMetadata colMetadata: columnMetadata){

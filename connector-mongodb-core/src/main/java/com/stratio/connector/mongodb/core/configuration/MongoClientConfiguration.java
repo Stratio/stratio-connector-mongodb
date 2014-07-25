@@ -1,7 +1,6 @@
 package com.stratio.connector.mongodb.core.configuration;
 
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.mongodb.MongoClientOptions;
@@ -13,7 +12,7 @@ import com.stratio.meta.common.exceptions.InitializationException;
 
 
 /**
- * The configuration for Mongo. Created by darroyo on 08/07/14.
+ * The configuration for Mongo.
  */
  
 public class MongoClientConfiguration implements IConfiguration{
@@ -27,6 +26,8 @@ public class MongoClientConfiguration implements IConfiguration{
      * List of servers (mongos or replica set members)
      */
 	private List<String> seeds = null;
+
+	
 
 	public MongoClientConfiguration(IConfiguration iconfiguration) throws InitializationException{
 		ConfigurationImplem configuration = (ConfigurationImplem) iconfiguration;

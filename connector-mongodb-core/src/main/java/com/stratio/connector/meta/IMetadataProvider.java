@@ -19,9 +19,9 @@ public interface IMetadataProvider extends Serializable {
 
     public void dropTable(String catalog, String table) throws UnsupportedOperationException;
 
-    public void createIndex(String catalog, String table, String field) throws UnsupportedOperationException;
+    public void createIndex(String catalog, String table, String... field) throws UnsupportedOperationException;
     
-    public void dropIndex(String catalog, String table, String field) throws UnsupportedOperationException;
+    public void dropIndex(String catalog, String table, String... field) throws UnsupportedOperationException;
     
     public void dropIndexes(String catalog, String table) throws UnsupportedOperationException;
 }
