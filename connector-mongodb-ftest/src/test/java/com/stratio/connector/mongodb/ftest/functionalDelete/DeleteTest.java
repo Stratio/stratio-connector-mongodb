@@ -1,3 +1,19 @@
+/**
+* Copyright (C) 2014 Stratio (http://stratio.com)
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
 package com.stratio.connector.mongodb.ftest.functionalDelete;
 
 import static org.junit.Assert.assertEquals;
@@ -55,7 +71,7 @@ public class DeleteTest extends ConnectionTest {
          insertRow(5,"text",20,42);	
          
 
-        Collection<Filter> filterSet = createFilterCollection(EQUAL_FILTER, "text2");
+       Filter[] filterSet = createFilterCollection(EQUAL_FILTER, "text2");
         
    	 	((MongoStorageEngine) stratioMongoConnector.getStorageEngine()).delete(CATALOG, COLLECTION, filterSet);
         
@@ -86,7 +102,7 @@ public class DeleteTest extends ConnectionTest {
          insertRow(5,"text",20,42);	
          
 
-        Collection<Filter> filterSet = createFilterCollection(EQUAL_FILTER, 20);
+        Filter[] filterSet = createFilterCollection(EQUAL_FILTER, 20);
         
    	 	((MongoStorageEngine) stratioMongoConnector.getStorageEngine()).delete(CATALOG, COLLECTION, filterSet);
         
@@ -116,7 +132,7 @@ public class DeleteTest extends ConnectionTest {
          insertRow(5,"text",20,42);	
          
 
-        Collection<Filter> filterSet = createFilterCollection(NOTEQUAL_BETWEEN, 20);//age notequal 20 and money between 9,11
+        Filter[] filterSet = createFilterCollection(NOTEQUAL_BETWEEN, 20);//age notequal 20 and money between 9,11
         
    	 	((MongoStorageEngine) stratioMongoConnector.getStorageEngine()).delete(CATALOG, COLLECTION, filterSet);
         
@@ -137,10 +153,10 @@ public class DeleteTest extends ConnectionTest {
     }
     
     
- private Collection<Filter> createFilterCollection(int filterType, Object object) throws Exception {
+ private Filter[] createFilterCollection(int filterType, Object object) throws Exception {
 	 
-	 Collection<Filter> coll = new HashSet<Filter>();
-	 
+	 ArrayList<Filter> coll = new ArrayList<Filter>();
+	
 	 
 	 List<LogicalStep> stepList = new ArrayList<>();
      List<ColumnMetadata> columns = new ArrayList<>();
@@ -155,7 +171,8 @@ public class DeleteTest extends ConnectionTest {
 //    		 || HIGH_BETWEEN_FILTER == filterType) 
 //    	 coll.add(createEqualsFilter(filterType, object));
 //     if (BETWEEN_FILTER==filterType || HIGH_BETWEEN_FILTER==filterType) coll.add(createBetweenFilter());
-     return coll;
+     Filter[] filArray = new Filter[coll.size()];
+     return coll.toArray(filArray);
      
 
 	}
