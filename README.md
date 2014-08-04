@@ -1,0 +1,2 @@
+stratio-connector-mongodb
+=========================
