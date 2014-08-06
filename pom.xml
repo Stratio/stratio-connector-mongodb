@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.stratio.connector</groupId>
-    <artifactId>stratio-connector-mongodb</artifactId>
+    <artifactId>stratio-connector-elasticsearch</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <description>Connector for MongoDB</description>
+    <description>Connector for ElasticSearch</description>
     <packaging>pom</packaging>
     
     <modules>
-   	 <module>connector-mongodb-core</module>
+   	 <module>connector-elasticsearch-core</module>
   </modules>
 
 
@@ -16,8 +16,8 @@
         <profile>
             <id>functional</id>
             <modules>
-                <module>connector-mongodb-core</module>
-                <module>connector-mongodb-ftest</module>
+                <module>connector-elasticsearch-core</module>
+                <module>connector-elasticsearch-ftest</module>
             </modules>
         </profile>
     </profiles>
