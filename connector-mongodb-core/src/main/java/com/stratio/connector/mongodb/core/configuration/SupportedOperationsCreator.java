@@ -33,8 +33,8 @@ public class SupportedOperationsCreator {
 
     static {
         support = new EnumMap<Operations, Boolean>(Operations.class);
-        support.put(Operations.CREATE_CATALOG, Boolean.TRUE);
-        support.put(Operations.CREATE_TABLE, Boolean.TRUE);
+        support.put(Operations.CREATE_CATALOG, Boolean.FALSE);
+        support.put(Operations.CREATE_TABLE, Boolean.FALSE);
         support.put(Operations.DELETE, Boolean.TRUE);
         support.put(Operations.DROP_CATALOG, Boolean.TRUE);
         support.put(Operations.DROP_TABLE, Boolean.TRUE);
@@ -48,6 +48,7 @@ public class SupportedOperationsCreator {
         support.put(Operations.SELECT_WHERE_BETWEEN, Boolean.TRUE);
         support.put(Operations.SELECT_WHERE_MATCH, Boolean.TRUE);
         support.put(Operations.SELECT_WINDOW, Boolean.FALSE);
+        support.put(Operations.SELECT_WHERE_IN, Boolean.TRUE);
     }
 
     /**

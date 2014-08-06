@@ -66,7 +66,7 @@ public class MongoClientConfiguration implements IConfiguration{
 		int acceptableLatencyDifference = configuration.exist("mongo.acceptableLatencyDifference") ? Integer.decode(configuration.getProperty("mongo.acceptableLatencyDifference")) : 15;
 		int maxConnectionsPerHost = configuration.exist("mongo.maxConnectionsPerHost") ? Integer.decode(configuration.getProperty("mongo.maxConnectionsPerHost")) : 100;
 		int connectTimeout = configuration.exist("mongo.connectTimeout") ? Integer.decode(configuration.getProperty("mongo.connectTimeout")) : 10000;
-		int maxConnectionIdleTime = configuration.exist("mongo.maxConnectionIdleTime") ? Integer.decode(configuration.getProperty("mongo.maxConnectionIdleTime")) : 0; //por defecto 0 sinlimite?? seguro??
+		int maxConnectionIdleTime = configuration.exist("mongo.maxConnectionIdleTime") ? Integer.decode(configuration.getProperty("mongo.maxConnectionIdleTime")) : 0; //por defecto 0 sinlimite??
 
 
 		ReadPreference readPreference = ReadPreference.primary();

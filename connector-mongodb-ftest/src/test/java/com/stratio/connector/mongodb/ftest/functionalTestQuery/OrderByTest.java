@@ -82,8 +82,8 @@ public class OrderByTest extends ConnectionTest {
         assertEquals("text5", resultList.get(0).getCell(COLUMN_TEXT).getValue());
         assertEquals("text4", resultList.get(1).getCell(COLUMN_TEXT).getValue());
         assertEquals("text3", resultList.get(2).getCell(COLUMN_TEXT).getValue());
-        assertEquals("text1", resultList.get(3).getCell(COLUMN_TEXT).getValue());
-        assertEquals("text2", resultList.get(4).getCell(COLUMN_TEXT).getValue());
+        assertEquals("text2", resultList.get(3).getCell(COLUMN_TEXT).getValue());
+        assertEquals("text1", resultList.get(4).getCell(COLUMN_TEXT).getValue());
 
     }
 
