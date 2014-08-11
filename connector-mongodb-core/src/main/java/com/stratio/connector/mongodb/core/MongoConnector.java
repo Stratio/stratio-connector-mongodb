@@ -33,14 +33,17 @@ import com.stratio.connector.mongodb.core.configuration.ConnectionConfigurationC
 import com.stratio.connector.mongodb.core.configuration.MongoClientConfiguration;
 import com.stratio.connector.mongodb.core.configuration.SupportedOperationsCreator;
 import com.stratio.connector.mongodb.core.engine.MongoMetaProvider;
+import com.stratio.connector.mongodb.core.engine.MongoMetadataEngine;
 import com.stratio.connector.mongodb.core.engine.MongoQueryEngine;
 import com.stratio.connector.mongodb.core.engine.MongoStorageEngine;
 import com.stratio.meta.common.connector.IConfiguration;
 import com.stratio.meta.common.connector.IConnector;
+import com.stratio.meta.common.connector.IMetadataEngine;
 import com.stratio.meta.common.connector.IQueryEngine;
 import com.stratio.meta.common.connector.IStorageEngine;
 import com.stratio.meta.common.connector.Operations;
 import com.stratio.meta.common.exceptions.InitializationException;
+import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta.common.security.ICredentials;
 
 
@@ -77,10 +80,14 @@ public class MongoConnector implements IConnector {
 	 */
 	private MongoQueryEngine mongoQueryEngine = null;
 	
+	private MongoMetadataEngine mongoMetadataEngine = null;
+	
 	/**
 	* The Log.
 	*/
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	
 
 	/**
 	 * Create a connection to Mongo.
@@ -194,7 +201,7 @@ public class MongoConnector implements IConnector {
 	 */
 	@Override
 	public IStorageEngine getStorageEngine() {
-		createSingeltonStorageEngine();
+		createSingletonStorageEngine();
 		mongoStorageEngine.setConnection(mongoClient);
 		return mongoStorageEngine;
 
@@ -206,7 +213,7 @@ public class MongoConnector implements IConnector {
 	 * @return the MetadataProvider
 	 */
 	public IMetadataProvider getMedatadaProvider(){
-		createSingeltonMetaProvider();
+		createSingletonMetaProvider();
 		mongoMetaProvider.setConnection(mongoClient);
 		return mongoMetaProvider;
 	}
@@ -218,7 +225,7 @@ public class MongoConnector implements IConnector {
 	 */
 	@Override
 	public IQueryEngine getQueryEngine(){
-		createSingeltonQueryEngine();
+		createSingletonQueryEngine();
 		mongoQueryEngine.setConnection(mongoClient);
 		return mongoQueryEngine;
 	}
@@ -260,7 +267,7 @@ public class MongoConnector implements IConnector {
 	/**
 	 * Create a StorageEngine.
 	 */
-	private void createSingeltonStorageEngine() {
+	private void createSingletonStorageEngine() {
 		if (mongoStorageEngine == null) {
 			mongoStorageEngine = new MongoStorageEngine();
 		}
@@ -270,7 +277,7 @@ public class MongoConnector implements IConnector {
 	/**
 	 * Create a QueryEngine.
 	 */
-	private void createSingeltonQueryEngine() {
+	private void createSingletonQueryEngine() {
 		if (mongoQueryEngine == null) {
 			mongoQueryEngine = new MongoQueryEngine();
 		}
@@ -279,10 +286,20 @@ public class MongoConnector implements IConnector {
 	/**
 	 * Create a MetaProvider.
 	 */
-	private void createSingeltonMetaProvider() {
+	private void createSingletonMetaProvider() {
 		if (mongoMetaProvider == null) {
 			mongoMetaProvider = new MongoMetaProvider();
 		}
+	}
+	
+	/**
+	 * Create a MetadataEngine.
+	 */
+	private void createSingletonMetadataEngine() {
+		if (mongoMetadataEngine == null) {
+			mongoMetadataEngine = new MongoMetadataEngine();
+		}
+		
 	}
 	
 	
@@ -311,6 +328,19 @@ public class MongoConnector implements IConnector {
 //		}
 //		return connected;
 
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see com.stratio.meta.common.connector.IConnector#getMetadataEngine()
+	 */
+	@Override
+	public IMetadataEngine getMetadataEngine() throws UnsupportedException {
+		createSingletonMetadataEngine();
+		mongoMetadataEngine.setStorageEngine((MongoStorageEngine) getStorageEngine());
+		mongoMetadataEngine.setQueryEngine((MongoQueryEngine) getQueryEngine());
+		return mongoMetadataEngine;
 	}
 
 	
