@@ -93,7 +93,7 @@ public class LogicalStepDecider {
 				if (projection == null)
 					projection = (Project) lStep;
 				else
-					throw new MongoQueryException(" # Project > 1", null);
+					throw new MongoUnsupportedOperationException(" # Project > 1");
 			} else if (lStep instanceof Sort) {
 				sortList.add((Sort) lStep);
 			} else if (lStep instanceof Limit) {

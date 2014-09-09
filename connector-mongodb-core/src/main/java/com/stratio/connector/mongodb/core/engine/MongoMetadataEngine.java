@@ -56,14 +56,20 @@ public class MongoMetadataEngine implements IMetadataEngine{
 	 */
 	@Override
 	public void put(String key, String metadata) {
-		//TODO validate? key exist? =>key=type y id=1
-		//get then insert?
 		
-		Row row = new Row();
-        Map<String, Cell> cells = new HashMap<>();
-        cells.put(key, new Cell(metadata));
-        row.setCells(cells);
-		storageEngine.insert(CATALOG, COLLECTION, row);
+		if(key.contains(".") || metadata.contains(".")) {
+			//TODO throw new ExecutionException("The character '.' is not allowed"){};
+			System.out.println("add ExecutionException . not allowed");
+		}else{
+			//TODO validate? key exist? =>key=type y id=1
+			//get then insert?
+			
+			Row row = new Row();
+	        Map<String, Cell> cells = new HashMap<>();
+	        cells.put(key, new Cell(metadata));
+	        row.setCells(cells);
+			storageEngine.insert(CATALOG, COLLECTION, row, key);
+		}
 		
 	}
 
@@ -72,33 +78,13 @@ public class MongoMetadataEngine implements IMetadataEngine{
 	 */
 	@Override
 	public String get(String key) {
-		//TODO getID, getPK
-
-		List<LogicalStep> stepList = new ArrayList<>();
-        List<ColumnMetadata> columns = Arrays.asList(new ColumnMetadata(COLLECTION,key));
-        Project project = new Project(CATALOG, COLLECTION,columns);
-        stepList.add(project);
-		LogicalPlan logicalPlan = new LogicalPlan(stepList);
-		
-		
-        QueryResult queryResult = null;
-		try {
-			queryResult = (QueryResult) queryEngine.execute(logicalPlan);
-		} catch (ExecutionException e) {
-			// TODO throws Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        Iterator<Row> rowIterator = queryResult.getResultSet().iterator();
-        Row row = null;
-        while(rowIterator.hasNext()){
-        	if(row != null) {
-        		row = null; break;//TODO throw new Exception
-        	}else row = rowIterator.next();
-        	
-        }
-        
-        return (String) row.getCells().get(key).getValue();
+		Object value;
+		Cell cell;
+		if ((cell= queryEngine.getRowById(CATALOG, COLLECTION, key).getCell(key)) != null){
+			if ((value =cell.getValue()) != null){
+				return (value instanceof String) ? (String) value : null;
+			} else return null;
+		}else return null;
         
 	}
 

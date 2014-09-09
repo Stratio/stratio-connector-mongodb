@@ -15,11 +15,20 @@
 */
 package com.stratio.connector.mongodb.core.engine;
 
+import java.util.Map;
+
+import org.bson.types.ObjectId;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.QueryBuilder;
 import com.stratio.connector.meta.ICallBack;
 import com.stratio.connector.meta.IResultSet;
 import com.stratio.connector.meta.MongoResultSet;
 import com.stratio.meta.common.connector.IQueryEngine;
+import com.stratio.meta.common.data.Cell;
+import com.stratio.meta.common.data.Row;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.logicalplan.LogicalPlan;
 
@@ -49,7 +58,21 @@ public class MongoQueryEngine implements IQueryEngine {
     }
     
 
+	protected Row getRowById(String catalog, String collection, String id){
+		DBCursor cursor = mongoClient.getDB(catalog).getCollection(collection).find(new BasicDBObject("_id", id));
+    	
+    	Row row = new Row();
+    	
+    	while (cursor.hasNext()){
+    		DBObject rowDBObject = cursor.next();
+    		for (String field : rowDBObject.keySet()) {
+    			row.addCell(field, new Cell(rowDBObject.get(field)));
+    		}
+    	}
 	
+    	return row;
+    	
+	}
 	  /**
 * Set the connection.
 * @param aerospikeClient the connection.

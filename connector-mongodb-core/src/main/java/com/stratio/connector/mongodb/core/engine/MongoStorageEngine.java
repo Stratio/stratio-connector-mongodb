@@ -15,27 +15,22 @@
 */
 package com.stratio.connector.mongodb.core.engine;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
-import org.bson.types.Binary;
+import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.BulkWriteOperation;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.DBRef;
 import com.mongodb.MongoClient;
 import com.stratio.connector.mongodb.core.engine.utils.FilterDBObjectBuilder;
 import com.stratio.meta.common.connector.IStorageEngine;
 import com.stratio.meta.common.data.Cell;
 import com.stratio.meta.common.data.Row;
-import com.stratio.meta.common.exceptions.InitializationException;
 import com.stratio.meta.common.logicalplan.Filter;
 
 
@@ -180,5 +175,36 @@ public class MongoStorageEngine implements IStorageEngine {
 	 */
 	public void setConnection(MongoClient mongoClient) {
 		this.mongoClient = mongoClient;
+	}
+	
+	
+	/**
+	 * Upsert 
+	 */
+	protected void insert(String catalog, String tableName, Row row, String id)
+			throws UnsupportedOperationException {
+
+		if (isEmpty(catalog) || isEmpty(tableName) || row == null || id==null) {
+			//throw exception
+		}else{
+			
+				DB db = mongoClient.getDB(catalog);
+				
+				BasicDBObject replace = new BasicDBObject();
+				
+				for (Map.Entry<String, Cell> entry : row.getCells().entrySet())
+				{
+					Object cellValue = entry.getValue().getValue();	
+					replace.put(entry.getKey(), cellValue);
+				}	
+				
+				BasicDBObject find = new BasicDBObject();
+				find.put("_id", id);
+				
+				db.getCollection(tableName).update(find,new BasicDBObject("$set", replace),true,false); 
+				// insert(doc,write concern)			
+			
+		}
+			
 	}
 }
