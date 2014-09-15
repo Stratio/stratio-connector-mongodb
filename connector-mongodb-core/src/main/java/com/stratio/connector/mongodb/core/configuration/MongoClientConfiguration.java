@@ -18,81 +18,55 @@
 package com.stratio.connector.mongodb.core.configuration;
 
 
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ReadPreference;
+import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
-import com.stratio.connector.meta.ConfigurationImplem;
-import com.stratio.meta.common.connector.IConfiguration;
-import com.stratio.meta.common.exceptions.InitializationException;
+import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
+import com.stratio.connector.commons.util.Parser;
+import com.stratio.meta.common.connector.ConnectorClusterConfig;
 
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.*;
 
 /**
  * The configuration for Mongo.
  */
  
-public class MongoClientConfiguration implements IConfiguration{
+public class MongoClientConfiguration{
 	
+	ConnectorClusterConfig configuration;
+	static Parser parser = new Parser();
 	/**
-     * The MongoClient options
-     */
-	private MongoClientOptions clientOptions = null;
-	
-	/**
-     * List of servers (mongos or replica set members)
-     */
-	private List<String> seeds = null;
-
-	
-
-	public MongoClientConfiguration(IConfiguration iconfiguration) throws InitializationException{
-		ConfigurationImplem configuration = (ConfigurationImplem) iconfiguration;
-		configureSeeds(configuration);
-		configureClientOptions(configuration);
+	 * @param connectorClusterConfig
+	 */
+	public MongoClientConfiguration(ConnectorClusterConfig connectorClusterConfig) {
+		this.configuration = connectorClusterConfig;
 	}
 
 
-	public void configureSeeds (ConfigurationImplem configuration) throws InitializationException{
+
+	public  MongoClientOptions getMongoClientOptions() {
 		
-		if( (seeds = configuration.getSeeds()) == null ){
-			throw new InitializationException("there is no seeds");
-		}
+		
+	
+		int acceptableLatencyDifference = getIntegerSetting(ACCEPTABLE_LATENCY);	
+		int maxConnectionsPerHost = getIntegerSetting(MAX_CONNECTIONS_PER_HOST);	
+		int connectTimeout = getIntegerSetting(CONNECTION_TIMEOUT);
+		int maxConnectionIdleTime = getIntegerSetting(MAX_IDLE_TIME);
 
-	}
+		
+		ReadPreference readPreference = getReadPreference();
+		
 
-	public void configureClientOptions(ConfigurationImplem configuration) {
+		WriteConcern writeConcern = getWriteConcern();
+		
 
-		int acceptableLatencyDifference = configuration.exist("mongo.acceptableLatencyDifference") ? Integer.decode(configuration.getProperty("mongo.acceptableLatencyDifference")) : 15;
-		int maxConnectionsPerHost = configuration.exist("mongo.maxConnectionsPerHost") ? Integer.decode(configuration.getProperty("mongo.maxConnectionsPerHost")) : 100;
-		int connectTimeout = configuration.exist("mongo.connectTimeout") ? Integer.decode(configuration.getProperty("mongo.connectTimeout")) : 10000;
-		int maxConnectionIdleTime = configuration.exist("mongo.maxConnectionIdleTime") ? Integer.decode(configuration.getProperty("mongo.maxConnectionIdleTime")) : 0; //por defecto 0 sinlimite??
-
-
-		ReadPreference readPreference = ReadPreference.primary();
-		if(configuration.exist("mongo.readPreference")){
-			final String tagReadPreference = configuration.getProperty("mongo.readPreference");
-			if( ! tagReadPreference.equalsIgnoreCase("primary")){
-				if(tagReadPreference.equalsIgnoreCase("primaryPreferred"))  ReadPreference.primaryPreferred();	
-				else if(tagReadPreference.equalsIgnoreCase("secondary"))  ReadPreference.secondary();
-				else if(tagReadPreference.equalsIgnoreCase("secondaryPreferred"))  ReadPreference.secondaryPreferred();
-				else if(tagReadPreference.equalsIgnoreCase("nearest"))  ReadPreference.nearest();
-			}
-		}
-
-		WriteConcern writeConcern = WriteConcern.ACKNOWLEDGED;
-		if(configuration.exist("mongo.writeConcern")){
-			
-			final String tagWriteConcern = configuration.getProperty("mongo.writeConcern");
-			if( ! tagWriteConcern.equalsIgnoreCase("acknowledged")){
-				if(tagWriteConcern.equalsIgnoreCase("UNACKNOWLEDGED"))  writeConcern = WriteConcern.UNACKNOWLEDGED;	
-				else if(tagWriteConcern.equalsIgnoreCase("REPLICA_ACKNOWLEDGED"))   writeConcern = WriteConcern.REPLICA_ACKNOWLEDGED;	
-				else if(tagWriteConcern.equalsIgnoreCase("JOURNALED"))   writeConcern = WriteConcern.JOURNALED;	
-			}
-			
-
-		//MongoClientOptions
-		clientOptions = new MongoClientOptions.Builder()
+		MongoClientOptions clientOptions = new MongoClientOptions.Builder()
 		.acceptableLatencyDifference(acceptableLatencyDifference)
 		.connectionsPerHost(maxConnectionsPerHost)
 		.connectTimeout(connectTimeout)
@@ -101,26 +75,110 @@ public class MongoClientConfiguration implements IConfiguration{
 		.writeConcern(writeConcern)
 		.build();
 
-		//ListCredentials=>siempre trata de conectar con ellas=>si no necesario error
-			
-			
-		}
-		
-	//setWriteConcern
-	//	WriteConcern.UNACKNOWLEDGED Write operations that use this write concern will return as soon as the message is written to the socket
-	//	WriteConcern.ACKNOWLEDGED	Write operations that use this write concern will return as soon as the message is written to the socket
-	//	WriteConcern.REPLICA_ACKNOWLEDGED	Tries to write to two separate nodes. Same as the above, but will throw an exception if two writes are not possible.
-	//	WriteConcern.JOURNALED	Same as WriteConcern.ACKNOWLEDGED, but also waits for write to be written to the journal.
-
-		
-	}
-
-	public MongoClientOptions getMongoClientOptions() {
 		return clientOptions;
 	}
 
-	public List<String> getSeeds(){
+		
+		
+	private int getIntegerSetting( ConfigurationOptions option){
+		Map<String,String> config = configuration.getOptions();
+		 int value;
+		 if (config.containsKey(option.getOptionName())) {
+			 value = Integer.decode(config.get(option.getOptionName()));
+		 } else {
+			 value = Integer.decode(option.getDefaultValue()[0]);
+		 }
+		 return value;
+		
+	}
+	
+	
+	private ReadPreference getReadPreference(){
+		Map<String,String> config = configuration.getOptions();
+		ReadPreference readPreference;
+		
+		 if (config.containsKey(READ_PREFERENCE.getOptionName())) {
+			 readPreference = settingToReadPreference(config.get(READ_PREFERENCE.getOptionName()));
+		 } else {
+			 readPreference = settingToReadPreference(READ_PREFERENCE.getDefaultValue()[0]);
+		 }
+		 return readPreference;
+		
+	}
+	
+	private ReadPreference settingToReadPreference(String readSetting){
+		ReadPreference readPreference = null;
+		switch(readSetting.toLowerCase()){
+			case "primary" : readPreference = ReadPreference.primary(); break;
+			case "primarypreferred" : readPreference = ReadPreference.primaryPreferred(); break;
+			case "secondary" : readPreference = ReadPreference.secondary(); break;
+			case "secondarypreferred" : readPreference = ReadPreference.secondaryPreferred(); break;
+			case "nearest" : readPreference = ReadPreference.nearest(); break;
+			default: new RuntimeException("read preference "+readSetting+" is not a legal value");
+		}		 
+		return readPreference;
+
+	}
+	
+	private WriteConcern getWriteConcern(){
+		Map<String,String> config = configuration.getOptions();
+		WriteConcern writeConcern;
+		
+		 if (config.containsKey(WRITE_CONCERN.getOptionName())) {
+			 writeConcern = settingToWritePreference(config.get(WRITE_CONCERN.getOptionName()));
+		 } else {
+			 writeConcern = settingToWritePreference(WRITE_CONCERN.getDefaultValue()[0]);
+		 }
+		 return writeConcern;
+		
+	}
+	
+
+	private WriteConcern settingToWritePreference(String writeSetting) {
+		
+		WriteConcern writeConcern = null;
+		switch(writeSetting.toLowerCase()){
+			case "acknowledged" : writeConcern = WriteConcern.ACKNOWLEDGED; break;
+			case "unacknowledged" : writeConcern = WriteConcern.UNACKNOWLEDGED; break;
+			case "replica_acknowledged" : writeConcern = WriteConcern.REPLICA_ACKNOWLEDGED; break;
+			case "journaled" : writeConcern = WriteConcern.JOURNALED; break;
+
+		}		 
+		return writeConcern;	
+
+	}
+
+
+
+	public List<ServerAddress> getSeeds() throws CreateNativeConnectionException{
+	
+		ArrayList<ServerAddress> seeds = new ArrayList<ServerAddress>();
+		
+		String[] hosts = (String[]) parser.hosts(configuration.getOptions().get(HOST.getOptionName()));
+		String[] ports = (String[]) parser.ports(configuration.getOptions().get(PORT.getOptionName()));
+	
+			//TODO
+			if(hosts.length < 1 || (hosts.length != ports.length) ) throw new CreateNativeConnectionException("invalid address");
+			else {
+				for (int i = 0; i < hosts.length; i++) {
+					
+						try {
+							seeds.add(new ServerAddress(hosts[i],Integer.decode(ports[i])));
+						} catch (NumberFormatException e) {
+							throw new CreateNativeConnectionException("wrong port format");
+						} catch (UnknownHostException e) {
+							throw new CreateNativeConnectionException("connection failed with"+hosts[i]);
+							//TODO check if
+						}
+					
+				}
+				
+			}
+		
+		
 		return seeds;
+		
+
 	}
 	
 	//	public  ConnectorConfigurationOptions getConnectorConfigurationOptions(){

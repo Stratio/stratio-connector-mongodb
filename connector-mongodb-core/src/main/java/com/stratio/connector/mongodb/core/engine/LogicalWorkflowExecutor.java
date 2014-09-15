@@ -30,33 +30,27 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
-import com.stratio.connector.meta.GroupBy;
-import com.stratio.connector.meta.Limit;
 import com.stratio.connector.meta.MongoResultSet;
-import com.stratio.connector.meta.Sort;
 import com.stratio.connector.mongodb.core.engine.utils.FilterDBObjectBuilder;
-import com.stratio.connector.mongodb.core.engine.utils.GroupByDBObjectBuilder;
-import com.stratio.connector.mongodb.core.engine.utils.LimitDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.utils.ProjectDBObjectBuilder;
-import com.stratio.connector.mongodb.core.engine.utils.SortDBObjectBuilder;
 import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
 import com.stratio.connector.mongodb.core.exceptions.MongoUnsupportedOperationException;
 import com.stratio.meta.common.data.Cell;
 import com.stratio.meta.common.data.Row;
 import com.stratio.meta.common.logicalplan.Filter;
-import com.stratio.meta.common.logicalplan.LogicalPlan;
 import com.stratio.meta.common.logicalplan.LogicalStep;
+import com.stratio.meta.common.logicalplan.LogicalWorkflow;
 import com.stratio.meta.common.logicalplan.Project;
 
-public class LogicalStepDecider {
+public class LogicalWorkflowExecutor {
 	
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private Project projection = null;
-	private ArrayList<Sort> sortList = null;
-	private Limit limitValue = null;
+	//private ArrayList<Sort> sortList = null;
+	//private Limit limitValue = null;
 	private ArrayList<Filter> filterList = null;
-	private GroupBy groupBy = null;
+	//private GroupBy groupBy = null;
 
 	private boolean mandatoryAggregation; // true por defecto => si solo un RS,
 											// mejora de rendimiento y no
@@ -66,10 +60,10 @@ public class LogicalStepDecider {
 	
 	private List<DBObject> query = null;
 
-	public LogicalStepDecider(LogicalPlan logicalPlan)
+	public LogicalWorkflowExecutor(LogicalWorkflow logicalWorkflow)
 			throws MongoUnsupportedOperationException, MongoQueryException {
 
-		readLogicalPlan(logicalPlan);
+		readLogicalWorkflow(logicalWorkflow);
 		setMandatoryAggregation();
 		buildQuery();
 
@@ -77,43 +71,47 @@ public class LogicalStepDecider {
 
 	private void setMandatoryAggregation() {
 		// if isGroupBy, Sum, Average, etc... isAggregate = true
+		// TODO update to new LogicalSteps
 		mandatoryAggregation = true;
 
 	}
 
-	private void readLogicalPlan(LogicalPlan logicalPlan)
-			throws MongoQueryException, MongoUnsupportedOperationException {
+	private void readLogicalWorkflow(LogicalWorkflow logicalWorkflow) throws MongoQueryException, MongoUnsupportedOperationException {
 
-		List<LogicalStep> logicalSteps = logicalPlan.getStepList();
-		sortList = new ArrayList<Sort>();
+		
+		//TODO getLastStep?? should be getSteps(); 
+		
+		List<LogicalStep> logicalSteps = logicalWorkflow.getInitialSteps();
+		
+		//sortList = new ArrayList<Sort>();
 		filterList = new ArrayList<Filter>();
 
-		for (LogicalStep lStep : logicalSteps) { // validar??
+		for (LogicalStep lStep : logicalSteps) { //TODO validar??
 			if (lStep instanceof Project) {
 				if (projection == null)
 					projection = (Project) lStep;
 				else
 					throw new MongoUnsupportedOperationException(" # Project > 1");
-			} else if (lStep instanceof Sort) {
+			}else if (lStep instanceof Filter) {
+				filterList.add((Filter) lStep);
+			}/* else if (lStep instanceof Sort) {
 				sortList.add((Sort) lStep);
 			} else if (lStep instanceof Limit) {
 				if (limitValue == null)
 					limitValue = (Limit) lStep;
 				else
 					throw new MongoQueryException(" # Limit > 1", null);
-			} else if (lStep instanceof Filter) {
-				filterList.add((Filter) lStep);
-			} else if (lStep instanceof GroupBy) {
+			}  else if (lStep instanceof GroupBy) {
 				if (groupBy == null)
 					groupBy = (GroupBy) lStep;
 				else
 					throw new MongoQueryException(" # GroupBy > 1", null);
-			} else {
-				throw new UnsupportedOperationException("type unsupported");
+			}*/ else {
+				throw new UnsupportedOperationException("step unsupported" + lStep.getClass());
 			}
 		}
 		
-		if (projection == null) throw new MongoQueryException("no projection founded",null);
+		if (projection == null) throw new MongoQueryException("projection has not been found",null);
 
 	}
 
@@ -128,9 +126,9 @@ public class LogicalStepDecider {
 			if(!filterList.isEmpty()) query.add(buildFilter());
 			// TODO Orden actual: project y después group by => si llegarán =>comprobar
 			query.add(buildProject());
-			if (groupBy != null) query.add(buildGroupBy());
-			if (!sortList.isEmpty()) query.add(buildSort());
-			if (limitValue != null) query.add(buildLimit());
+			//if (groupBy != null) query.add(buildGroupBy());
+			//if (!sortList.isEmpty()) query.add(buildSort());
+			//if (limitValue != null) query.add(buildLimit());
 
 		}
 
@@ -145,6 +143,7 @@ public class LogicalStepDecider {
 
 	}
 
+	/*
 	private DBObject buildLimit() {
 		LimitDBObjectBuilder limitDBObject = new LimitDBObjectBuilder(limitValue);	
 		return limitDBObject.build();
@@ -193,7 +192,8 @@ public class LogicalStepDecider {
 
 		return groupDBObject.build();
 	}
-
+	*/
+	
 	private DBObject buildProject() {
 		ProjectDBObjectBuilder projectDBObject = new ProjectDBObjectBuilder(
 				mandatoryAggregation, projection);
@@ -206,7 +206,9 @@ public class LogicalStepDecider {
 			for (Filter f : filterList) {
 				filterDBObjectBuilder.add(f);
 			}
-			logger.debug("ConsultaAgg" + filterDBObjectBuilder.build());
+			if(logger.isDebugEnabled()){
+				logger.debug("ConsultaAgg" + filterDBObjectBuilder.build());
+			}
 			return filterDBObjectBuilder.build();
 	}
 
@@ -217,9 +219,9 @@ public class LogicalStepDecider {
 	public MongoResultSet executeQuery(MongoClient mongoClient) {
 
 		DB db = mongoClient.getDB(projection.getCatalogName());
-		DBCollection coll = db.getCollection(projection.getTableName());
+		DBCollection coll = db.getCollection(projection.getTableName().getName());
 		MongoResultSet resultSet = new MongoResultSet();
-		resultSet.setColumnMetadata(projection.getColumnList());// necesario??
+		//resultSet.setColumnMetadata(projection.getColumnList());// necesario??
 
 		if (isMandatoryAggregation()) {
 
@@ -233,12 +235,9 @@ public class LogicalStepDecider {
 
 			AggregationOutput aggOutput = coll.aggregate(query);
 
-			resultSet = new MongoResultSet();
-
 			for (DBObject result : aggOutput.results()) {
 				logger.debug("AggResult: " + result);
 				resultSet.add(createRow(result));
-
 			}
 
 		} else {
@@ -256,6 +255,7 @@ public class LogicalStepDecider {
 			DBCursor cursor = coll.find(query.get(0), fields);
 			DBObject rowDBObject;
 
+			/*
 			// sort, skip and limit
 			if (!sortList.isEmpty()) {
 //				DBObject orderBy = new BasicDBObject();// asc o desc, y varios
@@ -272,7 +272,7 @@ public class LogicalStepDecider {
 			if (limitValue != null) {
 				cursor = cursor.limit(limitValue.getLimit());
 			}
-
+			*/
 			// iterate over the cursor
 			try {
 				while (cursor.hasNext()) { //Si no hay resultados => excepción..

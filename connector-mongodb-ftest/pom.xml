@@ -16,6 +16,13 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>com.stratio.connector</groupId>
+            <artifactId>connector-commons-ftest</artifactId>
+            <classifier>tests</classifier>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>

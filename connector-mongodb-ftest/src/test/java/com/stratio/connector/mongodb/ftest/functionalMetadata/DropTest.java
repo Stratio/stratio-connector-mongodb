@@ -15,22 +15,30 @@
 */
 package com.stratio.connector.mongodb.ftest.functionalMetadata;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Test;
-
-import com.mongodb.DBCollection;
-import com.stratio.connector.meta.IMetadataProvider;
-import com.stratio.connector.mongodb.core.engine.MongoStorageEngine;
+import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
+import com.stratio.connector.elasticsearch.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.ftest.ConnectionTest;
-import com.stratio.meta.common.data.Cell;
-import com.stratio.meta.common.data.Row;
+import com.stratio.connector.mongodb.ftest.MongoConnectorHelper;
+import com.stratio.meta.common.exceptions.ConnectionException;
+import com.stratio.meta.common.exceptions.InitializationException;
 
 public class DropTest extends ConnectionTest {
 
+	@Override
+	protected IConnectorHelper getConnectorHelper() {
+		MongoConnectorHelper mongoConnectorHelper = null;
+	try {
+		mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
+	} catch (ConnectionException e) {
+		e.printStackTrace();
+	} catch (InitializationException e) {
+		e.printStackTrace();
+	} catch (CreateNativeConnectionException e) {
+		e.printStackTrace();
+	}
+		return mongoConnectorHelper;
+	}
+	/*
 	@Test
 	public void dropCollectionTest() throws UnsupportedOperationException, com.stratio.connector.meta.exception.UnsupportedOperationException {
 
@@ -72,6 +80,6 @@ public class DropTest extends ConnectionTest {
 		assertEquals("Catalog deleted", false, mongoClient.getDatabaseNames().contains(CATALOG) ); 
 
 	}
-	
+	*/
 	
 }

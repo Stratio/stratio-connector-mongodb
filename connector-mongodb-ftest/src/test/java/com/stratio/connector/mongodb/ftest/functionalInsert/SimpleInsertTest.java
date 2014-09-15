@@ -16,64 +16,34 @@
 package com.stratio.connector.mongodb.ftest.functionalInsert;
 
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
-
-import com.mongodb.BasicDBList;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-import com.stratio.connector.mongodb.core.engine.MongoStorageEngine;
-import com.stratio.connector.mongodb.ftest.ConnectionTest;
-import com.stratio.meta.common.data.Cell;
-import com.stratio.meta.common.data.Row;
-import com.stratio.meta.common.exceptions.ExecutionException;
-import com.stratio.meta.common.exceptions.ValidationException;
+import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
+import com.stratio.connector.elasticsearch.ftest.functionalInsert.GenericSimpleInsertTest;
+import com.stratio.connector.elasticsearch.ftest.helper.IConnectorHelper;
+import com.stratio.connector.mongodb.ftest.MongoConnectorHelper;
+import com.stratio.meta.common.exceptions.ConnectionException;
+import com.stratio.meta.common.exceptions.InitializationException;
 
 /**
  * Created by jmgomez on 16/07/14.
  */
-public class SimpleInsertTest extends ConnectionTest {
+public class SimpleInsertTest extends GenericSimpleInsertTest {
+
+	@Override
+	protected IConnectorHelper getConnectorHelper() {
+		MongoConnectorHelper mongoConnectorHelper = null;
+	try {
+		mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
+	} catch (ConnectionException e) {
+		e.printStackTrace();
+	} catch (InitializationException e) {
+		e.printStackTrace();
+	} catch (CreateNativeConnectionException e) {
+		e.printStackTrace();
+	}
+		return mongoConnectorHelper;
+	}
 
 
-    @Test
-    public void testSimpleInsert() throws ExecutionException, ValidationException, MongoException {
-
-
-        Row row = new Row();
-        Map<String, Cell> cells = new HashMap<>();
-        cells.put("name1", new Cell("value1"));
-        cells.put("name2", new Cell(2));
-        cells.put("name3", new Cell(true));
-        row.setCells(cells);
-
-        ((MongoStorageEngine) stratioMongoConnector.getStorageEngine()).insert(CATALOG, COLLECTION, row);
-
-        DBCollection collection = mongoClient.getDB(CATALOG).getCollection(COLLECTION);
-       
-        DBCursor cursor = collection.find();
-
-        DBObject resultSet;
-        int recordNumber = 0;
-        
-        while (cursor.hasNext()) {
-        	resultSet = cursor.next();
-            assertEquals("The value is correct", "value1", resultSet.get("name1"));
-            assertEquals("The value is correct", 2, resultSet.get("name2"));
-            assertEquals("The value is correct", true, resultSet.get("name3"));
-            recordNumber++;
-        }
-        assertEquals("The records number is correct", 1, recordNumber);
-
-    }
     
 //    @Test
 //    public void booleanSimpleInsert() throws ExecutionException, ValidationException, MongoException {

@@ -16,35 +16,32 @@
 
 package com.stratio.connector.mongodb.core;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.MongoClient;
-import com.mongodb.ServerAddress;
+import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
 import com.stratio.connector.meta.ConnectionConfiguration;
-import com.stratio.connector.meta.IMetadataProvider;
 import com.stratio.connector.mongodb.core.configuration.ConnectionConfigurationCreator;
-import com.stratio.connector.mongodb.core.configuration.MongoClientConfiguration;
 import com.stratio.connector.mongodb.core.configuration.SupportedOperationsCreator;
-import com.stratio.connector.mongodb.core.engine.MongoMetaProvider;
+import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.MongoMetadataEngine;
 import com.stratio.connector.mongodb.core.engine.MongoQueryEngine;
 import com.stratio.connector.mongodb.core.engine.MongoStorageEngine;
+import com.stratio.meta.common.connector.ConnectorClusterConfig;
 import com.stratio.meta.common.connector.IConfiguration;
 import com.stratio.meta.common.connector.IConnector;
 import com.stratio.meta.common.connector.IMetadataEngine;
 import com.stratio.meta.common.connector.IQueryEngine;
 import com.stratio.meta.common.connector.IStorageEngine;
 import com.stratio.meta.common.connector.Operations;
-import com.stratio.meta.common.exceptions.InitializationException;
+import com.stratio.meta.common.exceptions.ConnectionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta.common.security.ICredentials;
+import com.stratio.meta2.common.data.ClusterName;
+
 
 
 
@@ -53,146 +50,66 @@ import com.stratio.meta.common.security.ICredentials;
  */
 public class MongoConnector implements IConnector {
 
-	
-
-	/**
-	 * The Mongo client.
-	 */
-	private MongoClient mongoClient = null;
-
-	/**
-	 * The connector's configuration.
-	 */
-	private MongoClientConfiguration mongoConfiguration = null;
-	
-	/**
-	 * The StorageEngine.
-	 */
-	private MongoStorageEngine mongoStorageEngine = null;
-
-	/**
-	 * The MetaProvider.
-	 */
-	private MongoMetaProvider mongoMetaProvider = null;
-
-	/**
-	 * The QueryEngine.
-	 */
-	private MongoQueryEngine mongoQueryEngine = null;
-	
-	private MongoMetadataEngine mongoMetadataEngine = null;
-	
 	/**
 	* The Log.
 	*/
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	
+	 /**
+	* The connectionHandler.
+	*/
+	private MongoConnectionHandler connectionHandler = null;
 
-	/**
-	 * Create a connection to Mongo.
-	 * 
-	 * @param credentials
-	 *            the security credentials.
-	 * @param configuration
-	 *            the connection configuration.
-	 *
-	 * @throws InitializationException
-	 *             on failure connection.
-	 */
 	
+	/**
+	* Create a connection to Mongo.
+	*
+	* @param configuration the connection configuration. It must be not null.
+	* onnection.
+	*/
 	@Override
-	public void init(ICredentials credentials, IConfiguration configuration)
-			throws InitializationException {
-		
-		//if not null=> return the previous connection
-				
-				if(!isConnected()){
-
-					mongoConfiguration = new MongoClientConfiguration(configuration);
-					
-					ArrayList<ServerAddress> seeds = new ArrayList<ServerAddress>(3);
-					
-					for(String server: mongoConfiguration.getSeeds()){
-						String[] array =  server.split(":");
-						try{
-							if(array.length != 2) throw new InitializationException("invalid address => host:port");
-							else seeds.add(new ServerAddress(array[0],Integer.decode(array[1])));
-							
-						}catch(UnknownHostException e){
-							throw new InitializationException("connection failed");
-						}
-					}
-					
-					createClient(seeds, credentials);
-
-				}else {
-					throw new InitializationException("connection already exist");
-				}
-
-				
-		
+	public void init(IConfiguration configuration) {
+		connectionHandler = new MongoConnectionHandler(configuration);
 	}
 	
 	
 
- /**
-* Create the client.
-*
-* @param seeds the list of servers.
-* @param credentials   the security credentials.
-* @throws InitializationException in case the connection fail.
-*/
-    private void createClient(List<ServerAddress> seeds, ICredentials credentials) throws InitializationException {
-        if (mongoClient == null ) {
-		
-				if (credentials == null) {
-							mongoClient = new MongoClient(seeds,mongoConfiguration.getMongoClientOptions());//Excep
-							logger.info("MongoDB connection established ");
-					} else {
-						
-						throw new InitializationException("Credentials are not supported");
-			
-						// deprecated boolean auth = db.authenticate(myUserName,
-						// myPassword);
-			
-			//			ArrayList<MongoCredential> credentialsSet = new ArrayList<MongoCredential>(1);
-			//			credentialsSet.add(MongoCredential.createMongoCRCredential(
-			//					credentials.getUser(), MongoConnector.database, credentials
-			//							.getPass().toCharArray()));
-			//
-			//			try {
-			//				mongoClient = new MongoClient(seeds, credentialsSet);
-			//			} catch (MongoException | UnknownHostException e) {
-			//				throw new ConnectionException("connection failed to [" + hostM
-			//						+ ":" + portM + "]", e);
-			//			}
-			
-					}
-					
-  
-        }
-    }	
-	
-	
-
-
-	
-	/**
-	 * Close the Mongo's connection.
-	 * 
+	/* (non-Javadoc)
+	 * @see com.stratio.meta.common.connector.IConnector#connect(com.stratio.meta.common.security.ICredentials, com.stratio.meta.common.connector.ConnectorClusterConfig)
 	 */
-	public void close() {
-
-		if(mongoClient != null){
-			mongoClient.close();
-			logger.info("Disconnected from Mongo");
+	@Override
+	public void connect(ICredentials credentials, ConnectorClusterConfig config) throws ConnectionException {
+		try {
+			connectionHandler.createConnection(credentials, config);
+		} catch (HandlerConnectionException e) {
+			//TODO ?
+			throw new ConnectionException("connection failed", e);
 		}
-		mongoClient = null;
-		mongoStorageEngine = null;
-		mongoQueryEngine = null;
-		mongoMetaProvider = null;
+		
 	}
+
+	/* (non-Javadoc)
+	 * @see com.stratio.meta.common.connector.IConnector#close(com.stratio.meta2.common.data.ClusterName)
+	 */
+	@Override
+	public void close(ClusterName name) throws ConnectionException {
+		connectionHandler.closeConnection(name.getName());
+		
+	}
+
+
+	/**
+	* The connection status.
+	*
+	* @return true if the driver's client is not null.
+	*/
+	@Override
+	public boolean isConnected(ClusterName name) {
+		connectionHandler.isConnected(name.getName());
+		return false;
+	}
+	
+	
 
 	/**
 	 * Return the StorageEngine.
@@ -201,22 +118,10 @@ public class MongoConnector implements IConnector {
 	 */
 	@Override
 	public IStorageEngine getStorageEngine() {
-		createSingletonStorageEngine();
-		mongoStorageEngine.setConnection(mongoClient);
-		return mongoStorageEngine;
+		return new MongoStorageEngine(connectionHandler);
 
 	}
 
-	/**
-	 * Return the MetadataProvider.
-	 * 
-	 * @return the MetadataProvider
-	 */
-	public IMetadataProvider getMedatadaProvider(){
-		createSingletonMetaProvider();
-		mongoMetaProvider.setConnection(mongoClient);
-		return mongoMetaProvider;
-	}
 
 	/**
 	 * Return the QueryEngine.
@@ -225,24 +130,23 @@ public class MongoConnector implements IConnector {
 	 */
 	@Override
 	public IQueryEngine getQueryEngine(){
-		createSingletonQueryEngine();
-		mongoQueryEngine.setConnection(mongoClient);
-		return mongoQueryEngine;
+		return new MongoQueryEngine(connectionHandler);
 	}
 
+
+	/* (non-Javadoc)
+	 * @see com.stratio.meta.common.connector.IConnector#getMetadataEngine()
+	 */
+	@Override
+	public IMetadataEngine getMetadataEngine() throws UnsupportedException {
+		return new MongoMetadataEngine(connectionHandler);
+	}
+
+	
 //	@Override
 //	public IConnectorConfiguration getConnectorConfiguration() {
 //		return null;
 //	}
-
-	/**
-	 * Return the configuration.
-	 * 
-	 * @return the configuration.
-	 */
-	public IConfiguration getConfiguration() {
-		return mongoConfiguration;
-	}
 
 	/**
      * Return the supported operations
@@ -263,85 +167,28 @@ public class MongoConnector implements IConnector {
     	return ConnectionConfigurationCreator.getConfiguration();
     }
 	
-	
-	/**
-	 * Create a StorageEngine.
+
+	/* (non-Javadoc)
+	 * @see com.stratio.meta.common.connector.IConnector#getConnectorName()
 	 */
-	private void createSingletonStorageEngine() {
-		if (mongoStorageEngine == null) {
-			mongoStorageEngine = new MongoStorageEngine();
-		}
+	@Override
+	public String getConnectorName() {
+	return "Mongo";
 	}
 
 
-	/**
-	 * Create a QueryEngine.
-	 */
-	private void createSingletonQueryEngine() {
-		if (mongoQueryEngine == null) {
-			mongoQueryEngine = new MongoQueryEngine();
-		}
-	}
 
-	/**
-	 * Create a MetaProvider.
-	 */
-	private void createSingletonMetaProvider() {
-		if (mongoMetaProvider == null) {
-			mongoMetaProvider = new MongoMetaProvider();
-		}
-	}
-	
-	/**
-	 * Create a MetadataEngine.
-	 */
-	private void createSingletonMetadataEngine() {
-		if (mongoMetadataEngine == null) {
-			mongoMetadataEngine = new MongoMetadataEngine();
-		}
-		
-	}
-	
-	
 	/**
 	* Return the DataStore Name.
 	* @return DataStore Name
 	*/
 	@Override
-	public String getDatastoreName() {
-		return "Mongo";
-	}
-
-	/**
-	* The connection status.
-	*
-	* @return true if the driver's client is not null.
-	*/
-	@Override
-	public boolean isConnected() {
-		return mongoClient != null;
-//		boolean connected=false;
-//		ReplicaSetStatus rsStatus;
-//		if ( mongoClient != null ) {
-//			if( (rsStatus= mongoClient.getReplicaSetStatus()) == null) connected = true; //mongo getRSStatus?
-//			else connected = (rsStatus.getMaster() != null); //TODO canRead(RP) and canWrite(WC) //puede ser proceso de failover
-//		}
-//		return connected;
-
+	public String[] getDatastoreName() {
+		return new String[]{"Mongo"};
 	}
 
 
 
-	/* (non-Javadoc)
-	 * @see com.stratio.meta.common.connector.IConnector#getMetadataEngine()
-	 */
-	@Override
-	public IMetadataEngine getMetadataEngine() throws UnsupportedException {
-		createSingletonMetadataEngine();
-		mongoMetadataEngine.setStorageEngine((MongoStorageEngine) getStorageEngine());
-		mongoMetadataEngine.setQueryEngine((MongoQueryEngine) getQueryEngine());
-		return mongoMetadataEngine;
-	}
 
 	
 

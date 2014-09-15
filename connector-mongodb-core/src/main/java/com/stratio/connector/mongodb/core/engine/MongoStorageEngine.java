@@ -16,6 +16,7 @@
 package com.stratio.connector.mongodb.core.engine;
 
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,11 +28,19 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
+import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.utils.FilterDBObjectBuilder;
+import com.stratio.connector.mongodb.core.exceptions.MongoDeleteException;
 import com.stratio.meta.common.connector.IStorageEngine;
 import com.stratio.meta.common.data.Cell;
 import com.stratio.meta.common.data.Row;
+import com.stratio.meta.common.exceptions.ExecutionException;
+import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta.common.logicalplan.Filter;
+import com.stratio.meta2.common.data.ClusterName;
+import com.stratio.meta2.common.data.ColumnName;
+import com.stratio.meta2.common.metadata.TableMetadata;
 
 
 
@@ -41,8 +50,36 @@ import com.stratio.meta.common.logicalplan.Filter;
  */
 public class MongoStorageEngine implements IStorageEngine {
 
-	private MongoClient mongoClient = null;
+	private transient MongoConnectionHandler connectionHandler;
 	
+	/**
+	 * @param connectionHandler
+	 */
+	public MongoStorageEngine(MongoConnectionHandler connectionHandler) {
+		this.connectionHandler = connectionHandler;
+	}
+
+	
+	 @Override
+	 public void insert(ClusterName targetCluster, TableMetadata targetTable, Row row) throws UnsupportedException, ExecutionException {
+		 try {
+			insert((MongoClient)connectionHandler.getConnection(targetCluster.getName()).getNativeConnection(), targetTable, row);
+		} catch (HandlerConnectionException e) {
+			throw new ExecutionException("cluster cannot be recovered: "+targetCluster.getName() , e);
+		}
+	 }
+	 
+	 
+	 @Override
+	 public void insert(ClusterName targetCluster, TableMetadata targetTable, Collection<Row> rows ) throws UnsupportedException, ExecutionException {
+		 try{
+			 insert((MongoClient)connectionHandler.getConnection(targetCluster.getName()).getNativeConnection(), targetTable, rows);
+		 } catch (HandlerConnectionException e) {
+				throw new ExecutionException("cluster cannot be recovered: "+targetCluster.getName() , e);
+			}
+	 }
+	 
+	 
 	/**
      * Insert a document in MongoDB.
      *
@@ -51,9 +88,11 @@ public class MongoStorageEngine implements IStorageEngine {
      * @param row      		the row.
      * @throws ExecutionException  in case of failure during the execution.
      */
-	public void insert(String catalog, String tableName, Row row)
-			throws UnsupportedOperationException {
+	private void insert(MongoClient mongoClient, TableMetadata targetTable, Row row) throws ExecutionException, UnsupportedException {
 
+		String catalog = targetTable.getName().getCatalogName().getName();
+		String tableName = targetTable.getName().getName();
+		
 		if (isEmpty(catalog) || isEmpty(tableName) || row == null) {
 			//throw exception
 		}else{
@@ -64,11 +103,18 @@ public class MongoStorageEngine implements IStorageEngine {
 			
 				DB db = mongoClient.getDB(catalog);
 				BasicDBObject doc = new BasicDBObject();
-				// doc.putAll(row.getCells());//si cambio de Row...
+				
+				String pk = null;
+			
 				for (Map.Entry<String, Cell> entry : row.getCells().entrySet())
 				{
 					Object cellValue = entry.getValue().getValue();	
 					doc.put(entry.getKey(), cellValue);
+					
+					if (targetTable.isPK(new ColumnName(targetTable.getName().getCatalogName().getName(),targetTable.getName().getName(), entry.getKey()))){
+						if (pk!=null) throw new UnsupportedException("Only one PK is allowed");
+						pk = entry.getValue().getValue().toString(); //TODO revisar el toString.
+					}
 				}	
 //				CHECK BEFORE INSERT?			
 //					if(cellValue instanceof Integer || 
@@ -82,13 +128,26 @@ public class MongoStorageEngine implements IStorageEngine {
 //							
 //							){
 //					}
-
-				db.getCollection(tableName).insert(doc);// no options(alt create)
-				// insert(doc,write concern)			
+				if (pk!=null){
+					//TODO upsert by default
+					BasicDBObject find = new BasicDBObject();
+					find.put("_id", pk);
+					
+					db.getCollection(tableName).update(find,new BasicDBObject("$set", doc),true,false); 
+					
+				}else {
+					db.getCollection(tableName).insert(doc);// no options(alt create)
+					// insert(doc,write concern)			
+				}
+				
+				
 			
 		}
 			
 	}
+	
+//	UPDATE??
+//	http://docs.mongodb.org/manual/reference/operator/update/
 
 	/**
      * Insert a set of documents in MongoDB.
@@ -98,15 +157,13 @@ public class MongoStorageEngine implements IStorageEngine {
      * @param row      		the row.
      * @throws ExecutionException  in case of failure during the execution.
      */
-	public void insert(String catalog, String tableName, Set<Row> rows)
-			throws UnsupportedOperationException {
-	
+	private void insert(MongoClient mongoClient, TableMetadata targetTable, Collection<Row> rows)
+			throws UnsupportedException, ExecutionException {		
+		
 		for(Row row: rows){
-			insert(catalog, tableName, row);
+			insert(mongoClient, targetTable, row);
 		}
-		
-		
-		
+			
 //		_id required	
 //		if (isEmpty(catalog) || isEmpty(tableName) || rows == null || rows.isEmpty()) {
 //			//throwException
@@ -129,7 +186,6 @@ public class MongoStorageEngine implements IStorageEngine {
 //			}
 //			bulk.execute();
 //		}
-		
 						
 	}
 
@@ -139,10 +195,10 @@ public class MongoStorageEngine implements IStorageEngine {
 	* @param tableName   the collection.
 	* @param filterSet filters to restrict the set of documents.
 	*/
-	
-	public void delete(String catalog, String tableName, Filter... filterSet)
+	private void delete(MongoClient mongoClient, String catalog, String tableName, Filter... filterSet)
 			throws UnsupportedOperationException {
 		//TODO list Filter.  And, Or, etc...
+
 		
 		DB db = mongoClient.getDB(catalog);
 
@@ -160,51 +216,17 @@ public class MongoStorageEngine implements IStorageEngine {
 
 	}
 
-//	UPDATE??
-//	http://docs.mongodb.org/manual/reference/operator/update/
+
 	
 	private boolean isEmpty(String value) {
         return value == null || value.trim().isEmpty();
     }
 	
-	/**
-	 * Set the connection.
-	 * 
-	 * @param mongoClient
-	 *            the connection.
-	 */
-	public void setConnection(MongoClient mongoClient) {
-		this.mongoClient = mongoClient;
-	}
+	 
 	
 	
-	/**
-	 * Upsert 
-	 */
-	protected void insert(String catalog, String tableName, Row row, String id)
-			throws UnsupportedOperationException {
-
-		if (isEmpty(catalog) || isEmpty(tableName) || row == null || id==null) {
-			//throw exception
-		}else{
-			
-				DB db = mongoClient.getDB(catalog);
-				
-				BasicDBObject replace = new BasicDBObject();
-				
-				for (Map.Entry<String, Cell> entry : row.getCells().entrySet())
-				{
-					Object cellValue = entry.getValue().getValue();	
-					replace.put(entry.getKey(), cellValue);
-				}	
-				
-				BasicDBObject find = new BasicDBObject();
-				find.put("_id", id);
-				
-				db.getCollection(tableName).update(find,new BasicDBObject("$set", replace),true,false); 
-				// insert(doc,write concern)			
-			
-		}
-			
-	}
+	 private MongoClient recoveredClient(ClusterName targetCluster) throws HandlerConnectionException {
+		 return (MongoClient) connectionHandler.getConnection(targetCluster.getName()).getNativeConnection();
+	 }
+	
 }

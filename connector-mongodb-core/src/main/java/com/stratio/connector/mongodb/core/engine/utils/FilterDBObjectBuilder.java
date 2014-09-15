@@ -15,17 +15,17 @@
 */
 package com.stratio.connector.mongodb.core.engine.utils;
 
-import java.util.ArrayList;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.stratio.meta.common.logicalplan.Filter;
+import com.stratio.meta.common.statements.structures.relationships.Operator;
 import com.stratio.meta.common.statements.structures.relationships.Relation;
-import com.stratio.meta.common.statements.structures.relationships.RelationBetween;
-import com.stratio.meta.common.statements.structures.relationships.RelationCompare;
-import com.stratio.meta.common.statements.structures.relationships.RelationIn;
-import com.stratio.meta.common.statements.structures.relationships.RelationType;
-import com.stratio.meta.common.statements.structures.terms.Term;
+import com.stratio.meta2.common.statements.structures.selectors.BooleanSelector;
+import com.stratio.meta2.common.statements.structures.selectors.ColumnSelector;
+import com.stratio.meta2.common.statements.structures.selectors.IntegerSelector;
+import com.stratio.meta2.common.statements.structures.selectors.Selector;
+import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
+
 
 public class FilterDBObjectBuilder extends DBObjectBuilder {
 
@@ -34,8 +34,9 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 	
 	
 	public FilterDBObjectBuilder(boolean useAggregation){
-		super(DBObjectType.FILTER,useAggregation);
+		super(/*DBObjectType.FILTER,*/useAggregation);
 		filterQuery = new BasicDBObject();
+		//TODO filterQuery = QueryBuilder.start()...
 			
 	}
 
@@ -43,17 +44,22 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 		
 		//add booleanType o logicalType
 		
-		RelationType relationType = filter.getType();
+
 		Relation relation = filter.getRelation();
 		
-		if(filterQuery.containsField(relation.getIdentifiers().get(0).getField())){
-			filterOptions = (BasicDBObject) filterQuery.get(relation.getIdentifiers().get(0).getField());	
-		}else filterOptions = new BasicDBObject();
+		if(filterQuery.containsField(getFieldName(relation.getLeftTerm()))){
+			filterOptions = (BasicDBObject) filterQuery.get(getFieldName(relation.getLeftTerm()));	
+		}else {
+			filterOptions = new BasicDBObject();
+		}
 		
-		switch(relationType){
 		
+		
+		switch(relation.getOperator()){
 		
 			case BETWEEN:
+				new RuntimeException("A la espera de que se implemente por Meta"); //REVIEW mewtodo handleBetweenFilter
+				/*
 				RelationBetween relBetween = (RelationBetween) relation;
 				//check types: DateTerm, StringTerm, etc.. (única forma) de compatibilidad
 				//múltiples between?? //check 2 terms
@@ -64,10 +70,14 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 		//					Integer.valueOf(  relBetween.getTerms().get(1).getStringValue() ));	
 					filterQuery.append(relation.getIdentifiers().get(0).getField(), filterOptions);
 				
+				*/
+				
 				break;
 				
 				
 			case COMPARE:
+				new RuntimeException("A la espera de que se implemente por Meta"); //REVIEW mewtodo handleBetweenFilter
+				/*
 				RelationCompare relCompare = (RelationCompare) relation;
 				String lValue = null;
 				//check integer?? también hay que hacer para between strings
@@ -85,11 +95,13 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 					filterQuery.append(relation.getIdentifiers().get(0).getField(), filterOptions);
 				}
 				
-				
+				*/
 				break;
 				
 				
 			case IN:
+				new RuntimeException("A la espera de que se implemente por Meta"); //REVIEW mewtodo handleBetweenFilter
+				/*SelectorType type = relation.getLeftTerm().getType();
 				
 				RelationIn relIn = (RelationIn) relation;
 				//check integer?? 
@@ -101,17 +113,64 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 				}	
 				filterOptions.append("$in",  inTerms);
 				filterQuery.append(relation.getIdentifiers().get(0).getField(), filterOptions);
-				
+				*/
 				break;
-			case TOKEN:
-				break;
-			default: //throwException
+
+
+	
+		case DISTINCT: case GET: case GT: case LET: case LT: case ASSIGN:
+			handleRelationCompare(relation);
+		
+			default: //TODO throwException
 				break;
 			
 		}
 		
 	}
 	
+	
+	/**
+	 * @param operator 
+	 * 
+	 */
+	private void handleRelationCompare(Relation relation) {
+		Operator operator = relation.getOperator();
+		String lValue = null;
+		//check integer?? también hay que hacer para between strings
+		//relation.getIdentifiers().get(0).getField(); //si llega un equal se eliminan > < etc..
+		switch(operator){
+		
+			case DISTINCT: lValue = "$ne"; break;
+			case GET: lValue = "$gte"; break;
+			case GT: lValue = "$gt"; break;
+			case LET: lValue = "$lte";	break;
+			case LT:  lValue = "$lt"; break;
+			case ASSIGN: lValue = "$eq"; break;
+		}
+		
+		if(lValue != null){
+			
+			   	Selector selector = relation.getRightTerm();
+			   	
+				switch(selector.getType()){
+				
+					case BOOLEAN: filterOptions.append(lValue, ((BooleanSelector) selector).getValue() ); break;
+					//TODO floating point get valued missing
+					//case FLOATING_POINT: filterOptions.append(lValue, ((FloatingPointSelector) selector). ); break;
+					case INTEGER: filterOptions.append(lValue, ((IntegerSelector) selector).getValue() ); break;
+					case STRING:filterOptions.append(lValue, ((StringSelector) selector).getValue() ); break;
+					case COLUMN: filterOptions.append(lValue, ((ColumnSelector) selector).getName().getName()); break;
+					case ASTERISK: case FUNCTION: default: throw new RuntimeException("Not implemented yet");
+						//break;
+				}		
+				//TODO CHECK if numbers is supported
+				filterQuery.append(getFieldName(relation.getLeftTerm()), filterOptions);
+		}
+		
+
+		
+	}
+
 	public DBObject build(){
 		DBObject container;
 		if(useAggregation){
@@ -122,4 +181,18 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 		return container;
 			
 	}
+	
+
+	private static String getFieldName(Selector selector){
+        String field = null;
+        if (selector instanceof ColumnSelector) {
+            ColumnSelector columnSelector = (ColumnSelector) selector;
+            field = columnSelector.getName().getName();
+        }
+        return field;
+    }
+	
+
+	 
+	 
 }

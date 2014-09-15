@@ -20,7 +20,7 @@ import java.util.List;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.stratio.meta.common.logicalplan.Project;
-import com.stratio.meta.common.metadata.structures.ColumnMetadata;
+import com.stratio.meta2.common.data.ColumnName;
 
 public class ProjectDBObjectBuilder extends DBObjectBuilder {
 
@@ -30,19 +30,19 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
 	
 	
 	public ProjectDBObjectBuilder(boolean useAggregation, Project projection){
-		super(DBObjectType.PROJECT,useAggregation);
+		super(/*DBObjectType.PROJECT,*/useAggregation);
 		
 		projectQuery = new BasicDBObject();
-		List<ColumnMetadata> columnMetadata = projection.getColumnList();
-		
+		List<ColumnName> columnMetadata = projection.getColumnList();
 		if(columnMetadata == null || columnMetadata.isEmpty() ) {
     		//throw new ValidationException? select *
     	}else{
     		
-			for(ColumnMetadata colMetadata: columnMetadata){
-				projectQuery.put(colMetadata.getColumnName(), 1);//no comprobar columName...?
+			for(ColumnName colMetadata: columnMetadata){
+				projectQuery.put(colMetadata.getName(), 1);//no comprobar columName...?
 			}
 			
+			//TODO como va a llegar la PK, trasnformar a _id?
 		if(!projectQuery.containsField("_id")) projectQuery.put("_id", 0); //seleccionar con boolean?
 		}
 		
