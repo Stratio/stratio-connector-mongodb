@@ -15,12 +15,21 @@
  */
 package com.stratio.connector.mongodb.ftest;
 
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.HOST;
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.PORT;
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.READ_PREFERENCE;
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.WRITE_CONCERN;
+import static org.mockito.Mockito.mock;
+
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
-import com.stratio.connector.elasticsearch.ftest.helper.IConnectorHelper;
+import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.core.MongoConnector;
 import com.stratio.connector.mongodb.core.configuration.MongoClientConfiguration;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
@@ -31,9 +40,7 @@ import com.stratio.meta.common.exceptions.ConnectionException;
 import com.stratio.meta.common.exceptions.InitializationException;
 import com.stratio.meta.common.security.ICredentials;
 import com.stratio.meta2.common.data.ClusterName;
-
-import static org.mockito.Mockito.mock;
-import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.*;
+import com.stratio.meta2.common.metadata.ColumnType;
 /**
  * @author darroyo
  *
@@ -41,8 +48,8 @@ import static com.stratio.connector.mongodb.core.configuration.ConfigurationOpti
 public class MongoConnectorHelper implements IConnectorHelper{
 
 	private MongoConnectionHandler connectorHandle;
-	protected String SERVER_IP = "localhost";//"10.200.0.58,10.200.0.59,10.200.0.60";
-	private String SERVER_PORT = "27017";//TODO config test "9300,9300,9300";
+	protected String SERVER_IP = "10.200.0.62";//"10.200.0.58,10.200.0.59,10.200.0.60";
+	private String SERVER_PORT = "27200";//TODO config test "9300,9300,9300";
 	private String readPreference = "primaryPreferred";
 	private String writeConcern = "acknowledged";//TODO test different writeConcern
 	
@@ -85,17 +92,36 @@ public class MongoConnectorHelper implements IConnectorHelper{
 		//TODO return mock(ICredentials.class);
 	}
 
-	@Override
-	public void deleteSet(String schema) {
-	
-			if (mongoClient != null) mongoClient.dropDatabase(schema);
-				
-		
-	}
 
 	@Override
 	public void refresh(String schema) {
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see com.stratio.connector.commons.ftest.helper.IConnectorHelper#recoveredCatalogSettings(java.lang.String)
+	 */
+	@Override
+	public Map recoveredCatalogSettings(String catalog) {
+		// TODO Afecta a ES, no a mongoDB??
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.stratio.connector.commons.ftest.helper.IConnectorHelper#getAllSupportedColumnType()
+	 */
+	@Override
+	public Collection getAllSupportedColumnType() {
+		 Set<ColumnType> allColumntTypes = new HashSet<>();
+		 //TODO new types??
+		 allColumntTypes.add(ColumnType.BIGINT);
+		 allColumntTypes.add(ColumnType.BOOLEAN);
+		 allColumntTypes.add(ColumnType.DOUBLE);
+		 allColumntTypes.add(ColumnType.FLOAT);
+		 allColumntTypes.add(ColumnType.INT);
+		 allColumntTypes.add(ColumnType.TEXT);
+		 allColumntTypes.add(ColumnType.VARCHAR);
+		 return allColumntTypes ;
 	}
 
 }

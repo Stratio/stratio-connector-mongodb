@@ -17,8 +17,8 @@
 package com.stratio.connector.mongodb.ftest;
 
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
-import com.stratio.connector.elasticsearch.ftest.GenericConfigurationTest;
-import com.stratio.connector.elasticsearch.ftest.helper.IConnectorHelper;
+import com.stratio.connector.commons.ftest.GenericConfigurationTest;
+import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.meta.common.exceptions.ConnectionException;
 import com.stratio.meta.common.exceptions.InitializationException;
 

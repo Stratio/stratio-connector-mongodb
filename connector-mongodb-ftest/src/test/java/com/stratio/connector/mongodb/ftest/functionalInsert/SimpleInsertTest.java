@@ -17,8 +17,8 @@ package com.stratio.connector.mongodb.ftest.functionalInsert;
 
 
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
-import com.stratio.connector.elasticsearch.ftest.functionalInsert.GenericSimpleInsertTest;
-import com.stratio.connector.elasticsearch.ftest.helper.IConnectorHelper;
+import com.stratio.connector.commons.ftest.functionalInsert.GenericSimpleInsertTest;
+import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.ftest.MongoConnectorHelper;
 import com.stratio.meta.common.exceptions.ConnectionException;
 import com.stratio.meta.common.exceptions.InitializationException;
