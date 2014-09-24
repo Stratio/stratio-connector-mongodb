@@ -19,7 +19,13 @@ import com.stratio.meta.common.exceptions.ExecutionException;
 
 public class MongoInsertException extends ExecutionException {
 
-    public MongoInsertException(String msg, Throwable cause) {
+
+	static final long serialVersionUID = 3007123571810028475L;
+
+	public MongoInsertException(String msg, Throwable cause) {
+        super(msg,cause);
+    } 
+	public MongoInsertException(String msg) {
         super(msg);
     } 
 }

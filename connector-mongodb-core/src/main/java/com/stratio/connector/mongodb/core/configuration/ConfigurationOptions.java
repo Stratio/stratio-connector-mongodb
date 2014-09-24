@@ -17,8 +17,11 @@ package com.stratio.connector.mongodb.core.configuration;
 
 /**
  * @author darroyo
+ * Set of options for the mongo connector. A default value is provided.
  *
  */
+
+
 public enum ConfigurationOptions {
 
 	ACCEPTABLE_LATENCY("mongo.acceptableLatencyDifference", "15"),
@@ -26,7 +29,6 @@ public enum ConfigurationOptions {
 	MAX_IDLE_TIME("mongo.maxConnectionIdleTime", "0"),
 	CONNECTION_TIMEOUT("mongo.connectTimeout","10000"),
 	READ_PREFERENCE("mongo.readPreference", "primaryPreferred"),
-	//primary,primiaryPreferred,secondary, secondaryPreferred, nearest
 	WRITE_CONCERN("mongo.writeConcern", "acknowledged"),
 
 	

@@ -19,8 +19,8 @@
             <groupId>com.stratio.connector</groupId>
             <artifactId>connector-commons-ftest</artifactId>
             <classifier>tests</classifier>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>test</scope>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>test</scope>      
         </dependency>
         <dependency>
             <groupId>junit</groupId>

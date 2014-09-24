@@ -39,7 +39,7 @@ public class MongoConnectionHandler extends ConnectionHandler{
 	 * @see com.stratio.connector.commons.connection.ConnectionHandler#createNativeConnection(com.stratio.meta.common.security.ICredentials, com.stratio.meta.common.connector.ConnectorClusterConfig)
 	 */
 	@Override
-	protected Connection createNativeConnection(ICredentials credentials,ConnectorClusterConfig connectorClusterConfig) throws CreateNativeConnectionException {
+	protected Connection<?> createNativeConnection(ICredentials credentials,ConnectorClusterConfig connectorClusterConfig) throws CreateNativeConnectionException {
 		return new DriverConnection(credentials,connectorClusterConfig);
 	}
 }

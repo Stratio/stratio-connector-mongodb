@@ -21,7 +21,6 @@ package com.stratio.connector.meta;
 */
 public enum ConnectionOption {
 
-	//ServerAddress?
     HOST_IP,
     HOST_PORT;
 }

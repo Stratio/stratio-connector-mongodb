@@ -20,6 +20,12 @@ import com.stratio.meta.common.exceptions.ExecutionException;
 
 public class MongoValidationException extends ExecutionException {
 
+static final long serialVersionUID = -6751513453299437587L;
+
+public MongoValidationException(String msg, Throwable cause) {
+        super(msg,cause);
+    }
+	 
     public MongoValidationException(String msg) {
         super(msg);
     }

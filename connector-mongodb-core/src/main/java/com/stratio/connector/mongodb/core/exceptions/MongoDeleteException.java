@@ -19,7 +19,12 @@ import com.stratio.meta.common.exceptions.ExecutionException;
 
 public class MongoDeleteException extends ExecutionException {
 
-    public MongoDeleteException(String msg, Throwable cause) {
-        super(msg);
-}
+	static final long serialVersionUID = 4437784374390458324L;
+	
+	public MongoDeleteException(String msg, Throwable cause) {
+        super(msg,cause);
+    }
+    public MongoDeleteException(String msg){
+    	super(msg);
+    }
 }

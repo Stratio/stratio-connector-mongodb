@@ -34,9 +34,9 @@ import com.stratio.connector.meta.MongoResultSet;
 import com.stratio.connector.mongodb.core.engine.utils.FilterDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.utils.ProjectDBObjectBuilder;
 import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
-import com.stratio.connector.mongodb.core.exceptions.MongoUnsupportedOperationException;
 import com.stratio.meta.common.data.Cell;
 import com.stratio.meta.common.data.Row;
+import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta.common.logicalplan.Filter;
 import com.stratio.meta.common.logicalplan.LogicalStep;
 import com.stratio.meta.common.logicalplan.LogicalWorkflow;
@@ -61,7 +61,7 @@ public class LogicalWorkflowExecutor {
 	private List<DBObject> query = null;
 
 	public LogicalWorkflowExecutor(LogicalWorkflow logicalWorkflow)
-			throws MongoUnsupportedOperationException, MongoQueryException {
+			throws  MongoQueryException, UnsupportedException {
 
 		readLogicalWorkflow(logicalWorkflow);
 		setMandatoryAggregation();
@@ -76,7 +76,7 @@ public class LogicalWorkflowExecutor {
 
 	}
 
-	private void readLogicalWorkflow(LogicalWorkflow logicalWorkflow) throws MongoQueryException, MongoUnsupportedOperationException {
+	private void readLogicalWorkflow(LogicalWorkflow logicalWorkflow) throws MongoQueryException, UnsupportedException{
 
 		
 		//TODO getLastStep?? should be getSteps(); 
@@ -91,7 +91,7 @@ public class LogicalWorkflowExecutor {
 				if (projection == null)
 					projection = (Project) lStep;
 				else
-					throw new MongoUnsupportedOperationException(" # Project > 1");
+					throw new UnsupportedException(" # Project > 1");
 			}else if (lStep instanceof Filter) {
 				filterList.add((Filter) lStep);
 			}/* else if (lStep instanceof Sort) {
@@ -107,7 +107,7 @@ public class LogicalWorkflowExecutor {
 				else
 					throw new MongoQueryException(" # GroupBy > 1", null);
 			}*/ else {
-				throw new UnsupportedOperationException("step unsupported" + lStep.getClass());
+				throw new UnsupportedException("step unsupported" + lStep.getClass());
 			}
 		}
 		
@@ -139,6 +139,7 @@ public class LogicalWorkflowExecutor {
 				query.add(buildFilter());
 		}
 
+	
 		
 
 	}
@@ -233,6 +234,12 @@ public class LogicalWorkflowExecutor {
 			// .build();
 			// pipeline,aggOptions => dbcursor
 
+			int stage =1;
+			for (DBObject aggregationStage: query){
+				logger.debug("Aggregate framework stage ("+ (stage++) +") : " +aggregationStage.toString());
+			}
+			
+			
 			AggregationOutput aggOutput = coll.aggregate(query);
 
 			for (DBObject result : aggOutput.results()) {

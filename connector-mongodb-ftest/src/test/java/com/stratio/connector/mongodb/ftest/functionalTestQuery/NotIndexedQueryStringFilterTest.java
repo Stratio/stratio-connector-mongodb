@@ -17,7 +17,7 @@ package com.stratio.connector.mongodb.ftest.functionalTestQuery;
 
 
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
-import com.stratio.connector.commons.ftest.functionalTestQuery.GenericQueryFilterTest;
+import com.stratio.connector.commons.ftest.functionalTestQuery.GenericNotIndexedQueryStringFilterTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.ftest.MongoConnectorHelper;
 import com.stratio.meta.common.exceptions.ConnectionException;
@@ -27,7 +27,7 @@ import com.stratio.meta.common.exceptions.InitializationException;
 /**
  * Created by jmgomez on 17/07/14.
  */
-public class QueryFilterTest extends GenericQueryFilterTest{
+public class NotIndexedQueryStringFilterTest extends GenericNotIndexedQueryStringFilterTest{
 
 	@Override
 	protected IConnectorHelper getConnectorHelper() {
