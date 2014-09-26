@@ -26,19 +26,19 @@ import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
+import com.stratio.connector.commons.connection.Connection;
+import com.stratio.connector.commons.engine.CommonsMetadataEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
-import com.stratio.meta.common.connector.IMetadataEngine;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta2.common.data.CatalogName;
-import com.stratio.meta2.common.data.ClusterName;
 import com.stratio.meta2.common.data.TableName;
 import com.stratio.meta2.common.metadata.CatalogMetadata;
 import com.stratio.meta2.common.metadata.ColumnMetadata;
 import com.stratio.meta2.common.metadata.IndexMetadata;
 import com.stratio.meta2.common.metadata.IndexType;
 import com.stratio.meta2.common.metadata.TableMetadata;
+import com.stratio.meta2.common.statements.structures.selectors.BooleanSelector;
 import com.stratio.meta2.common.statements.structures.selectors.Selector;
 import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
 
@@ -46,7 +46,7 @@ import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
  * @author darroyo
  *
  */
-public class MongoMetadataEngine implements IMetadataEngine {
+public class MongoMetadataEngine extends CommonsMetadataEngine {
 
     private transient MongoConnectionHandler connectionHandler;
     // TODO meta name?
@@ -62,7 +62,7 @@ public class MongoMetadataEngine implements IMetadataEngine {
      *            the connector handler
      */
     public MongoMetadataEngine(MongoConnectionHandler connectionHandler) {
-        this.connectionHandler = connectionHandler;
+        super(connectionHandler);
     }
 
     /**
@@ -78,9 +78,10 @@ public class MongoMetadataEngine implements IMetadataEngine {
      *             if an error occur.
      */
     @Override
-    public void createCatalog(ClusterName targetCluster, CatalogMetadata catalogMetadata) throws ExecutionException,
+    public void createCatalog(CatalogMetadata catalogMetadata, Connection connection) throws ExecutionException,
                     UnsupportedException {
 
+        MongoClient mongoClient = (MongoClient) connection.getNativeConnection();
         Map<TableName, TableMetadata> tables = catalogMetadata.getTables();
         boolean isCatalogSharded = false;
         Iterator<TableName> keyIterator = tables.keySet().iterator();
@@ -91,9 +92,9 @@ public class MongoMetadataEngine implements IMetadataEngine {
 
         }
         if (isCatalogSharded) {
-            enableSharding(targetCluster, catalogMetadata.getName().getName());
+            enableSharding(mongoClient, catalogMetadata.getName().getName());
             for (TableMetadata tableMetadata : tables.values()) {
-                shardCollection(targetCluster, tableMetadata, isCatalogSharded);
+                shardCollection(mongoClient, tableMetadata, isCatalogSharded);
             }
         }
 
@@ -101,7 +102,7 @@ public class MongoMetadataEngine implements IMetadataEngine {
         for (TableMetadata tableMetadata : tables.values()) {
             if (tableMetadata.getIndexes() != null) {
                 for (IndexMetadata indexMetadata : tableMetadata.getIndexes().values()) {
-                    createIndex(targetCluster, indexMetadata);
+                    createIndex(indexMetadata, connection);
                 }
             }
         }
@@ -109,22 +110,22 @@ public class MongoMetadataEngine implements IMetadataEngine {
     }
 
     @Override
-    public void createTable(ClusterName targetCluster, TableMetadata tableMetadata) throws ExecutionException,
+    public void createTable(TableMetadata tableMetadata, Connection connection) throws ExecutionException,
                     UnsupportedException {
-        shardCollection(targetCluster, tableMetadata, false);
+        shardCollection((MongoClient) connection.getNativeConnection(), tableMetadata, false);
     }
 
     /**
      * Shard a collection if the table option "enable_sharding" is true
      * 
-     * @param targetCluster
+     * @param mongoClient
      * @param tableMetadata
      * @param shardingEnabled
      *            whether sharding has been enabled previously for the catalog or not
      * @throws ExecutionException
      * @throws UnsupportedException
      */
-    private void shardCollection(ClusterName targetCluster, TableMetadata tableMetadata, boolean shardingEnabled)
+    private void shardCollection(MongoClient mongoClient, TableMetadata tableMetadata, boolean shardingEnabled)
                     throws ExecutionException, UnsupportedException {
 
         final String catalogName = tableMetadata.getName().getCatalogName().getName();
@@ -132,14 +133,10 @@ public class MongoMetadataEngine implements IMetadataEngine {
         if (collectionIsSharded(tableMetadata)) {
 
             if (!shardingEnabled)
-                enableSharding(targetCluster, catalogName);
+                enableSharding(mongoClient, catalogName);
 
             DB catalog;
-            try {
-                catalog = recoveredClient(targetCluster).getDB("admin");
-            } catch (HandlerConnectionException e) {
-                throw new ExecutionException("admin cannot be recovered: " + targetCluster.getName(), e);
-            }
+            catalog = mongoClient.getDB("admin");
 
             // TODO tableMetadata.getOptions();
             // TODO shardKey hashed=> ("date", "hashed"); o multicampo ascendente o descendente
@@ -151,7 +148,9 @@ public class MongoMetadataEngine implements IMetadataEngine {
              * shardField.getIndexType() }
              */
             // TODO hashed key by default
-            final DBObject shardKey = new BasicDBObject("_id", "hashed");
+            // final DBObject shardKey = new BasicDBObject("_id", "hashed");
+            // TODO _id key by default
+            final DBObject shardKey = new BasicDBObject("_id", 1);
 
             // shard the collection with the key
             final DBObject cmd = new BasicDBObject("shardCollection", catalogName + "."
@@ -174,37 +173,28 @@ public class MongoMetadataEngine implements IMetadataEngine {
     private boolean collectionIsSharded(TableMetadata tableMetadata) {
 
         Selector selectorSharded = null;
-        boolean isSharded = false;
-        // TODO META option if collection is sharded
-        boolean a = false;
-        for (Selector sel : tableMetadata.getOptions().keySet()) {
-            if (sel instanceof StringSelector) {
-                if (((StringSelector) sel).getValue().equals(SHARDING_ENABLED)) {
-                    isSharded = true;
-                }
-            }
-        }
-        Selector sel = tableMetadata.getOptions().get(new StringSelector(SHARDING_ENABLED));
-        StringSelector strSelector = new StringSelector(SHARDING_ENABLED);
-        StringSelector sel2 = strSelector;
-        boolean equalss = strSelector.equals(sel2);
-        return isSharded;
 
         /*
-         * TODO StringSelector.equals()? if ((selectorSharded = tableMetadata.getOptions().get(new
-         * StringSelector(SHARDING_ENABLED))) != null) { return ((BooleanSelector) selectorSharded).getValue(); // TODO
-         * return (Boolean) tableMetadata.getOptions().get(SHARDING_ENABLED); } else return a;
+         * boolean isSharded = false; // TODO META option if collection is sharded for (Selector sel :
+         * tableMetadata.getOptions().keySet()) { if (sel instanceof StringSelector) { if (((StringSelector)
+         * sel).getValue().equals(SHARDING_ENABLED)) { isSharded = true; } } } return isSharded;
          */
+
+        if ((selectorSharded = tableMetadata.getOptions().get(new StringSelector(SHARDING_ENABLED))) != null) {
+            return ((BooleanSelector) selectorSharded).getValue();
+            // TODO
+
+        } else
+            return false;
+
     }
 
-    private void enableSharding(ClusterName targetCluster, String catalogName) throws ExecutionException {
+    private void enableSharding(MongoClient mongoClient, String catalogName) throws ExecutionException {
 
         DB catalog;
-        try {
-            catalog = recoveredClient(targetCluster).getDB("admin");
-        } catch (HandlerConnectionException e) {
-            throw new ExecutionException("admin cannot be recovered: " + targetCluster.getName(), e);
-        }
+
+        catalog = mongoClient.getDB("admin");
+
         CommandResult result = catalog.command(new BasicDBObject("enableSharding", catalogName));
         if (!result.ok()) {
             logger.error("Command Error:" + result.getErrorMessage());
@@ -222,12 +212,8 @@ public class MongoMetadataEngine implements IMetadataEngine {
      *            the database name.
      */
     @Override
-    public void dropCatalog(ClusterName targetCluster, CatalogName name) throws ExecutionException {
-        try {
-            recoveredClient(targetCluster).dropDatabase(name.getName());
-        } catch (HandlerConnectionException e) {
-            throw new ExecutionException("cluster cannot be recovered: " + targetCluster.getName(), e);
-        }
+    public void dropCatalog(CatalogName name, Connection connection) throws ExecutionException {
+        ((MongoClient) connection.getNativeConnection()).dropDatabase(name.getName());
     }
 
     /**
@@ -239,20 +225,12 @@ public class MongoMetadataEngine implements IMetadataEngine {
      *            the database name.
      */
     @Override
-    public void dropTable(ClusterName targetCluster, TableName name) throws ExecutionException {
+    public void dropTable(TableName name, Connection connection) throws ExecutionException {
 
-        DB db;
-        try {
-            db = recoveredClient(targetCluster).getDB(name.getCatalogName().getName());
-        } catch (HandlerConnectionException e) {
-            throw new ExecutionException("cluster cannot be recovered: " + targetCluster.getName(), e);
-        }
+        DB db = ((MongoClient) connection.getNativeConnection()).getDB(name.getCatalogName().getName());
+
         db.getCollection(name.getName()).drop();
 
-    }
-
-    private MongoClient recoveredClient(ClusterName targetCluster) throws HandlerConnectionException {
-        return (MongoClient) connectionHandler.getConnection(targetCluster.getName()).getNativeConnection();
     }
 
     /*
@@ -262,16 +240,11 @@ public class MongoMetadataEngine implements IMetadataEngine {
      * com.stratio.meta2.common.metadata.IndexMetadata)
      */
     @Override
-    public void createIndex(ClusterName targetCluster, IndexMetadata indexMetadata) throws ExecutionException,
+    public void createIndex(IndexMetadata indexMetadata, Connection connection) throws ExecutionException,
                     UnsupportedException {
 
-        DB db;
-        try {
-            db = recoveredClient(targetCluster)
-                            .getDB(indexMetadata.getName().getTableName().getCatalogName().getName());
-        } catch (HandlerConnectionException e) {
-            throw new ExecutionException("cluster cannot be recovered: " + targetCluster.getName(), e);
-        }
+        DB db = ((MongoClient) connection.getNativeConnection()).getDB(indexMetadata.getName().getTableName()
+                        .getCatalogName().getName());
 
         DBObject indexDBObject = new BasicDBObject();
         DBObject indexOptionsDBObject = null;
@@ -306,16 +279,10 @@ public class MongoMetadataEngine implements IMetadataEngine {
      * com.stratio.meta2.common.metadata.IndexMetadata)
      */
     @Override
-    public void dropIndex(ClusterName targetCluster, IndexMetadata indexMetadata) throws ExecutionException,
+    public void dropIndex(IndexMetadata indexMetadata, Connection connection) throws ExecutionException,
                     UnsupportedException {
-        DB db;
-
-        try {
-            db = recoveredClient(targetCluster)
-                            .getDB(indexMetadata.getName().getTableName().getCatalogName().getName());
-        } catch (HandlerConnectionException e) {
-            throw new ExecutionException("cluster cannot be recovered: " + targetCluster.getName(), e);
-        }
+        DB db = ((MongoClient) connection.getNativeConnection()).getDB(indexMetadata.getName().getTableName()
+                        .getCatalogName().getName());
 
         String indexName = null;
         if (indexMetadata.getName() != null)

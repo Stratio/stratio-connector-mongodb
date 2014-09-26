@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Stratio Meta
+~
+~ Copyright (c) 2014, Stratio, All rights reserved.
+~
+~ This library is free software; you can redistribute it and/or modify it under the terms of the
+~ GNU Lesser General Public License as published by the Free Software Foundation; either version
+~ 3.0 of the License, or (at your option) any later version.
+~
+~ This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+~ even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+~ Lesser General Public License for more details.
+~
+~ You should have received a copy of the GNU Lesser General Public License along with this library.
+-->
+<Connector>
+	<ConnectorName>MongoConnector</ConnectorName>
+	<DataStoresName>
+		<Datastore>Mongo</Datastore>
+	</DataStoresName>
+	<Version>0.1.0</Version>
+	<RequiredProperties>
+		<Property>
+			<Name>node_type</Name>
+		</Property>
+		</RequiredProperties>
+	<OptionalProperties/>
+	<SupportedOperations>
+		<operation>CREATE_CATALOG</operation>
+		<operation>DROP_CATALOG</operation>
+		<operation>CREATE_TABLE</operation>
+		<operation>DROP_TABLE</operation>
+		<operation>INSERT</operation>
+		<operation>PROJECT</operation>
+		<operation>SELECT_OPERATOR</operation>
+		<operation>SELECT_LIMIT</operation>
+		<operation>FILTER_PK_EQ</operation>
+		<operation>FILTER_PK_GT</operation>
+		<operation>FILTER_PK_LT</operation>
+		<operation>FILTER_PK_GET</operation>
+		<operation>FILTER_PK_LET</operation>
+		<operation>FILTER_PK_DISTINCT</operation>
+		<operation>FILTER_NON_INDEXED_EQ</operation>
+		<operation>FILTER_NON_INDEXED_GT</operation>
+		<operation>FILTER_NON_INDEXED_LT</operation>
+		<operation>FILTER_NON_INDEXED_GET</operation>
+		<operation>FILTER_NON_INDEXED_LET</operation>
+		<operation>FILTER_NON_INDEXED_DISTINCT</operation>
+		<operation>FILTER_INDEXED_EQ</operation>
+		<operation>FILTER_INDEXED_GT</operation>
+		<operation>FILTER_INDEXED_LT</operation>
+		<operation>FILTER_INDEXED_GET</operation>
+		<operation>FILTER_INDEXED_LET</operation>
+		<operation>FILTER_INDEXED_DISTINCT</operation>
+	</SupportedOperations>
+</Connector>

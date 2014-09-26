@@ -66,7 +66,6 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
              */
 
             break;
-
         case IN:
             new RuntimeException("A la espera de que se implemente por Meta"); // REVIEW mewtodo handleBetweenFilter
             /*
@@ -87,9 +86,10 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         case LT:
         case EQ:
             handleRelationCompare(relation);
+            break;
         case LIKE:
         case MATCH:
-            new RuntimeException("A la espera de que se implemente por Meta"); // REVIEW mewtodo handleBetweenFilter
+            handleMatchRelation(relation);
         case ADD:
         case DIVISION:
         case ASSIGN:
@@ -99,6 +99,28 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             new RuntimeException("No soportado"); // TODO throwException
             break;
 
+        }
+
+    }
+
+    /**
+     * @param relation
+     */
+    private void handleMatchRelation(Relation relation) {
+
+        Selector selector = relation.getRightTerm();
+
+        switch (relation.getRightTerm().getType()) {
+
+        case STRING:
+            throw new RuntimeException("Not yet supported");
+            /*
+             * TODO QueryBuilder.start(getFieldName(relation.getLeftTerm())).text(((StringSelector)
+             * selector).getValue()).get(); break;
+             */
+        default:
+            throw new RuntimeException("Only string selector is supported");
+            // break;
         }
 
     }
@@ -129,7 +151,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         case LT:
             lValue = "$lt";
             break;
-        case ASSIGN:
+        case EQ:
             lValue = "$eq";
             break;
         }

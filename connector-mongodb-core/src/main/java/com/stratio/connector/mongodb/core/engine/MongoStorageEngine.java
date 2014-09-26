@@ -23,15 +23,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
+import com.stratio.connector.commons.connection.Connection;
+import com.stratio.connector.commons.engine.CommonsStorageEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.exceptions.MongoInsertException;
-import com.stratio.meta.common.connector.IStorageEngine;
 import com.stratio.meta.common.data.Cell;
 import com.stratio.meta.common.data.Row;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
-import com.stratio.meta2.common.data.ClusterName;
 import com.stratio.meta2.common.data.ColumnName;
 import com.stratio.meta2.common.metadata.ColumnMetadata;
 import com.stratio.meta2.common.metadata.ColumnType;
@@ -40,7 +39,7 @@ import com.stratio.meta2.common.metadata.TableMetadata;
 /**
  * This class performs operations insert and delete in Mongo. Created by darroyo on 10/07/14.
  */
-public class MongoStorageEngine implements IStorageEngine {
+public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     private transient MongoConnectionHandler connectionHandler;
 
@@ -48,27 +47,36 @@ public class MongoStorageEngine implements IStorageEngine {
      * @param connectionHandler
      */
     public MongoStorageEngine(MongoConnectionHandler connectionHandler) {
-        this.connectionHandler = connectionHandler;
+        super(connectionHandler);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.stratio.connector.commons.engine.CommonsStorageEngine#insert(com.stratio.meta2.common.data.ClusterName,
+     * com.stratio.meta2.common.metadata.TableMetadata, com.stratio.meta.common.data.Row,
+     * com.stratio.connector.commons.connection.Connection)
+     */
     @Override
-    public void insert(ClusterName targetCluster, TableMetadata targetTable, Row row) throws UnsupportedException,
-                    ExecutionException {
-        try {
-            insert(recoveredClient(targetCluster), targetTable, row);
-        } catch (HandlerConnectionException e) {
-            throw new ExecutionException("cluster cannot be recovered: " + targetCluster.getName(), e);
-        }
-    }
-
-    @Override
-    public void insert(ClusterName targetCluster, TableMetadata targetTable, Collection<Row> rows)
+    public void insert(TableMetadata targetTable, Row row, Connection<MongoClient> connection)
                     throws UnsupportedException, ExecutionException {
-        try {
-            insert(recoveredClient(targetCluster), targetTable, rows);
-        } catch (HandlerConnectionException e) {
-            throw new ExecutionException("cluster cannot be recovered: " + targetCluster.getName(), e);
-        }
+        insert((MongoClient) connection.getNativeConnection(), targetTable, row);
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.stratio.connector.commons.engine.CommonsStorageEngine#insert(com.stratio.meta2.common.data.ClusterName,
+     * com.stratio.meta2.common.metadata.TableMetadata, java.util.Collection,
+     * com.stratio.connector.commons.connection.Connection)
+     */
+    @Override
+    public void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
+                    throws UnsupportedException, ExecutionException {
+
+        insert(connection.getNativeConnection(), targetTable, rows);
+
     }
 
     /**
@@ -97,6 +105,7 @@ public class MongoStorageEngine implements IStorageEngine {
             BasicDBObject doc = new BasicDBObject();
 
             Object pk = null; // TODO MongoDB use reflection?
+            DBObject bsonPK = null;
             String cellName;
             Object cellValue;
 
@@ -108,7 +117,8 @@ public class MongoStorageEngine implements IStorageEngine {
                     validatePKDataType(cellValue, targetTable.getColumns().get(primaryKeyList.get(0)));
                     pk = cellValue;
                 } else {
-                    DBObject bsonPK = new BasicDBObject();
+
+                    bsonPK = new BasicDBObject();
                     for (ColumnName columnName : primaryKeyList) {
                         cellValue = row.getCell(columnName.getName()).getValue();
                         validatePKDataType(cellValue, targetTable.getColumns().get(columnName));
@@ -130,11 +140,10 @@ public class MongoStorageEngine implements IStorageEngine {
             }
 
             if (pk != null) {
-                // Upsert
+                // Upsert searching for _id
                 BasicDBObject find = new BasicDBObject();
                 find.put("_id", pk);
                 db.getCollection(tableName).update(find, new BasicDBObject("$set", doc), true, false);
-
             } else {
                 db.getCollection(tableName).insert(doc);
             }
@@ -172,6 +181,7 @@ public class MongoStorageEngine implements IStorageEngine {
         case MAP: // TODO isSupported?
             break;
         case NATIVE:
+            // instanceof
             throw new MongoInsertException("Type not supported: " + colType.toString());
             // TODO if(columnMetadata.getParameters())
         case SET: // TODO isSupported?
@@ -208,6 +218,7 @@ public class MongoStorageEngine implements IStorageEngine {
         case INT:
             break;
         case NATIVE:
+            // instanceof
             // TODO if(columnMetadata.getParameters())
             throw new MongoInsertException("Type not supported as PK: " + colType.toString());
         case LIST:
@@ -282,10 +293,6 @@ public class MongoStorageEngine implements IStorageEngine {
 
     private boolean isEmpty(String value) {
         return value == null || value.trim().isEmpty();
-    }
-
-    private MongoClient recoveredClient(ClusterName targetCluster) throws HandlerConnectionException {
-        return (MongoClient) connectionHandler.getConnection(targetCluster.getName()).getNativeConnection();
     }
 
 }

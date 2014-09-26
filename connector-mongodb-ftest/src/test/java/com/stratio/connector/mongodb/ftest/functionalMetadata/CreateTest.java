@@ -88,7 +88,9 @@ public class CreateTest extends GenericMetadataCreateTest {
         }
 
         options = new HashMap<>();
-        options.put(new StringSelector(MongoMetadataEngine.SHARDING_ENABLED), new BooleanSelector(true));
+        StringSelector optionSelector = new StringSelector(MongoMetadataEngine.SHARDING_ENABLED);
+        optionSelector.setAlias(MongoMetadataEngine.SHARDING_ENABLED);
+        options.put(optionSelector, new BooleanSelector(true));
 
         Map<TableName, TableMetadata> tableMap = new HashMap<TableName, TableMetadata>();
         TableMetadata tableMetadata = new TableMetadata(tableName, options, columnsMap, null, clusterRef, partitionKey,

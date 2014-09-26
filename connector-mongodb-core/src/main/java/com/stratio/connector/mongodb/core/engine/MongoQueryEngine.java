@@ -16,17 +16,16 @@
 package com.stratio.connector.mongodb.core.engine;
 
 import com.mongodb.MongoClient;
-import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
-import com.stratio.connector.meta.MongoResultSet;
+import com.stratio.connector.commons.connection.Connection;
+import com.stratio.connector.commons.engine.UniqueProjectQueryEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
-import com.stratio.meta.common.connector.IQueryEngine;
+import com.stratio.meta.common.data.ResultSet;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta.common.logicalplan.LogicalWorkflow;
 import com.stratio.meta.common.result.QueryResult;
-import com.stratio.meta2.common.data.ClusterName;
 
-public class MongoQueryEngine implements IQueryEngine {
+public class MongoQueryEngine extends UniqueProjectQueryEngine {
 
     private transient MongoConnectionHandler connectionHandler;
 
@@ -34,26 +33,22 @@ public class MongoQueryEngine implements IQueryEngine {
      * @param connectionHandler
      */
     public MongoQueryEngine(MongoConnectionHandler connectionHandler) {
-        this.connectionHandler = connectionHandler;
+        super(connectionHandler);
     }
 
     @Override
-    public QueryResult execute(ClusterName targetCluster, LogicalWorkflow workflow) throws ExecutionException,
+    public QueryResult execute(LogicalWorkflow workflow, Connection connection) throws ExecutionException,
                     UnsupportedException {
 
-        MongoResultSet resultSet = null;
-        LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(workflow);
-        try {
-            resultSet = executor.executeQuery(recoveredClient(targetCluster));
-        } catch (HandlerConnectionException e) {
-            throw new ExecutionException("client cannot have been recovered", e);
-        }
+        ResultSet resultSet = null;
+        if (workflow.getInitialSteps().size() != 1)
+            throw new UnsupportedException("Only a single set of logical step is allowed");
+        LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(workflow.getInitialSteps().get(0));
+
+        resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
+
         return QueryResult.createQueryResult(resultSet);
 
-    }
-
-    private MongoClient recoveredClient(ClusterName targetCluster) throws HandlerConnectionException {
-        return (MongoClient) connectionHandler.getConnection(targetCluster.getName()).getNativeConnection();
     }
 
 }
