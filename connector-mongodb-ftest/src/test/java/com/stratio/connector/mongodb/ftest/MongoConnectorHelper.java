@@ -167,4 +167,10 @@ public class MongoConnectorHelper implements IConnectorHelper {
         return indexInfo.size();
     }
 
+	@Override
+	public boolean isCatalogMandatory() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
 }
