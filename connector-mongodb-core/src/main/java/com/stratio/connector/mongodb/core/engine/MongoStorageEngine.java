@@ -23,6 +23,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsStorageEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
@@ -143,9 +144,17 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
                 // Upsert searching for _id
                 BasicDBObject find = new BasicDBObject();
                 find.put("_id", pk);
-                db.getCollection(tableName).update(find, new BasicDBObject("$set", doc), true, false);
+                try {
+                    db.getCollection(tableName).update(find, new BasicDBObject("$set", doc), true, false);
+                } catch (MongoException e) {
+                    throw new MongoInsertException(e.getMessage(), e);
+                }
             } else {
-                db.getCollection(tableName).insert(doc);
+                try {
+                    db.getCollection(tableName).insert(doc);
+                } catch (MongoException e) {
+                    throw new MongoInsertException(e.getMessage(), e);
+                }
             }
 
         }

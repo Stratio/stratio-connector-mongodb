@@ -17,6 +17,7 @@ package com.stratio.connector.mongodb.core.engine.utils;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
 import com.stratio.meta.common.logicalplan.Filter;
 import com.stratio.meta.common.statements.structures.relationships.Operator;
 import com.stratio.meta.common.statements.structures.relationships.Relation;
@@ -55,7 +56,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         case BETWEEN:
             new RuntimeException("A la espera de que se implemente por Meta"); // REVIEW mewtodo handleBetweenFilter
             /*
-             * RelationBetween relBetween = (RelationBetween) relation; //check types: DateTerm, StringTerm, etc..
+             * RelationBetween rel Between = (RelationBetween) relation; //check types: DateTerm, StringTerm, etc..
              * (única forma) de compatibilidad //múltiples between?? //check 2 terms
              * 
              * filterOptions.append("$gte", relBetween.getTerms().get(0).getTermValue()); // Integer.valueOf(
@@ -89,7 +90,6 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             break;
         case LIKE:
         case MATCH:
-            handleMatchRelation(relation);
         case ADD:
         case DIVISION:
         case ASSIGN:
@@ -99,28 +99,6 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             new RuntimeException("No soportado"); // TODO throwException
             break;
 
-        }
-
-    }
-
-    /**
-     * @param relation
-     */
-    private void handleMatchRelation(Relation relation) {
-
-        Selector selector = relation.getRightTerm();
-
-        switch (relation.getRightTerm().getType()) {
-
-        case STRING:
-            throw new RuntimeException("Not yet supported");
-            /*
-             * TODO QueryBuilder.start(getFieldName(relation.getLeftTerm())).text(((StringSelector)
-             * selector).getValue()).get(); break;
-             */
-        default:
-            throw new RuntimeException("Only string selector is supported");
-            // break;
         }
 
     }
@@ -185,6 +163,60 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             // TODO CHECK if numbers is supported
             filterQuery.append(getFieldName(relation.getLeftTerm()), filterOptions);
         }
+
+    }
+
+    /**
+     * @param textSearch
+     * @throws MongoQueryException
+     */
+    public void addTextSearch(Filter textSearch) throws MongoQueryException {
+        Relation relation = textSearch.getRelation();
+        filterOptions = new BasicDBObject();
+        switch (relation.getOperator()) {
+        case LIKE:
+            handleLikeRelation(relation);
+            break;
+        case MATCH:
+            handleMatchRelation(relation);
+            break;
+        default:
+            throw new MongoQueryException("Operator: " + relation.getOperator().toString() + " is not allowed");
+        }
+
+    }
+
+    /**
+     * @param relation
+     */
+    private void handleLikeRelation(Relation relation) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * @param relation
+     */
+    private void handleMatchRelation(Relation relation) {
+
+        Selector selector = relation.getRightTerm();
+        Operator operator = relation.getOperator();
+
+        String lValue = "$search";
+
+        switch (selector.getType()) {
+
+        case STRING:
+            filterOptions.append(lValue, ((StringSelector) selector).getValue());
+            break;
+        // throw new RuntimeException("Not yet supported");
+        default:
+            throw new RuntimeException("Only string selector is supported");
+            // break;
+        }
+
+        // TODO Only full-text search over a collection
+        filterQuery.append("$text", filterOptions);
 
     }
 

@@ -167,4 +167,12 @@ public class MongoConnectorHelper implements IConnectorHelper {
         return indexInfo.size();
     }
 
+    /**
+     * If create the catalog is neccesary to test some functionality (as PKs...)
+     */
+    @Override
+    public boolean isCatalogMandatory() {
+        return true;
+    }
+
 }

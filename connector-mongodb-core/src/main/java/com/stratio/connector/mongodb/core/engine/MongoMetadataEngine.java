@@ -82,27 +82,32 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
                     UnsupportedException {
 
         MongoClient mongoClient = (MongoClient) connection.getNativeConnection();
-        Map<TableName, TableMetadata> tables = catalogMetadata.getTables();
-        boolean isCatalogSharded = false;
-        Iterator<TableName> keyIterator = tables.keySet().iterator();
 
-        // Sharding operations
-        while (keyIterator.hasNext() && !isCatalogSharded) {
-            isCatalogSharded = collectionIsSharded(tables.get(keyIterator.next()));
+        if (catalogMetadata != null && catalogMetadata.getTables() != null) {
 
-        }
-        if (isCatalogSharded) {
-            enableSharding(mongoClient, catalogMetadata.getName().getName());
-            for (TableMetadata tableMetadata : tables.values()) {
-                shardCollection(mongoClient, tableMetadata, isCatalogSharded);
+            Map<TableName, TableMetadata> tables = catalogMetadata.getTables();
+
+            boolean isCatalogSharded = false;
+            Iterator<TableName> keyIterator = tables.keySet().iterator();
+
+            // Sharding operations
+            while (keyIterator.hasNext() && !isCatalogSharded) {
+                isCatalogSharded = collectionIsSharded(tables.get(keyIterator.next()));
+
             }
-        }
+            if (isCatalogSharded) {
+                enableSharding(mongoClient, catalogMetadata.getName().getName());
+                for (TableMetadata tableMetadata : tables.values()) {
+                    shardCollection(mongoClient, tableMetadata, isCatalogSharded);
+                }
+            }
 
-        // Index operations
-        for (TableMetadata tableMetadata : tables.values()) {
-            if (tableMetadata.getIndexes() != null) {
-                for (IndexMetadata indexMetadata : tableMetadata.getIndexes().values()) {
-                    createIndex(indexMetadata, connection);
+            // Index operations
+            for (TableMetadata tableMetadata : tables.values()) {
+                if (tableMetadata.getIndexes() != null) {
+                    for (IndexMetadata indexMetadata : tableMetadata.getIndexes().values()) {
+                        createIndex(indexMetadata, connection);
+                    }
                 }
             }
         }
@@ -112,7 +117,8 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
     @Override
     public void createTable(TableMetadata tableMetadata, Connection connection) throws ExecutionException,
                     UnsupportedException {
-        shardCollection((MongoClient) connection.getNativeConnection(), tableMetadata, false);
+        if (tableMetadata != null)
+            shardCollection((MongoClient) connection.getNativeConnection(), tableMetadata, false);
     }
 
     /**
@@ -213,7 +219,11 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
      */
     @Override
     public void dropCatalog(CatalogName name, Connection connection) throws ExecutionException {
-        ((MongoClient) connection.getNativeConnection()).dropDatabase(name.getName());
+        try {
+            ((MongoClient) connection.getNativeConnection()).dropDatabase(name.getName());
+        } catch (Exception e) {
+            throw new ExecutionException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -228,9 +238,11 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
     public void dropTable(TableName name, Connection connection) throws ExecutionException {
 
         DB db = ((MongoClient) connection.getNativeConnection()).getDB(name.getCatalogName().getName());
-
-        db.getCollection(name.getName()).drop();
-
+        try {
+            db.getCollection(name.getName()).drop();
+        } catch (Exception e) {
+            throw new ExecutionException(e.getMessage(), e);
+        }
     }
 
     /*
@@ -266,10 +278,18 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
 
         if (indexName != null && !indexName.trim().isEmpty()) {
             indexOptionsDBObject = new BasicDBObject("name", indexName);
-            db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject,
-                            indexOptionsDBObject);
+            try {
+                db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject,
+                                indexOptionsDBObject);
+            } catch (Exception e) {
+                throw new ExecutionException(e.getMessage(), e);
+            }
         } else
-            db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject);
+            try {
+                db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject);
+            } catch (Exception e) {
+                throw new ExecutionException(e.getMessage(), e);
+            }
     }
 
     /*
@@ -289,9 +309,11 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
             indexName = indexMetadata.getName().getName();
 
         if (indexName != null) {
-
-            db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(indexName);
-
+            try {
+                db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(indexName);
+            } catch (Exception e) {
+                throw new ExecutionException(e.getMessage(), e);
+            }
         } else {
 
             if (indexMetadata.getType() == IndexType.DEFAULT) {
@@ -299,8 +321,11 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
                 for (ColumnMetadata columnMeta : indexMetadata.getColumns()) {
                     indexDBObject.put(columnMeta.getName().getName(), 1);
                 }
-                db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(indexDBObject);
-
+                try {
+                    db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(indexDBObject);
+                } catch (Exception e) {
+                    throw new ExecutionException(e.getMessage(), e);
+                }
             } else if (indexMetadata.getType() == IndexType.FULL_TEXT) {
 
                 String defaultTextIndexName = "";
@@ -315,9 +340,11 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
                         defaultTextIndexName += "_";
 
                 }
-
-                db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(defaultTextIndexName);
-
+                try {
+                    db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(defaultTextIndexName);
+                } catch (Exception e) {
+                    throw new ExecutionException(e.getMessage(), e);
+                }
             } else
                 throw new UnsupportedException("index type " + indexMetadata.getType().toString() + " is not supported");
 

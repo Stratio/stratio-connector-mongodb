@@ -45,6 +45,7 @@ import com.stratio.meta.common.logicalplan.LogicalStep;
 import com.stratio.meta.common.logicalplan.Project;
 import com.stratio.meta.common.logicalplan.Select;
 import com.stratio.meta.common.metadata.structures.ColumnMetadata;
+import com.stratio.meta.common.statements.structures.relationships.Operator;
 import com.stratio.meta2.common.data.QualifiedNames;
 
 public class LogicalWorkflowExecutor {
@@ -117,7 +118,7 @@ public class LogicalWorkflowExecutor {
         return mandatoryAggregation;
     }
 
-    private void buildQuery() {
+    private void buildQuery() throws MongoQueryException {
         query = new ArrayList<DBObject>();
 
         if (mandatoryAggregation) {
@@ -142,12 +143,25 @@ public class LogicalWorkflowExecutor {
         return projectDBObject.build();
     }
 
-    private DBObject buildFilter() {
-
+    private DBObject buildFilter() throws MongoQueryException {
+        Filter textSearch = null;
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(mandatoryAggregation);
+        Operator operator;
         for (Filter f : filterList) {
+            operator = f.getRelation().getOperator();
+            if (operator.equals(Operator.MATCH) || operator.equals(Operator.LIKE)) {
+                if (textSearch != null)
+                    throw new MongoQueryException("Only one text search is allowed");
+                textSearch = f;
+            }
             filterDBObjectBuilder.add(f);
         }
+
+        // the match filter must be the last step
+        if (textSearch != null) {
+            filterDBObjectBuilder.addTextSearch(textSearch);
+        }
+
         if (logger.isDebugEnabled()) {
             logger.debug("Filter:" + filterDBObjectBuilder.build());
         }
@@ -165,6 +179,7 @@ public class LogicalWorkflowExecutor {
         DB db = mongoClient.getDB(projection.getCatalogName());
         DBCollection coll = db.getCollection(projection.getTableName().getName());
         ResultSet resultSet = new ResultSet();
+
         // resultSet.setColumnMetadata(projection.getColumnList());// necesario??
 
         if (isMandatoryAggregation()) {
