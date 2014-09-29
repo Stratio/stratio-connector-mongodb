@@ -23,6 +23,7 @@ import com.stratio.meta.common.data.ResultSet;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta.common.logicalplan.LogicalWorkflow;
+import com.stratio.meta.common.logicalplan.Project;
 import com.stratio.meta.common.result.QueryResult;
 
 public class MongoQueryEngine extends UniqueProjectQueryEngine {
@@ -37,13 +38,12 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine {
     }
 
     @Override
-    public QueryResult execute(LogicalWorkflow workflow, Connection connection) throws ExecutionException,
+    public QueryResult execute(Project workflow, Connection connection) throws ExecutionException,
                     UnsupportedException {
 
         ResultSet resultSet = null;
-        if (workflow.getInitialSteps().size() != 1)
-            throw new UnsupportedException("Only a single set of logical step is allowed");
-        LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(workflow.getInitialSteps().get(0));
+     
+        LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(workflow);
 
         resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
 
