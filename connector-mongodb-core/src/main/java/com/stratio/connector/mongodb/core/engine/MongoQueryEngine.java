@@ -22,7 +22,6 @@ import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.meta.common.data.ResultSet;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
-import com.stratio.meta.common.logicalplan.LogicalWorkflow;
 import com.stratio.meta.common.logicalplan.Project;
 import com.stratio.meta.common.result.QueryResult;
 
@@ -38,11 +37,10 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine {
     }
 
     @Override
-    public QueryResult execute(Project workflow, Connection connection) throws ExecutionException,
-                    UnsupportedException {
+    public QueryResult execute(Project workflow, Connection connection) throws ExecutionException, UnsupportedException {
 
         ResultSet resultSet = null;
-     
+
         LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(workflow);
 
         resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());

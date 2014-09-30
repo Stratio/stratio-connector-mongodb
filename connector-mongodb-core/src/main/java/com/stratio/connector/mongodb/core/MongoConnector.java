@@ -19,10 +19,7 @@ package com.stratio.connector.mongodb.core;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
+import com.stratio.connector.commons.CommonsConnector;
 import com.stratio.connector.meta.ConnectionConfiguration;
 import com.stratio.connector.mongodb.core.configuration.ConnectionConfigurationCreator;
 import com.stratio.connector.mongodb.core.configuration.SupportedOperationsCreator;
@@ -30,33 +27,17 @@ import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.MongoMetadataEngine;
 import com.stratio.connector.mongodb.core.engine.MongoQueryEngine;
 import com.stratio.connector.mongodb.core.engine.MongoStorageEngine;
-import com.stratio.meta.common.connector.ConnectorClusterConfig;
 import com.stratio.meta.common.connector.IConfiguration;
-import com.stratio.meta.common.connector.IConnector;
 import com.stratio.meta.common.connector.IMetadataEngine;
 import com.stratio.meta.common.connector.IQueryEngine;
 import com.stratio.meta.common.connector.IStorageEngine;
 import com.stratio.meta.common.connector.Operations;
-import com.stratio.meta.common.exceptions.ConnectionException;
-import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
-import com.stratio.meta.common.security.ICredentials;
-import com.stratio.meta2.common.data.ClusterName;
 
 /**
  * This class implements the connector for Mongo. Created by darroyo on 8/07/14.
  */
-public class MongoConnector implements IConnector {
-
-    /**
-     * The Log.
-     */
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    /**
-     * The connectionHandler.
-     */
-    private MongoConnectionHandler connectionHandler = null;
+public class MongoConnector extends CommonsConnector {
 
     /**
      * Create a connection to Mongo.
@@ -70,44 +51,6 @@ public class MongoConnector implements IConnector {
         connectionHandler = new MongoConnectionHandler(configuration);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.meta.common.connector.IConnector#connect(com.stratio.meta.common.security.ICredentials,
-     * com.stratio.meta.common.connector.ConnectorClusterConfig)
-     */
-    @Override
-    public void connect(ICredentials credentials, ConnectorClusterConfig config) throws ConnectionException {
-        try {
-            connectionHandler.createConnection(credentials, config);
-        } catch (HandlerConnectionException connectionException) {
-            throw new ConnectionException("connection failed", connectionException);
-        }
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.meta.common.connector.IConnector#close(com.stratio.meta2.common.data.ClusterName)
-     */
-    @Override
-    public void close(ClusterName name) throws ConnectionException {
-        connectionHandler.closeConnection(name.getName());
-
-    }
-
-    /**
-     * The connection status.
-     *
-     * @return true if the driver's client is not null.
-     */
-    @Override
-    public boolean isConnected(ClusterName name) {
-        connectionHandler.isConnected(name.getName());
-        return false;
-    }
-
     /**
      * Return the StorageEngine.
      * 
@@ -115,7 +58,7 @@ public class MongoConnector implements IConnector {
      */
     @Override
     public IStorageEngine getStorageEngine() {
-        return new MongoStorageEngine(connectionHandler);
+        return new MongoStorageEngine((MongoConnectionHandler) connectionHandler);
 
     }
 
@@ -126,7 +69,7 @@ public class MongoConnector implements IConnector {
      */
     @Override
     public IQueryEngine getQueryEngine() {
-        return new MongoQueryEngine(connectionHandler);
+        return new MongoQueryEngine((MongoConnectionHandler) connectionHandler);
     }
 
     /**
@@ -136,7 +79,7 @@ public class MongoConnector implements IConnector {
      */
     @Override
     public IMetadataEngine getMetadataEngine() throws UnsupportedException {
-        return new MongoMetadataEngine(connectionHandler);
+        return new MongoMetadataEngine((MongoConnectionHandler) connectionHandler);
     }
 
     /**
@@ -175,17 +118,6 @@ public class MongoConnector implements IConnector {
     @Override
     public String[] getDatastoreName() {
         return new String[] { "Mongo" };
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.meta.common.connector.IConnector#shutdown()
-     */
-    @Override
-    public void shutdown() throws ExecutionException {
-        // TODO Auto-generated method stub
-
     }
 
 }

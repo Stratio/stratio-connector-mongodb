@@ -173,19 +173,19 @@ public class MongoConnectorHelper implements IConnectorHelper {
     @Override
     public boolean isCatalogMandatory() {
         // TODO
-        return true;
+        return false;
     }
 
     @Override
     public boolean isTableMandatory() {
         // TODO
-        return true;
+        return false;
     }
 
     @Override
     public boolean isIndexMandatory() {
 
-        return true;
+        return false;
     }
 
 }

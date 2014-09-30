@@ -23,6 +23,7 @@ import com.stratio.meta.common.statements.structures.relationships.Operator;
 import com.stratio.meta.common.statements.structures.relationships.Relation;
 import com.stratio.meta2.common.statements.structures.selectors.BooleanSelector;
 import com.stratio.meta2.common.statements.structures.selectors.ColumnSelector;
+import com.stratio.meta2.common.statements.structures.selectors.FloatingPointSelector;
 import com.stratio.meta2.common.statements.structures.selectors.IntegerSelector;
 import com.stratio.meta2.common.statements.structures.selectors.Selector;
 import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
@@ -151,14 +152,13 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             case STRING:
                 filterOptions.append(lValue, ((StringSelector) selector).getValue());
                 break;
-            case COLUMN:
-                filterOptions.append(lValue, ((ColumnSelector) selector).getName().getName());
-                break;
             case FLOATING_POINT:
                 // TODO
-                // filterOptions.append(lValue, ((FloatingPointSelector) selector).getValue());
+                filterOptions.append(lValue, Double.parseDouble(((FloatingPointSelector) selector).toString()));
                 break;
+
             case RELATION: // TODO between?
+            case COLUMN: // TODO $where ?
             case ASTERISK:
             case FUNCTION:
 

@@ -1,85 +1,75 @@
 /**
-* Copyright (C) 2014 Stratio (http://stratio.com)
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2014 Stratio (http://stratio.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.stratio.connector.mongodb.ftest.functionalMetadata;
 
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
+import com.stratio.connector.commons.ftest.functionalMetadata.GenericMetadataDropTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
-import com.stratio.connector.mongodb.ftest.ConnectionTest;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.meta.common.exceptions.ConnectionException;
 import com.stratio.meta.common.exceptions.InitializationException;
 
-public class DropTest extends ConnectionTest {
+public class DropTest extends GenericMetadataDropTest {
 
-	@Override
-	protected IConnectorHelper getConnectorHelper() {
-		MongoConnectorHelper mongoConnectorHelper = null;
-	try {
-		mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
-	} catch (ConnectionException e) {
-		e.printStackTrace();
-	} catch (InitializationException e) {
-		e.printStackTrace();
-	} catch (CreateNativeConnectionException e) {
-		e.printStackTrace();
-	}
-		return mongoConnectorHelper;
-	}
-	/*
-	@Test
-	public void dropCollectionTest() throws UnsupportedOperationException, com.stratio.connector.meta.exception.UnsupportedOperationException {
+    @Override
+    protected IConnectorHelper getConnectorHelper() {
+        MongoConnectorHelper mongoConnectorHelper = null;
+        try {
+            mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
+        } catch (ConnectionException e) {
+            e.printStackTrace();
+        } catch (InitializationException e) {
+            e.printStackTrace();
+        } catch (CreateNativeConnectionException e) {
+            e.printStackTrace();
+        }
+        return mongoConnectorHelper;
+    }
+    /*
+     * @Test public void dropCollectionTest() throws UnsupportedOperationException,
+     * com.stratio.connector.meta.exception.UnsupportedOperationException {
+     * 
+     * Row row = new Row(); Map<String, Cell> cells = new HashMap<>(); cells.put("name1", new Cell("value1"));
+     * cells.put("name2", new Cell(2)); row.setCells(cells);
+     * 
+     * ((MongoStorageEngine) stratioMongoConnector.getStorageEngine()).insert( CATALOG, COLLECTION, row);
+     * 
+     * DBCollection collection = mongoClient.getDB(CATALOG).getCollection( COLLECTION);
+     * 
+     * ((IMetadataProvider) stratioMongoConnector.getMedatadaProvider()).dropTable(CATALOG, COLLECTION);
+     * 
+     * assertEquals("Catalog deleted", false, mongoClient.getDB(CATALOG).getCollectionNames().contains(COLLECTION) );
+     * 
+     * }
+     * 
+     * @Test public void dropCatalogTest() throws UnsupportedOperationException,
+     * com.stratio.connector.meta.exception.UnsupportedOperationException {
+     * 
+     * Row row = new Row(); Map<String, Cell> cells = new HashMap<>(); cells.put("name1", new Cell("value1"));
+     * cells.put("name2", new Cell(2)); row.setCells(cells);
+     * 
+     * ((MongoStorageEngine) stratioMongoConnector.getStorageEngine()).insert( CATALOG, COLLECTION, row);
+     * 
+     * DBCollection collection = mongoClient.getDB(CATALOG).getCollection( COLLECTION);
+     * 
+     * ((IMetadataProvider) stratioMongoConnector.getMedatadaProvider()).dropCatalog(CATALOG);
+     * 
+     * assertEquals("Catalog deleted", false, mongoClient.getDatabaseNames().contains(CATALOG) );
+     * 
+     * }
+     */
 
-		Row row = new Row();
-		Map<String, Cell> cells = new HashMap<>();
-		cells.put("name1", new Cell("value1"));
-		cells.put("name2", new Cell(2));
-		row.setCells(cells);
-
-		((MongoStorageEngine) stratioMongoConnector.getStorageEngine()).insert(
-				CATALOG, COLLECTION, row);
-
-		DBCollection collection = mongoClient.getDB(CATALOG).getCollection(
-				COLLECTION);
-		
-		((IMetadataProvider) stratioMongoConnector.getMedatadaProvider()).dropTable(CATALOG, COLLECTION);
-
-		assertEquals("Catalog deleted", false, mongoClient.getDB(CATALOG).getCollectionNames().contains(COLLECTION) ); 
-
-	}
-	
-	@Test
-	public void dropCatalogTest() throws UnsupportedOperationException, com.stratio.connector.meta.exception.UnsupportedOperationException {
-
-		Row row = new Row();
-		Map<String, Cell> cells = new HashMap<>();
-		cells.put("name1", new Cell("value1"));
-		cells.put("name2", new Cell(2));
-		row.setCells(cells);
-
-		((MongoStorageEngine) stratioMongoConnector.getStorageEngine()).insert(
-				CATALOG, COLLECTION, row);
-
-		DBCollection collection = mongoClient.getDB(CATALOG).getCollection(
-				COLLECTION);
-		
-		((IMetadataProvider) stratioMongoConnector.getMedatadaProvider()).dropCatalog(CATALOG);
-
-		assertEquals("Catalog deleted", false, mongoClient.getDatabaseNames().contains(CATALOG) ); 
-
-	}
-	*/
-	
 }
