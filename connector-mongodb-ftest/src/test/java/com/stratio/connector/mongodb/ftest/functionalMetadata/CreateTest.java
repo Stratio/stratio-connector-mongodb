@@ -27,7 +27,7 @@ import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectio
 import com.stratio.connector.commons.ftest.functionalMetadata.GenericMetadataCreateTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.core.engine.MongoMetadataEngine;
-import com.stratio.connector.mongodb.ftest.MongoConnectorHelper;
+import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.meta.common.exceptions.ConnectionException;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.InitializationException;

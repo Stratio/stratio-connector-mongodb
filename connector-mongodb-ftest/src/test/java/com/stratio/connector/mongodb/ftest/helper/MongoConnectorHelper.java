@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stratio.connector.mongodb.ftest;
+package com.stratio.connector.mongodb.ftest.helper;
 
 import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.HOST;
 import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.PORT;
