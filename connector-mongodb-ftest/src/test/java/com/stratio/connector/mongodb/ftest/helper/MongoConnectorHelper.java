@@ -168,8 +168,7 @@ public class MongoConnectorHelper implements IConnectorHelper {
     }
 
     /**
-     * If create the catalog is neccesary to test some functionality (as PKs...)
-     * 
+     * If create the catalog is necessary to test some functionality (as PKs...)
      */
     @Override
     public boolean isCatalogMandatory() {
@@ -180,6 +179,12 @@ public class MongoConnectorHelper implements IConnectorHelper {
     @Override
     public boolean isTableMandatory() {
         // TODO
+        return true;
+    }
+
+    @Override
+    public boolean isIndexMandatory() {
+
         return true;
     }
 
