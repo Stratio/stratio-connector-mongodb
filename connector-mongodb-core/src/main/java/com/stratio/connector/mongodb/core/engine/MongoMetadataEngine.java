@@ -255,6 +255,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
     public void createIndex(IndexMetadata indexMetadata, Connection connection) throws ExecutionException,
                     UnsupportedException {
 
+        IndexType type = indexMetadata.getType();
         DB db = ((MongoClient) connection.getNativeConnection()).getDB(indexMetadata.getName().getTableName()
                         .getCatalogName().getName());
 

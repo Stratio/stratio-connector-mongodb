@@ -169,9 +169,17 @@ public class MongoConnectorHelper implements IConnectorHelper {
 
     /**
      * If create the catalog is neccesary to test some functionality (as PKs...)
+     * 
      */
     @Override
     public boolean isCatalogMandatory() {
+        // TODO
+        return true;
+    }
+
+    @Override
+    public boolean isTableMandatory() {
+        // TODO
         return true;
     }
 

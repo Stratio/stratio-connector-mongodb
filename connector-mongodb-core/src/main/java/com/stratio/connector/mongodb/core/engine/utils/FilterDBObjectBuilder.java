@@ -23,6 +23,7 @@ import com.stratio.meta.common.statements.structures.relationships.Operator;
 import com.stratio.meta.common.statements.structures.relationships.Relation;
 import com.stratio.meta2.common.statements.structures.selectors.BooleanSelector;
 import com.stratio.meta2.common.statements.structures.selectors.ColumnSelector;
+import com.stratio.meta2.common.statements.structures.selectors.FloatingPointSelector;
 import com.stratio.meta2.common.statements.structures.selectors.IntegerSelector;
 import com.stratio.meta2.common.statements.structures.selectors.Selector;
 import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
@@ -154,8 +155,13 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             case COLUMN:
                 filterOptions.append(lValue, ((ColumnSelector) selector).getName().getName());
                 break;
+            case FLOATING_POINT:
+                filterOptions.append(lValue, ((FloatingPointSelector) selector).getValue());
+                break;
+            case RELATION: // TODO between?
             case ASTERISK:
             case FUNCTION:
+
             default:
                 throw new RuntimeException("Not implemented yet");
                 // break;
@@ -190,7 +196,22 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
      * @param relation
      */
     private void handleLikeRelation(Relation relation) {
-        // TODO Auto-generated method stub
+        Selector selector = relation.getRightTerm();
+
+        String patternSearch = null;
+
+        switch (selector.getType()) {
+
+        case STRING:
+            patternSearch = ((StringSelector) selector).getValue();
+            break;
+        // throw new RuntimeException("Not yet supported");
+        default:
+            throw new RuntimeException("Only string selector is supported");
+            // break;
+        }
+
+        filterQuery.append(getFieldName(relation.getLeftTerm()), patternSearch);
 
     }
 
@@ -200,7 +221,6 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
     private void handleMatchRelation(Relation relation) {
 
         Selector selector = relation.getRightTerm();
-        Operator operator = relation.getOperator();
 
         String lValue = "$search";
 
