@@ -16,11 +16,11 @@
 ~ You should have received a copy of the GNU Lesser General Public License along with this library.
 -->
 <DataStore>
-	<Name>ElasticSearch</Name>
+	<Name>Mongo</Name>
 	<Version>1.0.0</Version>
 	<RequiredProperties>
 		<cluster>
-		<name>ElasticSearchCluster</name>
+		<name>MongoCluster</name>
 		<hosts>
 			<host>10.0.0.62</host>
 			<port>27200</port>
@@ -28,12 +28,7 @@
 		</cluster>
 	</RequiredProperties>
 	<OptionalProperties>
-		<Property>
-			<Name></Name>
-		</Property>
-		<Property>
-			<Name></Name>
-		</Property>
+
 	</OptionalProperties>
 </DataStore>
 

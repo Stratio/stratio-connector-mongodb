@@ -46,7 +46,7 @@ import com.stratio.meta.common.logicalplan.Project;
 import com.stratio.meta.common.logicalplan.Select;
 import com.stratio.meta.common.metadata.structures.ColumnMetadata;
 import com.stratio.meta.common.statements.structures.relationships.Operator;
-import com.stratio.meta2.common.data.QualifiedNames;
+import com.stratio.meta2.common.data.ColumnName;
 
 public class LogicalWorkflowExecutor {
 
@@ -265,20 +265,15 @@ public class LogicalWorkflowExecutor {
      */
     private Row createRowWithAlias(DBObject rowDBObject) {
         Row row = new Row();
-        Map<String, String> aliasMapping = select.getColumnMap();
-        Set<String> fieldNames = aliasMapping.keySet();
-
-        for (String field : fieldNames) {
-            if (field.contains(".")) {
-                String[] aField = field.split("\\.");
-                field = aField[aField.length - 1];
-            }
+        Map<ColumnName, String> aliasMapping = select.getColumnMap();
+        Set<ColumnName> fieldNames = aliasMapping.keySet();
+        String field;
+        for (ColumnName colName : fieldNames) {
+            field = colName.getName();
             Object value = rowDBObject.get(field);
 
-            String qualifiedFieldName = QualifiedNames.getColumnQualifiedName(projection.getCatalogName(), projection
-                            .getTableName().getName(), field);
-            if (aliasMapping.containsKey(qualifiedFieldName)) {
-                field = aliasMapping.get(qualifiedFieldName);
+            if (aliasMapping.containsKey(colName)) {
+                field = aliasMapping.get(colName);
             }
             row.addCell(field, new Cell(value));
         }
@@ -287,14 +282,11 @@ public class LogicalWorkflowExecutor {
 
     private List<ColumnMetadata> createMetadata() {
         List<ColumnMetadata> retunColumnMetadata = new ArrayList<>();
-        for (String field : select.getColumnMap().keySet()) {
-            if (field.contains(".")) {
-                String[] aField = field.split("\\.");
-                field = aField[aField.length - 1];
-            }
+        for (ColumnName colName : select.getColumnMap().keySet()) {
+            String field = colName.getName();
             ColumnMetadata columnMetadata = new ColumnMetadata(projection.getTableName().getName(), field, select
                             .getTypeMap().get(field));
-            columnMetadata.setColumnAlias(select.getColumnMap().get(field));
+            columnMetadata.setColumnAlias(select.getColumnMap().get(colName));
             retunColumnMetadata.add(columnMetadata);
         }
         return retunColumnMetadata;

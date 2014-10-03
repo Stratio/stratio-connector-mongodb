@@ -26,17 +26,15 @@ import org.junit.Test;
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.ftest.functionalMetadata.GenericMetadataCreateTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
-import com.stratio.connector.mongodb.core.engine.MongoMetadataEngine;
+import com.stratio.connector.mongodb.core.configuration.TableOptions;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.meta.common.exceptions.ConnectionException;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.InitializationException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
-import com.stratio.meta2.common.data.CatalogName;
 import com.stratio.meta2.common.data.ClusterName;
 import com.stratio.meta2.common.data.ColumnName;
 import com.stratio.meta2.common.data.TableName;
-import com.stratio.meta2.common.metadata.CatalogMetadata;
 import com.stratio.meta2.common.metadata.ColumnMetadata;
 import com.stratio.meta2.common.metadata.ColumnType;
 import com.stratio.meta2.common.metadata.TableMetadata;
@@ -87,17 +85,25 @@ public class CreateTest extends GenericMetadataCreateTest {
             i++;
         }
 
-        options = new HashMap<>();
-        StringSelector optionSelector = new StringSelector(MongoMetadataEngine.SHARDING_ENABLED);
-        optionSelector.setAlias(MongoMetadataEngine.SHARDING_ENABLED);
+        options = new HashMap<Selector, Selector>();
+
+        StringSelector optionSelector = new StringSelector(TableOptions.SHARDING_ENABLED.getOptionName());
+        optionSelector.setAlias(TableOptions.SHARDING_ENABLED.getOptionName());
         options.put(optionSelector, new BooleanSelector(true));
+
+        StringSelector optionSelector2 = new StringSelector(TableOptions.SHARD_KEY_TYPE.getOptionName());
+        optionSelector2.setAlias(TableOptions.SHARD_KEY_TYPE.getOptionName());
+        options.put(optionSelector2, new StringSelector("desc"));
+
+        StringSelector optionSelector3 = new StringSelector(TableOptions.SHARD_KEY_FIELDS.getOptionName());
+        optionSelector3.setAlias(TableOptions.SHARD_KEY_FIELDS.getOptionName());
+        options.put(optionSelector3, new StringSelector("campo1,campo2"));
 
         Map<TableName, TableMetadata> tableMap = new HashMap<TableName, TableMetadata>();
         TableMetadata tableMetadata = new TableMetadata(tableName, options, columnsMap, null, clusterRef, partitionKey,
                         clusterKey);
         tableMap.put(tableName, tableMetadata);
 
-        connector.getMetadataEngine().createCatalog(getClusterName(),
-                        new CatalogMetadata(new CatalogName(CATALOG), Collections.EMPTY_MAP, tableMap));
+        connector.getMetadataEngine().createTable(getClusterName(), tableMetadata);
     }
 }

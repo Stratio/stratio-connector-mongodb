@@ -19,15 +19,15 @@ import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.UniqueProjectQueryEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
+import com.stratio.meta.common.connector.IResultHandler;
 import com.stratio.meta.common.data.ResultSet;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
+import com.stratio.meta.common.logicalplan.LogicalWorkflow;
 import com.stratio.meta.common.logicalplan.Project;
 import com.stratio.meta.common.result.QueryResult;
 
-public class MongoQueryEngine extends UniqueProjectQueryEngine {
-
-    private transient MongoConnectionHandler connectionHandler;
+public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
 
     /**
      * @param connectionHandler
@@ -37,7 +37,8 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine {
     }
 
     @Override
-    public QueryResult execute(Project workflow, Connection connection) throws ExecutionException, UnsupportedException {
+    public QueryResult execute(Project workflow, Connection<MongoClient> connection) throws ExecutionException,
+                    UnsupportedException {
 
         ResultSet resultSet = null;
 
@@ -46,6 +47,30 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine {
         resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
 
         return QueryResult.createQueryResult(resultSet);
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.stratio.meta.common.connector.IQueryEngine#asyncExecute(java.lang.String,
+     * com.stratio.meta.common.logicalplan.LogicalWorkflow, com.stratio.meta.common.connector.IResultHandler)
+     */
+    @Override
+    public void asyncExecute(String queryId, LogicalWorkflow workflow, IResultHandler resultHandler)
+                    throws UnsupportedException, ExecutionException {
+        throw new UnsupportedException("Not yet supported");
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.stratio.meta.common.connector.IQueryEngine#stop(java.lang.String)
+     */
+    @Override
+    public void stop(String queryId) throws UnsupportedException, ExecutionException {
+        throw new UnsupportedException("Not yet supported");
 
     }
 

@@ -83,8 +83,16 @@ public class MongoClientConfiguration {
 
         ArrayList<ServerAddress> seeds = new ArrayList<ServerAddress>();
 
-        String[] hosts = (String[]) ConnectorParser.hosts(configuration.getOptions().get(HOST.getOptionName()));
-        String[] ports = (String[]) ConnectorParser.ports(configuration.getOptions().get(PORT.getOptionName()));
+        Map<String, String> config = configuration.getOptions();
+        String[] hosts;
+        String[] ports;
+        if (config != null) {
+            hosts = (String[]) ConnectorParser.hosts(config.get(HOST.getOptionName()));
+            ports = (String[]) ConnectorParser.ports(config.get(PORT.getOptionName()));
+        } else {
+            hosts = HOST.getDefaultValue();
+            ports = PORT.getDefaultValue();
+        }
 
         // TODO
         if (hosts.length < 1 || (hosts.length != ports.length))
@@ -93,7 +101,7 @@ public class MongoClientConfiguration {
             for (int i = 0; i < hosts.length; i++) {
 
                 try {
-                    seeds.add(new ServerAddress(hosts[i], Integer.decode(ports[i])));
+                    seeds.add(new ServerAddress(hosts[i], Integer.parseInt(ports[i])));
                 } catch (NumberFormatException e) {
                     throw new CreateNativeConnectionException("wrong port format");
                 } catch (UnknownHostException e) {
@@ -112,10 +120,10 @@ public class MongoClientConfiguration {
     private int getIntegerSetting(ConfigurationOptions option) {
         Map<String, String> config = configuration.getOptions();
         int value;
-        if (config.containsKey(option.getOptionName())) {
-            value = Integer.decode(config.get(option.getOptionName()));
+        if (config != null && config.containsKey(option.getOptionName())) {
+            value = Integer.parseInt(config.get(option.getOptionName()));
         } else {
-            value = Integer.decode(option.getDefaultValue()[0]);
+            value = Integer.parseInt(option.getDefaultValue()[0]);
         }
         return value;
 
@@ -125,7 +133,7 @@ public class MongoClientConfiguration {
         Map<String, String> config = configuration.getOptions();
         ReadPreference readPreference;
 
-        if (config.containsKey(READ_PREFERENCE.getOptionName())) {
+        if (config != null && config.containsKey(READ_PREFERENCE.getOptionName())) {
             readPreference = settingToReadPreference(config.get(READ_PREFERENCE.getOptionName()));
         } else {
             readPreference = settingToReadPreference(READ_PREFERENCE.getDefaultValue()[0]);
@@ -163,7 +171,7 @@ public class MongoClientConfiguration {
         Map<String, String> config = configuration.getOptions();
         WriteConcern writeConcern;
 
-        if (config.containsKey(WRITE_CONCERN.getOptionName())) {
+        if (config != null && config.containsKey(WRITE_CONCERN.getOptionName())) {
             writeConcern = settingToWritePreference(config.get(WRITE_CONCERN.getOptionName()));
         } else {
             writeConcern = settingToWritePreference(WRITE_CONCERN.getDefaultValue()[0]);
@@ -188,7 +196,8 @@ public class MongoClientConfiguration {
         case "journaled":
             writeConcern = WriteConcern.JOURNALED;
             break;
-
+        default:
+            new RuntimeException("read preference " + writeSetting + " is not a legal value");
         }
         return writeConcern;
 

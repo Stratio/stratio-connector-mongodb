@@ -22,6 +22,7 @@ import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
 import com.stratio.meta.common.logicalplan.Project;
 import com.stratio.meta.common.logicalplan.Select;
+import com.stratio.meta2.common.data.ColumnName;
 
 public class ProjectDBObjectBuilder extends DBObjectBuilder {
 
@@ -31,15 +32,14 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
         super(/* DBObjectType.PROJECT, */useAggregation);
 
         projectQuery = new BasicDBObject();
-        Set<String> columnMetadataList = select.getColumnMap().keySet();
+        Set<ColumnName> columnMetadataList = select.getColumnMap().keySet();
 
         if (columnMetadataList == null || columnMetadataList.isEmpty()) {
             throw new MongoQueryException("The query has to retrieve data");
         } else {
 
-            for (String columnName : columnMetadataList) {
-                String[] splitColumnName = columnName.split("\\.");
-                projectQuery.put(splitColumnName[splitColumnName.length - 1], 1);
+            for (ColumnName columnName : columnMetadataList) {
+                projectQuery.put(columnName.getName(), 1);
             }
 
         }

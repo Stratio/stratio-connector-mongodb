@@ -15,24 +15,24 @@
  */
 package com.stratio.connector.mongodb.core.configuration;
 
+import com.stratio.meta2.common.statements.structures.selectors.SelectorType;
+
 /**
  * @author darroyo Set of options for the mongo connector. A default value is provided.
  *
  */
 
-public enum ConfigurationOptions {
+public enum TableOptions {
 
-    ACCEPTABLE_LATENCY("mongo.acceptableLatencyDifference", "15"), MAX_CONNECTIONS_PER_HOST(
-                    "mongo.maxConnectionsPerHost", "10000"), MAX_IDLE_TIME("mongo.maxConnectionIdleTime", "0"), CONNECTION_TIMEOUT(
-                    "mongo.connectTimeout", "10000"), READ_PREFERENCE("mongo.readPreference", "primaryPreferred"), WRITE_CONCERN(
-                    "mongo.writeConcern", "acknowledged"),
-
-    HOST("seeds", new String[] { "localhost" }), PORT("ports", new String[] { "27017" });
+    SHARDING_ENABLED("enable_sharding", SelectorType.BOOLEAN, false), SHARD_KEY_TYPE("shard_key_type",
+                    SelectorType.STRING, ShardKeyType.ASC), SHARD_KEY_FIELDS("shard_key_fields", SelectorType.STRING,
+                    new String[] { "_id" });
 
     private final String optionName;
-    private final String[] defaultValue;
+    private final SelectorType selectorType;
+    private final Object defaultValue;
 
-    public String[] getDefaultValue() {
+    public Object getDefaultValue() {
         return defaultValue;
     }
 
@@ -40,8 +40,13 @@ public enum ConfigurationOptions {
         return optionName;
     }
 
-    ConfigurationOptions(String optionName, String... defaultValue) {
+    public SelectorType getSelectorType() {
+        return selectorType;
+    }
+
+    TableOptions(String optionName, SelectorType selectorType, Object defaultValue) {
         this.optionName = optionName;
+        this.selectorType = selectorType;
         this.defaultValue = defaultValue;
     }
 

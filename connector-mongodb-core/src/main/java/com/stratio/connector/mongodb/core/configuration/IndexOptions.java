@@ -15,34 +15,31 @@
  */
 package com.stratio.connector.mongodb.core.configuration;
 
+import com.stratio.meta2.common.statements.structures.selectors.SelectorType;
+
 /**
  * @author darroyo Set of options for the mongo connector. A default value is provided.
  *
  */
 
-public enum ConfigurationOptions {
+public enum IndexOptions {
 
-    ACCEPTABLE_LATENCY("mongo.acceptableLatencyDifference", "15"), MAX_CONNECTIONS_PER_HOST(
-                    "mongo.maxConnectionsPerHost", "10000"), MAX_IDLE_TIME("mongo.maxConnectionIdleTime", "0"), CONNECTION_TIMEOUT(
-                    "mongo.connectTimeout", "10000"), READ_PREFERENCE("mongo.readPreference", "primaryPreferred"), WRITE_CONCERN(
-                    "mongo.writeConcern", "acknowledged"),
-
-    HOST("seeds", new String[] { "localhost" }), PORT("ports", new String[] { "27017" });
+    INDEX_TYPE("index_type", SelectorType.STRING), COMPOUND_FIELDS("compound_fields", SelectorType.STRING);
 
     private final String optionName;
-    private final String[] defaultValue;
-
-    public String[] getDefaultValue() {
-        return defaultValue;
-    }
+    private final SelectorType selectorType;
 
     public String getOptionName() {
         return optionName;
     }
 
-    ConfigurationOptions(String optionName, String... defaultValue) {
+    public SelectorType getSelectorType() {
+        return selectorType;
+    }
+
+    IndexOptions(String optionName, SelectorType selectorType) {
         this.optionName = optionName;
-        this.defaultValue = defaultValue;
+        this.selectorType = selectorType;
     }
 
 }

@@ -42,8 +42,6 @@ import com.stratio.meta2.common.metadata.TableMetadata;
  */
 public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
-    private transient MongoConnectionHandler connectionHandler;
-
     /**
      * @param connectionHandler
      */
@@ -61,22 +59,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     @Override
     public void insert(TableMetadata targetTable, Row row, Connection<MongoClient> connection)
                     throws UnsupportedException, ExecutionException {
-        insert((MongoClient) connection.getNativeConnection(), targetTable, row);
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.connector.commons.engine.CommonsStorageEngine#insert(com.stratio.meta2.common.data.ClusterName,
-     * com.stratio.meta2.common.metadata.TableMetadata, java.util.Collection,
-     * com.stratio.connector.commons.connection.Connection)
-     */
-    @Override
-    public void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
-
-        insert(connection.getNativeConnection(), targetTable, rows);
+        insert(connection.getNativeConnection(), targetTable, row);
 
     }
 
@@ -247,8 +230,20 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     }
 
-    // UPDATE??
-    // http://docs.mongodb.org/manual/reference/operator/update/
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.stratio.connector.commons.engine.CommonsStorageEngine#insert(com.stratio.meta2.common.data.ClusterName,
+     * com.stratio.meta2.common.metadata.TableMetadata, java.util.Collection,
+     * com.stratio.connector.commons.connection.Connection)
+     */
+    @Override
+    public void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
+                    throws UnsupportedException, ExecutionException {
+
+        insert(connection.getNativeConnection(), targetTable, rows);
+
+    }
 
     /**
      * Insert a set of documents in MongoDB.
@@ -270,35 +265,6 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         }
 
     }
-
-    /**
-     * TODO UPDATE WHEN IFACE Delete a set of documents.
-     * 
-     * @param catalog
-     *            the catalog.
-     * 
-     * @param tableName
-     *            the collection.
-     * 
-     * @param filterSet
-     *            filters to restrict the set of documents.
-     */
-
-    /*
-     * private void delete(MongoClient mongoClient, String catalog, String tableName, Filter... filterSet) throws
-     * UnsupportedOperationException { // TODO list Filter. And, Or, etc...
-     * 
-     * DB db = mongoClient.getDB(catalog);
-     * 
-     * if (db.collectionExists(tableName)) { DBCollection coll = db.getCollection(tableName); FilterDBObjectBuilder
-     * filterBuilder = new FilterDBObjectBuilder(false);
-     * 
-     * for (Filter filter : filterSet) { filterBuilder.add(filter); }
-     * 
-     * coll.remove(filterBuilder.build()); }
-     * 
-     * }
-     */
 
     private boolean isEmpty(String value) {
         return value == null || value.trim().isEmpty();

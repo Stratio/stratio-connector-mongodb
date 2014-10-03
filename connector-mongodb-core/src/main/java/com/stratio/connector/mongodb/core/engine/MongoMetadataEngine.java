@@ -15,8 +15,20 @@
  */
 package com.stratio.connector.mongodb.core.engine;
 
-import java.util.Iterator;
+import static com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType.COMPOUND;
+import static com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType.GEOSPATIAL_FLAT;
+import static com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType.GEOSPATIAL_SPHERE;
+import static com.stratio.connector.mongodb.core.configuration.IndexOptions.COMPOUND_FIELDS;
+import static com.stratio.connector.mongodb.core.configuration.IndexOptions.INDEX_TYPE;
+import static com.stratio.connector.mongodb.core.configuration.ShardKeyType.ASC;
+import static com.stratio.connector.mongodb.core.configuration.ShardKeyType.HASHED;
+import static com.stratio.connector.mongodb.core.configuration.TableOptions.SHARDING_ENABLED;
+import static com.stratio.connector.mongodb.core.configuration.TableOptions.SHARD_KEY_FIELDS;
+import static com.stratio.connector.mongodb.core.configuration.TableOptions.SHARD_KEY_TYPE;
+
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +38,13 @@ import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsMetadataEngine;
+import com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType;
+import com.stratio.connector.mongodb.core.configuration.ShardKeyType;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta2.common.data.CatalogName;
@@ -46,11 +62,7 @@ import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
  * @author darroyo
  *
  */
-public class MongoMetadataEngine extends CommonsMetadataEngine {
-
-    private transient MongoConnectionHandler connectionHandler;
-    // TODO meta name?
-    static public final String SHARDING_ENABLED = "enable_sharding";
+public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 
     /**
      * The Log.
@@ -66,147 +78,194 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
     }
 
     /**
-     * Create a catalog in MongoDB.
+     * Create a database in MongoDB.
      *
-     * @param targetCluster
-     *            the cluster to be created.
-     * @param indexMetaData
-     *            the index configuration.
+     * @param catalogMetadata
+     *            the catalogMetadata.
+     * @param connection
+     *            the connection which contains the native connector.
      * @throws UnsupportedException
      *             if any operation is not supported.
      * @throws ExecutionException
      *             if an error occur.
      */
     @Override
-    public void createCatalog(CatalogMetadata catalogMetadata, Connection connection) throws ExecutionException,
-                    UnsupportedException {
-
-        MongoClient mongoClient = (MongoClient) connection.getNativeConnection();
-
-        if (catalogMetadata != null && catalogMetadata.getTables() != null) {
-
-            Map<TableName, TableMetadata> tables = catalogMetadata.getTables();
-
-            boolean isCatalogSharded = false;
-            Iterator<TableName> keyIterator = tables.keySet().iterator();
-
-            // Sharding operations
-            while (keyIterator.hasNext() && !isCatalogSharded) {
-                isCatalogSharded = collectionIsSharded(tables.get(keyIterator.next()));
-
-            }
-            if (isCatalogSharded) {
-                enableSharding(mongoClient, catalogMetadata.getName().getName());
-                for (TableMetadata tableMetadata : tables.values()) {
-                    shardCollection(mongoClient, tableMetadata, isCatalogSharded);
-                }
-            }
-
-            // Index operations
-            for (TableMetadata tableMetadata : tables.values()) {
-                if (tableMetadata.getIndexes() != null) {
-                    for (IndexMetadata indexMetadata : tableMetadata.getIndexes().values()) {
-                        createIndex(indexMetadata, connection);
-                    }
-                }
-            }
-        }
-
-    }
-
-    @Override
-    public void createTable(TableMetadata tableMetadata, Connection connection) throws ExecutionException,
-                    UnsupportedException {
-        if (tableMetadata != null)
-            shardCollection((MongoClient) connection.getNativeConnection(), tableMetadata, false);
+    protected void createCatalog(CatalogMetadata catalogMetadata, Connection<MongoClient> connection)
+                    throws ExecutionException, UnsupportedException {
+        throw new UnsupportedException("Create catalog is not supported");
     }
 
     /**
-     * Shard a collection if the table option "enable_sharding" is true
+     * Create a collection in MongoDB.
+     *
+     * @param tableMetadata
+     *            the tableMetadata.
+     * @param connection
+     *            the connection which contains the native connector.
+     * @throws UnsupportedException
+     *             if any operation is not supported.
+     * @throws ExecutionException
+     *             if an error occur.
+     */
+    @Override
+    protected void createTable(TableMetadata tableMetadata, Connection<MongoClient> connection)
+                    throws ExecutionException, UnsupportedException {
+
+        if (tableMetadata == null)
+            throw new UnsupportedException("the table metadata is required");
+
+        if (tableMetadata.getName() == null)
+            throw new UnsupportedException("the table name is required");
+
+        if (collectionIsSharded(processOptions(tableMetadata.getOptions())))
+            shardCollection((MongoClient) connection.getNativeConnection(), tableMetadata);
+    }
+
+    /**
+     * @param options
+     * @return
+     */
+    private Map<String, Selector> processOptions(Map<Selector, Selector> options) {
+        Map<String, Selector> stringOptions = new HashMap<String, Selector>();
+
+        for (Entry<Selector, Selector> e : options.entrySet()) {
+            stringOptions.put(e.getKey().getAlias(), e.getValue());
+        }
+        return stringOptions;
+    }
+
+    /**
+     * @param tableMetadata
+     * @return true if sharding is required
+     */
+    private boolean collectionIsSharded(Map<String, Selector> options) {
+
+        boolean isSharded = false;
+
+        if (options != null) {
+            Selector selectorSharded = null;
+
+            if ((selectorSharded = options.get(SHARDING_ENABLED.getOptionName())) != null)
+                isSharded = ((BooleanSelector) selectorSharded).getValue();
+        }
+
+        return isSharded;
+
+    }
+
+    /**
+     * Shard a collection
      * 
      * @param mongoClient
      * @param tableMetadata
-     * @param shardingEnabled
-     *            whether sharding has been enabled previously for the catalog or not
      * @throws ExecutionException
      * @throws UnsupportedException
      */
-    private void shardCollection(MongoClient mongoClient, TableMetadata tableMetadata, boolean shardingEnabled)
-                    throws ExecutionException, UnsupportedException {
+    private void shardCollection(MongoClient mongoClient, TableMetadata tableMetadata) throws ExecutionException,
+                    UnsupportedException {
 
         final String catalogName = tableMetadata.getName().getCatalogName().getName();
+        enableSharding(mongoClient, catalogName);
 
-        if (collectionIsSharded(tableMetadata)) {
+        DBObject shardKey = new BasicDBObject();
 
-            if (!shardingEnabled)
-                enableSharding(mongoClient, catalogName);
+        Map<String, Selector> options = processOptions(tableMetadata.getOptions());
 
-            DB catalog;
-            catalog = mongoClient.getDB("admin");
+        ShardKeyType shardKeyType = getShardKeyType(options);
 
-            // TODO tableMetadata.getOptions();
-            // TODO shardKey hashed=> ("date", "hashed"); o multicampo ascendente o descendente
+        String[] shardKeyFields = getShardKeyFields(options, shardKeyType);
 
-            // create a shardKey
-            // TODO required a shardKey con el tipo de índice
-            /*
-             * ShardKey shardKey = tableMetadata.getShardKey(); for( shardKey.getShardField()){
-             * shardField.getIndexType() }
-             */
-            // TODO hashed key by default
-            // final DBObject shardKey = new BasicDBObject("_id", "hashed");
-            // TODO _id key by default
-            final DBObject shardKey = new BasicDBObject("_id", 1);
-
-            // shard the collection with the key
-            final DBObject cmd = new BasicDBObject("shardCollection", catalogName + "."
-                            + tableMetadata.getName().getName());
-            cmd.put("key", shardKey);
-
-            CommandResult result = catalog.command(cmd);
-            if (!result.ok()) {
-                logger.error("Command Error:" + result.getErrorMessage());
-                throw new ExecutionException(result.getErrorMessage());
+        switch (shardKeyType) {
+        case ASC:
+            for (String field : shardKeyFields) {
+                shardKey.put(field, 1);
             }
+            break;
+        case HASHED:
+            shardKey.put(shardKeyFields[0], "hashed");
+            break;
         }
 
-    }
+        // shard the collection with the key
+        final DBObject cmd = new BasicDBObject("shardCollection", catalogName + "." + tableMetadata.getName().getName());
+        cmd.put("key", shardKey);
 
-    /**
-     * @param tableMetadata
-     * @return true if sharding is requiered
-     */
-    private boolean collectionIsSharded(TableMetadata tableMetadata) {
-
-        Selector selectorSharded = null;
-
-        /*
-         * boolean isSharded = false; // TODO META option if collection is sharded for (Selector sel :
-         * tableMetadata.getOptions().keySet()) { if (sel instanceof StringSelector) { if (((StringSelector)
-         * sel).getValue().equals(SHARDING_ENABLED)) { isSharded = true; } } } return isSharded;
-         */
-
-        if ((selectorSharded = tableMetadata.getOptions().get(new StringSelector(SHARDING_ENABLED))) != null) {
-            return ((BooleanSelector) selectorSharded).getValue();
-            // TODO
-
-        } else
-            return false;
+        CommandResult result = mongoClient.getDB("admin").command(cmd);
+        if (!result.ok()) {
+            logger.error("Command Error:" + result.getErrorMessage());
+            throw new ExecutionException(result.getErrorMessage());
+        }
 
     }
 
     private void enableSharding(MongoClient mongoClient, String catalogName) throws ExecutionException {
 
-        DB catalog;
+        DB db;
 
-        catalog = mongoClient.getDB("admin");
+        db = mongoClient.getDB("admin");
 
-        CommandResult result = catalog.command(new BasicDBObject("enableSharding", catalogName));
+        CommandResult result = db.command(new BasicDBObject("enableSharding", catalogName));
         if (!result.ok()) {
-            logger.error("Command Error:" + result.getErrorMessage());
-            if (!result.getErrorMessage().equals("already enabled"))
+            if (!result.getErrorMessage().equals("already enabled")) {
+                logger.error("Command Error:" + result.getErrorMessage());
                 throw new ExecutionException(result.getErrorMessage());
+            }
         }
+    }
+
+    /**
+     * @param options
+     * @return the key type. Returns a default value if not specified
+     */
+    private ShardKeyType getShardKeyType(Map<String, Selector> options) {
+
+        String shardKeyType = null;
+
+        if (options != null) {
+            Selector selectorSharded = null;
+
+            if ((selectorSharded = options.get(SHARD_KEY_TYPE.getOptionName())) != null)
+                shardKeyType = ((StringSelector) selectorSharded).getValue();
+        }
+
+        if (HASHED.getKeyType().equals(shardKeyType))
+            return HASHED;
+        else if (ASC.getKeyType().equals(shardKeyType))
+            return ASC;
+        else {
+            logger.info("Using the asc key as the default type");
+            return (ShardKeyType) SHARD_KEY_TYPE.getDefaultValue();
+        }
+
+    }
+
+    /**
+     * @param options
+     * @param shardKeyType
+     * @return the fields used to compute the shard key. If the option does not exist the _id is returned
+     * @throws MongoValidationException
+     */
+    private String[] getShardKeyFields(Map<String, Selector> options, ShardKeyType shardKeyType)
+                    throws MongoValidationException {
+
+        String[] shardKey = null;
+
+        if (options != null) {
+            Selector selectorSharded = null;
+
+            if ((selectorSharded = options.get(SHARD_KEY_FIELDS.getOptionName())) != null)
+                shardKey = ((StringSelector) selectorSharded).getValue().split(",");
+        }
+
+        if (shardKey == null || shardKey.length == 0) {
+            logger.info("Using the _id as the default shard key");
+            shardKey = ((String[]) SHARD_KEY_FIELDS.getDefaultValue());
+        } else if (shardKeyType == ShardKeyType.HASHED) {
+            if (shardKey.length > 1)
+                throw new MongoValidationException("The hashed key must have a single field");
+        }
+        return shardKey;
+
     }
 
     /**
@@ -218,10 +277,10 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
      *            the database name.
      */
     @Override
-    public void dropCatalog(CatalogName name, Connection connection) throws ExecutionException {
+    protected void dropCatalog(CatalogName name, Connection<MongoClient> connection) throws ExecutionException {
         try {
-            ((MongoClient) connection.getNativeConnection()).dropDatabase(name.getName());
-        } catch (Exception e) {
+            connection.getNativeConnection().dropDatabase(name.getName());
+        } catch (MongoException e) {
             throw new ExecutionException(e.getMessage(), e);
         }
     }
@@ -235,12 +294,12 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
      *            the database name.
      */
     @Override
-    public void dropTable(TableName name, Connection connection) throws ExecutionException {
+    protected void dropTable(TableName name, Connection<MongoClient> connection) throws ExecutionException {
 
-        DB db = ((MongoClient) connection.getNativeConnection()).getDB(name.getCatalogName().getName());
+        DB db = connection.getNativeConnection().getDB(name.getCatalogName().getName());
         try {
             db.getCollection(name.getName()).drop();
-        } catch (Exception e) {
+        } catch (MongoException e) {
             throw new ExecutionException(e.getMessage(), e);
         }
     }
@@ -252,28 +311,30 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
      * com.stratio.meta2.common.metadata.IndexMetadata)
      */
     @Override
-    public void createIndex(IndexMetadata indexMetadata, Connection connection) throws ExecutionException,
-                    UnsupportedException {
+    protected void createIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)
+                    throws ExecutionException, UnsupportedException {
 
-        IndexType type = indexMetadata.getType();
-        DB db = ((MongoClient) connection.getNativeConnection()).getDB(indexMetadata.getName().getTableName()
-                        .getCatalogName().getName());
+        IndexType indexType = indexMetadata.getType();
+        DB db = connection.getNativeConnection().getDB(
+                        indexMetadata.getName().getTableName().getCatalogName().getName());
 
         DBObject indexDBObject = new BasicDBObject();
         DBObject indexOptionsDBObject = null;
         String indexName = indexMetadata.getName().getName();
 
-        if (indexMetadata.getType() == IndexType.DEFAULT) {
+        if (indexType == IndexType.DEFAULT) {
 
             for (ColumnMetadata columnMeta : indexMetadata.getColumns()) {
                 indexDBObject.put(columnMeta.getName().getName(), 1);
             }
 
-        } else if (indexMetadata.getType() == IndexType.FULL_TEXT) {
+        } else if (indexType == IndexType.FULL_TEXT) {
             for (ColumnMetadata columnMeta : indexMetadata.getColumns()) {
                 indexDBObject.put(columnMeta.getName().getName(), "text");
             }
 
+        } else if (indexMetadata.getType() == IndexType.CUSTOM) {
+            indexDBObject = getCustomIndexDBObject(indexMetadata);
         } else
             throw new UnsupportedException("index type " + indexMetadata.getType().toString() + " is not supported");
 
@@ -282,15 +343,81 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
             try {
                 db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject,
                                 indexOptionsDBObject);
-            } catch (Exception e) {
+            } catch (MongoException e) {
                 throw new ExecutionException(e.getMessage(), e);
             }
         } else
             try {
                 db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject);
-            } catch (Exception e) {
+            } catch (MongoException e) {
                 throw new ExecutionException(e.getMessage(), e);
             }
+
+        logger.debug("Index created " + indexDBObject.toString());
+    }
+
+    /**
+     * @return
+     * @throws UnsupportedException
+     */
+    private DBObject getCustomIndexDBObject(IndexMetadata indexMetadata) throws UnsupportedException {
+        DBObject indexDBObject = new BasicDBObject();
+
+        Map<String, Selector> options = processOptions(indexMetadata.getOptions());
+
+        if (options == null)
+            throw new UnsupportedException("The custom index must have an index type and fields");
+
+        Selector selectorSharded = null;
+        String indexType;
+        String[] fields;
+
+        // Retrieves the type
+        if ((selectorSharded = options.get(INDEX_TYPE.getOptionName())) != null) {
+            indexType = ((StringSelector) selectorSharded).getValue().trim();
+        } else
+            throw new UnsupportedException("The custom index must have an index type");
+
+        // Retrieves the fields
+        if (COMPOUND.getIndexType().equals(indexType)) {
+            if ((selectorSharded = options.get(COMPOUND_FIELDS.getOptionName())) != null) {
+                fields = ((StringSelector) selectorSharded).getValue().split(",");
+            } else
+                throw new UnsupportedException("The custom index must have 1 o more fields");
+        } else {
+            int i = 0;
+            fields = new String[indexMetadata.getColumns().size()];
+            for (ColumnMetadata colMetadata : indexMetadata.getColumns()) {
+                fields[i++] = colMetadata.getName().getName();
+            }
+        }
+
+        // Create the index specified
+        if (CustomMongoIndexType.HASHED.getIndexType().equals(indexType)) {
+            if (fields.length != 1)
+                throw new UnsupportedException("The hashed index must have a single field");
+            indexDBObject.put(fields[0], "hashed");
+        } else if (COMPOUND.getIndexType().equals(indexType)) {
+            for (String field : fields) {
+                String[] fieldInfo = field.split(":");
+                if (fieldInfo.length != 2)
+                    throw new UnsupportedException(
+                                    "Format error. The fields in a compound index must be: fieldname:asc|desc [, field2:desc ...] ");
+                int order = fieldInfo[1].trim().equals("asc") ? 1 : -1;
+                indexDBObject.put(fieldInfo[0], order);
+            }
+        } else if (GEOSPATIAL_SPHERE.getIndexType().equals(indexType)) {
+            if (fields.length != 1)
+                throw new UnsupportedException("The geospatial index must have a single field");
+            indexDBObject.put(fields[0], "2dsphere");
+        } else if (GEOSPATIAL_FLAT.getIndexType().equals(indexType)) {
+            if (fields.length != 1)
+                throw new UnsupportedException("The geospatial index must have a single field");
+            indexDBObject.put(fields[0], "2d");
+        } else
+            throw new UnsupportedException("Index " + indexType + " is not supported");
+
+        return indexDBObject;
     }
 
     /*
@@ -300,10 +427,10 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
      * com.stratio.meta2.common.metadata.IndexMetadata)
      */
     @Override
-    public void dropIndex(IndexMetadata indexMetadata, Connection connection) throws ExecutionException,
-                    UnsupportedException {
-        DB db = ((MongoClient) connection.getNativeConnection()).getDB(indexMetadata.getName().getTableName()
-                        .getCatalogName().getName());
+    protected void dropIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)
+                    throws ExecutionException, UnsupportedException {
+        DB db = connection.getNativeConnection().getDB(
+                        indexMetadata.getName().getTableName().getCatalogName().getName());
 
         String indexName = null;
         if (indexMetadata.getName() != null)
@@ -347,7 +474,8 @@ public class MongoMetadataEngine extends CommonsMetadataEngine {
                     throw new ExecutionException(e.getMessage(), e);
                 }
             } else
-                throw new UnsupportedException("index type " + indexMetadata.getType().toString() + " is not supported");
+                throw new UnsupportedException("Dropping without the index name is not supported for the index type: "
+                                + indexMetadata.getType().toString());
 
         }
 

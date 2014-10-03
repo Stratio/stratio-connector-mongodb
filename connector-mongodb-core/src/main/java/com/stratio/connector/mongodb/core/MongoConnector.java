@@ -16,13 +16,7 @@
 
 package com.stratio.connector.mongodb.core;
 
-import java.util.Map;
-import java.util.Set;
-
 import com.stratio.connector.commons.CommonsConnector;
-import com.stratio.connector.meta.ConnectionConfiguration;
-import com.stratio.connector.mongodb.core.configuration.ConnectionConfigurationCreator;
-import com.stratio.connector.mongodb.core.configuration.SupportedOperationsCreator;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.MongoMetadataEngine;
 import com.stratio.connector.mongodb.core.engine.MongoQueryEngine;
@@ -31,7 +25,6 @@ import com.stratio.meta.common.connector.IConfiguration;
 import com.stratio.meta.common.connector.IMetadataEngine;
 import com.stratio.meta.common.connector.IQueryEngine;
 import com.stratio.meta.common.connector.IStorageEngine;
-import com.stratio.meta.common.connector.Operations;
 import com.stratio.meta.common.exceptions.UnsupportedException;
 
 /**
@@ -83,27 +76,9 @@ public class MongoConnector extends CommonsConnector {
     }
 
     /**
-     * Return the supported operations
-     *
-     * @return the supported operations.
-     */
-    public Map<Operations, Boolean> getSupportededOperations() {
-        return SupportedOperationsCreator.getSupportedOperations();
-    }
-
-    /**
-     * Return the supported configuration options
-     *
-     * @return the the supported configuration options.
-     */
-    public Set<ConnectionConfiguration> getConnectionConfiguration() {
-        return ConnectionConfigurationCreator.getConfiguration();
-    }
-
-    /*
-     * (non-Javadoc)
+     * Return the Connector Name.
      * 
-     * @see com.stratio.meta.common.connector.IConnector#getConnectorName()
+     * @return Connector Name
      */
     @Override
     public String getConnectorName() {

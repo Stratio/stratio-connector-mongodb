@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stratio.connector.mongodb.core.engine.utils;
+package com.stratio.connector.mongodb.core.configuration;
 
-import com.mongodb.DBObject;
+/**
+ * @author darroyo Set of options for the mongo connector.
+ *
+ */
 
-public abstract class DBObjectBuilder {
+public enum CustomMongoIndexType {
 
-    final public boolean useAggregation;
+    HASHED("hashed"), COMPOUND("compound"), GEOSPATIAL_SPHERE("geo_sphere"), GEOSPATIAL_FLAT("geo_flat");
 
-    /**
-     * @param useAggregation
-     *            whether the query use the aggregation framework or not
-     */
-    public DBObjectBuilder(boolean useAggregation) {
-        this.useAggregation = useAggregation;
+    private final String indexType;
+
+    public String getIndexType() {
+        return indexType;
     }
 
-    /**
-     * @return true if the query use the aggregation framework
-     */
-    public final boolean useAggregationPipeline() {
-        return useAggregation;
+    CustomMongoIndexType(String indexType) {
+        this.indexType = indexType;
     }
-
-    public abstract DBObject build();
 
 }

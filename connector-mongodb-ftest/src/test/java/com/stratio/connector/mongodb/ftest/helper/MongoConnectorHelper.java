@@ -53,12 +53,12 @@ public class MongoConnectorHelper implements IConnectorHelper {
 
     private MongoConnectionHandler connectorHandler;
     protected String SERVER_IP = "10.200.0.62";// "10.200.0.58,10.200.0.59,10.200.0.60";
-    private String SERVER_PORT = "27200";// TODO config test "9300,9300,9300";
+    protected String SERVER_PORT = "27200";// TODO config test "9300,9300,9300";
     private String readPreference = "primaryPreferred";
     private String writeConcern = "acknowledged";// TODO test different writeConcern
 
     private MongoClient mongoClient;
-    private ClusterName clusterName;
+    protected ClusterName clusterName;
 
     public MongoConnectorHelper(ClusterName clusterName) throws ConnectionException, InitializationException,
                     CreateNativeConnectionException {

@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stratio.connector.mongodb.core.engine.utils;
+package com.stratio.connector.mongodb.core.configuration;
 
-import com.mongodb.DBObject;
+/**
+ * @author darroyo Set of options for the mongo connector.
+ *
+ */
 
-public abstract class DBObjectBuilder {
+public enum ShardKeyType {
 
-    final public boolean useAggregation;
+    HASHED("hashed"), ASC("asc");
 
-    /**
-     * @param useAggregation
-     *            whether the query use the aggregation framework or not
-     */
-    public DBObjectBuilder(boolean useAggregation) {
-        this.useAggregation = useAggregation;
+    private final String keyType;
+
+    public String getKeyType() {
+        return keyType;
     }
 
-    /**
-     * @return true if the query use the aggregation framework
-     */
-    public final boolean useAggregationPipeline() {
-        return useAggregation;
+    ShardKeyType(String keyType) {
+        this.keyType = keyType;
     }
-
-    public abstract DBObject build();
 
 }

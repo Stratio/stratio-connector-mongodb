@@ -21,13 +21,86 @@
 	</DataStoresName>
 	<Version>0.1.0</Version>
 	<RequiredProperties>
-		<Property>
-			<Name>node_type</Name>
-		</Property>
+	
 		</RequiredProperties>
-	<OptionalProperties/>
+	<OptionalProperties>
+		<Property>
+			<Name>seeds</Name>
+		</Property>
+		<Property>
+			<Name>ports</Name>
+		</Property>
+		<Property>
+			<Name>mongo.readPreference</Name>
+			<Options>
+				<Name>primary</Name>
+				<Name>primarypreferred</Name>
+				<Name>secondary</Name>
+				<Name>secondarypreferred</Name>
+				<Name>nearest</Name>
+			</Options>
+		</Property>
+		<Property>
+			<Name>mongo.writeConcern</Name>
+			<Options>
+				<Name>acknowledged</Name>
+				<Name>unacknowledged</Name>
+				<Name>replica_acknowledged</Name>
+				<Name>journaled</Name>
+			</Options>
+		</Property>
+		<Property>
+			<Name>mongo.acceptableLatencyDifference</Name>
+		</Property>
+		<Property>
+			<Name>mongo.maxConnectionsPerHost</Name>
+		</Property>
+		<Property>
+			<Name>mongo.maxConnectionIdleTime</Name>
+		</Property>
+		<Property>
+			<Name>mongo.connectTimeout</Name>
+		</Property>
+	</OptionalProperties>
+	<CatalogProperties>
+	</CatalogProperties>
+	<TableProperties>
+		<Property>
+			<Name>enable_sharding</Name>
+			<SelectorType>boolean</SelectorType>
+		</Property>
+		<Property>
+			<Name>shard_key_index_type</Name>
+			<SelectorType>string</SelectorType>
+				<Options>
+					<Name>asc</Name>
+					<Name>hashed</Name>
+				</Options>
+		</Property>
+		<Property>
+			<Name>shard_key_fields</Name>
+			<SelectorType>string</SelectorType><!--Selector alias equasl fields csv. hashed only 1 field-->
+		</Property>
+	</TableProperties>
+	<IndexProperties>
+		<Property>
+			<Name>index_type</Name><!--Posibilidad de nuevo tipo de índice o custom => tipo por string-->
+			<SelectorType>string</SelectorType>
+				<Options>
+					<Name>compound</Name>
+					<Name>hashed</Name>
+					<Name>geo_sphere</Name>
+					<Name>geo_flat</Name>
+				</Options>
+		</Property>
+		<OptionalProperties>
+			<Property>
+				<Name>compound_fields</Name>
+				<SelectorType>string</SelectorType><!--only in compound fields or single desc; fields=> field1:asc, [field2:desc...]...-->
+			</Property>
+		</OptionalProperties>
+	</IndexProperties>
 	<SupportedOperations>
-		<operation>CREATE_CATALOG</operation>
 		<operation>DROP_CATALOG</operation>
 		<operation>CREATE_TABLE</operation>
 		<operation>DROP_TABLE</operation>

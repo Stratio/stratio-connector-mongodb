@@ -24,7 +24,7 @@ public class LimitDBObjectBuilder extends DBObjectBuilder {
     int limit;
 
     public LimitDBObjectBuilder(Limit limit) {
-        super(/* DBObjectType.LIMIT, */false); // only with aggregationFramework
+        super(true);
         this.limit = limit.getLimit();
     }
 

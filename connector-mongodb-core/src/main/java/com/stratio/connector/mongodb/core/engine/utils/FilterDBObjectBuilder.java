@@ -34,10 +34,8 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
     private BasicDBObject filterOptions;
 
     public FilterDBObjectBuilder(boolean useAggregation) {
-        super(/* DBObjectType.FILTER, */useAggregation);
+        super(useAggregation);
         filterQuery = new BasicDBObject();
-        // TODO filterQuery = QueryBuilder.start()...
-
     }
 
     public void add(Filter filter) {
