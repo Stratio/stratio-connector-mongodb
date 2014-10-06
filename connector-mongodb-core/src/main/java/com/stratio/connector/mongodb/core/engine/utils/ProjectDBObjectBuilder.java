@@ -19,8 +19,7 @@ import java.util.Set;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
-import com.stratio.meta.common.logicalplan.Project;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.logicalplan.Select;
 import com.stratio.meta2.common.data.ColumnName;
 
@@ -28,14 +27,14 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
 
     private BasicDBObject projectQuery;
 
-    public ProjectDBObjectBuilder(boolean useAggregation, Project projection, Select select) throws MongoQueryException {
-        super(/* DBObjectType.PROJECT, */useAggregation);
+    public ProjectDBObjectBuilder(boolean useAggregation, Select select) throws MongoValidationException {
+        super(useAggregation);
 
         projectQuery = new BasicDBObject();
         Set<ColumnName> columnMetadataList = select.getColumnMap().keySet();
 
         if (columnMetadataList == null || columnMetadataList.isEmpty()) {
-            throw new MongoQueryException("The query has to retrieve data");
+            throw new MongoValidationException("The query has to request at least one field");
         } else {
 
             for (ColumnName columnName : columnMetadataList) {

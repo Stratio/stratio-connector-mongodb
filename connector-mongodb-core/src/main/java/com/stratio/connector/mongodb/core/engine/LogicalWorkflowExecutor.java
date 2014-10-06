@@ -35,6 +35,7 @@ import com.stratio.connector.mongodb.core.engine.utils.FilterDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.utils.LimitDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.utils.ProjectDBObjectBuilder;
 import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.data.Cell;
 import com.stratio.meta.common.data.ResultSet;
 import com.stratio.meta.common.data.Row;
@@ -47,84 +48,94 @@ import com.stratio.meta.common.logicalplan.Select;
 import com.stratio.meta.common.metadata.structures.ColumnMetadata;
 import com.stratio.meta.common.statements.structures.relationships.Operator;
 import com.stratio.meta2.common.data.ColumnName;
+import com.stratio.meta2.common.metadata.ColumnType;
 
 public class LogicalWorkflowExecutor {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Project projection = null;
+    /**
+     * The list of filters without including full-text filters
+     */
     private ArrayList<Filter> filterList = null;
+    private Filter textFilter = null;
     private Limit limit = null;
     private Select select = null;
-    private boolean mandatoryAggregation; // true por defecto => si solo un RS,
-                                          // mejora de rendimiento y no
-                                          // necesario => check
+    /**
+     * Whether the aggregation framework is compulsory for logicalworkflow
+     */
+    private boolean aggregationRequired;
 
     private List<DBObject> query = null;
 
-    public LogicalWorkflowExecutor(LogicalStep initiallogicalStep) throws MongoQueryException, UnsupportedException {
+    public LogicalWorkflowExecutor(LogicalStep initialProject) throws MongoQueryException, UnsupportedException {
 
-        readLogicalWorkflow(initiallogicalStep);
-        setMandatoryAggregation();
+        readLogicalWorkflow(initialProject);
+        aggregationRequired();
         buildQuery();
 
     }
 
-    private void setMandatoryAggregation() {
-        // if isGroupBy, Sum, Average, etc... isAggregate = true
-        // TODO update to new LogicalSteps
-        // TODO this release Aggregation won't be used
-        mandatoryAggregation = false;
+    private void aggregationRequired() {
+        // Aggregation features will be included in the next release
+        aggregationRequired = false;
 
     }
 
-    private void readLogicalWorkflow(LogicalStep initialLogicalStep) throws MongoQueryException, UnsupportedException {
+    private void readLogicalWorkflow(LogicalStep initialProject) throws MongoQueryException, UnsupportedException {
 
-        LogicalStep logicalStep = initialLogicalStep;
+        LogicalStep logicalStep = initialProject;
 
-        // sortList = new ArrayList<Sort>();
         filterList = new ArrayList<Filter>();
 
         do {
             if (select != null)
-                throw new MongoQueryException("select must be the last step");
+                throw new MongoValidationException("Select must be the last step");
             if (logicalStep instanceof Project) {
                 if (projection == null)
                     projection = (Project) logicalStep;
                 else
-                    throw new UnsupportedException(" # Project > 1");
+                    throw new MongoValidationException(" # Project > 1");
             } else if (logicalStep instanceof Filter) {
-                filterList.add((Filter) logicalStep);
+                Filter step = (Filter) logicalStep;
+                if (Operator.MATCH == step.getRelation().getOperator()) {
+                    throw new MongoValidationException("Full-text queries not yet supported");
+                } else {
+                    filterList.add(step);
+                }
+
             } else if (logicalStep instanceof Limit) {
                 if (limit == null)
                     limit = (Limit) logicalStep;
                 else
-                    throw new MongoQueryException(" # Limit > 1");
+                    throw new MongoValidationException(" # Limit > 1");
             } else if (logicalStep instanceof Select) {
                 select = (Select) logicalStep;
             } else {
-                throw new UnsupportedException("step unsupported" + logicalStep.getClass());
+                throw new MongoValidationException("Step unsupported" + logicalStep.getClass());
             }
         } while ((logicalStep = logicalStep.getNextStep()) != null);
 
         if (projection == null)
-            throw new MongoQueryException("projection has not been found");
+            throw new MongoValidationException("Projection has not been found in the logical workflow");
         if (select == null)
-            throw new MongoQueryException("select has not been found");
+            throw new MongoValidationException("Select has not been found in the logical workflow");
 
     }
 
-    public boolean isMandatoryAggregation() {
-        return mandatoryAggregation;
+    private boolean isAggregationRequired() {
+        return aggregationRequired;
     }
 
-    private void buildQuery() throws MongoQueryException {
+    private void buildQuery() throws MongoValidationException {
         query = new ArrayList<DBObject>();
 
-        if (mandatoryAggregation) {
+        if (isAggregationRequired()) {
+            // TODO It will be included in the following release
             if (!filterList.isEmpty())
                 query.add(buildFilter());
-            // TODO It will be included in the following realease
+            query.add(buildLimit());
         }
 
         else {
@@ -138,28 +149,17 @@ public class LogicalWorkflowExecutor {
         return limitDBObject.build();
     }
 
-    private DBObject buildProject() throws MongoQueryException {
-        ProjectDBObjectBuilder projectDBObject = new ProjectDBObjectBuilder(mandatoryAggregation, projection, select);
+    private DBObject buildProject() throws MongoValidationException {
+        ProjectDBObjectBuilder projectDBObject = new ProjectDBObjectBuilder(aggregationRequired, select);
         return projectDBObject.build();
     }
 
-    private DBObject buildFilter() throws MongoQueryException {
-        Filter textSearch = null;
-        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(mandatoryAggregation);
-        Operator operator;
-        for (Filter f : filterList) {
-            operator = f.getRelation().getOperator();
-            if (operator.equals(Operator.MATCH) || operator.equals(Operator.LIKE)) {
-                if (textSearch != null)
-                    throw new MongoQueryException("Only one text search is allowed");
-                textSearch = f;
-            }
-            filterDBObjectBuilder.add(f);
-        }
+    private DBObject buildFilter() throws MongoValidationException {
 
-        // the match filter must be the last step
-        if (textSearch != null) {
-            filterDBObjectBuilder.addTextSearch(textSearch);
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(aggregationRequired);
+
+        for (Filter f : filterList) {
+            filterDBObjectBuilder.add(f);
         }
 
         if (logger.isDebugEnabled()) {
@@ -169,20 +169,20 @@ public class LogicalWorkflowExecutor {
     }
 
     /**
-     * Queries for objects in a collection
+     * Execute the query
      * 
+     * @param mongoClient
+     * @return the result set
      * @throws MongoQueryException
+     * @throws MongoValidationException
      */
-
-    public ResultSet executeQuery(MongoClient mongoClient) throws MongoQueryException {
+    public ResultSet executeQuery(MongoClient mongoClient) throws MongoQueryException, MongoValidationException {
 
         DB db = mongoClient.getDB(projection.getCatalogName());
         DBCollection coll = db.getCollection(projection.getTableName().getName());
         ResultSet resultSet = new ResultSet();
 
-        // resultSet.setColumnMetadata(projection.getColumnList());// necesario??
-
-        if (isMandatoryAggregation()) {
+        if (isAggregationRequired()) {
 
             // AggregationOptions aggOptions = AggregationOptions.builder()
             // .allowDiskUse(true)
@@ -208,32 +208,13 @@ public class LogicalWorkflowExecutor {
 
         } else {
 
-            // ProjectDBObjectBuilder projectDBObject = new ProjectDBObjectBuilder(
-            // false, projection);
-            // DBObject fields = projectDBObject.build();
-            DBObject fields = buildProject();
-
-            // if !isCount
-            // if !isDistinct
-            // if !groupBy
-
-            DBCursor cursor = coll.find(query.get(0), fields);
-            DBObject rowDBObject;
-
-            /*
-             * // sort, skip and limit if (!sortList.isEmpty()) { // DBObject orderBy = new BasicDBObject();// asc o
-             * desc, y varios // // sort posibles => // int sortType; // for (Sort sortElem : sortList) { // varios sort
-             * // sortType = (sortElem.getType() == Sort.ASC) ? 1 : -1; // orderBy.put(sortElem.getField(), sortType);
-             * // } DBObject orderBy = buildSort();
-             * 
-             * cursor = cursor.sort(orderBy); }
-             */
+            DBCursor cursor = coll.find(query.get(0), buildProject());
 
             if (limit != null) {
                 cursor = cursor.limit(limit.getLimit());
             }
 
-            // iterate over the cursor
+            DBObject rowDBObject;
             try {
                 while (cursor.hasNext()) { // Si no hay resultados => excepción..
 
@@ -244,20 +225,22 @@ public class LogicalWorkflowExecutor {
                     resultSet.add(createRowWithAlias(rowDBObject));
                 }
             } catch (MongoException e) {
-                // throw new ExecutionException("MongoException: "
-                // + e.getMessage());
+                throw new MongoQueryException(e.getMessage(), e);
             } finally {
                 cursor.close();
             }
+
         }
 
-        resultSet.setColumnMetadata(createMetadata());
+        if (!resultSet.isEmpty())
+            resultSet.setColumnMetadata(createMetadata());
+
         return resultSet;
 
     }
 
     /**
-     * This method creates a row from a Mongo result
+     * This method creates a row from a Mongo result. If there is no result a null value is inserted
      *
      * @param rowDBObject
      *            a bson containing the result.
@@ -272,9 +255,9 @@ public class LogicalWorkflowExecutor {
             field = colName.getName();
             Object value = rowDBObject.get(field);
 
-            if (aliasMapping.containsKey(colName)) {
+            if (aliasMapping.containsKey(colName))
                 field = aliasMapping.get(colName);
-            }
+
             row.addCell(field, new Cell(value));
         }
         return row;
@@ -283,13 +266,61 @@ public class LogicalWorkflowExecutor {
     private List<ColumnMetadata> createMetadata() {
         List<ColumnMetadata> retunColumnMetadata = new ArrayList<>();
         for (ColumnName colName : select.getColumnMap().keySet()) {
+
             String field = colName.getName();
-            ColumnMetadata columnMetadata = new ColumnMetadata(projection.getTableName().getName(), field, select
-                            .getTypeMap().get(field));
+            ColumnType colType = select.getTypeMap().get(field);
+
+            colType = updateColumnType(colType);
+
+            ColumnMetadata columnMetadata = new ColumnMetadata(projection.getTableName().getName(), field, colType);
             columnMetadata.setColumnAlias(select.getColumnMap().get(colName));
+
             retunColumnMetadata.add(columnMetadata);
         }
         return retunColumnMetadata;
     }
 
+    private ColumnType updateColumnType(ColumnType colType) {
+        String dbType;
+        switch (colType) {
+        case FLOAT:
+            // TODO check the meaning of DBType
+            dbType = colType.getODBCType();
+            colType.setDBMapping(dbType, Double.class);
+            break;
+        case SET:
+        case LIST:
+            // TODO Set? BasicDBList extends ArrayList<Object>. how to define??
+            dbType = colType.getODBCType();
+            colType.setDBMapping(dbType, List.class);
+            colType.setDBCollectionType(updateColumnType(colType.getDBInnerType()));
+            break;
+        case MAP:
+            // TODO DBObject?
+            dbType = colType.getODBCType();
+            colType.setDBMapping(dbType, Map.class);
+            colType.setDBMapType((updateColumnType(colType.getDBInnerType())),
+                            updateColumnType(colType.getDBInnerValueType()));
+            break;
+
+        case NATIVE:
+            // TODO Case not supported
+            // // TODO check? and setOdbcType??
+            // dbType = colType.getDbType();
+            // // TODO check the row??
+            // if (NativeTypes.DATE.equals(colType.getDbType()))
+            // colType.setDBMapping(dbType, Date.class);
+            break;
+        case BIGINT:
+        case BOOLEAN:
+        case DOUBLE:
+        case INT:
+        case TEXT:
+        case VARCHAR:
+        default:
+            break;
+        }
+        return colType;
+
+    }
 }

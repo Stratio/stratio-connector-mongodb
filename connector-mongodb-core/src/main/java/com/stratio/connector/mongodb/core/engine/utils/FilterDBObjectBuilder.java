@@ -17,7 +17,7 @@ package com.stratio.connector.mongodb.core.engine.utils;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.logicalplan.Filter;
 import com.stratio.meta.common.statements.structures.relationships.Operator;
 import com.stratio.meta.common.statements.structures.relationships.Relation;
@@ -26,91 +26,55 @@ import com.stratio.meta2.common.statements.structures.selectors.ColumnSelector;
 import com.stratio.meta2.common.statements.structures.selectors.FloatingPointSelector;
 import com.stratio.meta2.common.statements.structures.selectors.IntegerSelector;
 import com.stratio.meta2.common.statements.structures.selectors.Selector;
+import com.stratio.meta2.common.statements.structures.selectors.SelectorType;
 import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
 
 public class FilterDBObjectBuilder extends DBObjectBuilder {
 
     private BasicDBObject filterQuery;
-    private BasicDBObject filterOptions;
 
     public FilterDBObjectBuilder(boolean useAggregation) {
         super(useAggregation);
         filterQuery = new BasicDBObject();
     }
 
-    public void add(Filter filter) {
-
-        // add booleanType o logicalType
+    public void add(Filter filter) throws MongoValidationException {
 
         Relation relation = filter.getRelation();
+        String fieldName = getFieldName(relation.getLeftTerm());
+        BasicDBObject fieldQuery;
 
-        if (filterQuery.containsField(getFieldName(relation.getLeftTerm()))) {
-            filterOptions = (BasicDBObject) filterQuery.get(getFieldName(relation.getLeftTerm()));
+        if (filterQuery.containsField(fieldName)) {
+            fieldQuery = (BasicDBObject) filterQuery.get(fieldName);
         } else {
-            filterOptions = new BasicDBObject();
+            fieldQuery = new BasicDBObject();
         }
 
-        switch (relation.getOperator()) {
+        fieldQuery = handleRelation(fieldQuery, relation.getOperator(), relation.getRightTerm());
 
-        case BETWEEN:
-            new RuntimeException("A la espera de que se implemente por Meta"); // REVIEW mewtodo handleBetweenFilter
-            /*
-             * RelationBetween rel Between = (RelationBetween) relation; //check types: DateTerm, StringTerm, etc..
-             * (única forma) de compatibilidad //múltiples between?? //check 2 terms
-             * 
-             * filterOptions.append("$gte", relBetween.getTerms().get(0).getTermValue()); // Integer.valueOf(
-             * relBetween.getTerms().get(0).getStringValue() )); filterOptions.append("$lte",
-             * relBetween.getTerms().get(1).getTermValue()); // Integer.valueOf(
-             * relBetween.getTerms().get(1).getStringValue() ));
-             * filterQuery.append(relation.getIdentifiers().get(0).getField(), filterOptions);
-             */
-
-            break;
-        case IN:
-            new RuntimeException("A la espera de que se implemente por Meta"); // REVIEW mewtodo handleBetweenFilter
-            /*
-             * SelectorType type = relation.getLeftTerm().getType();
-             * 
-             * RelationIn relIn = (RelationIn) relation; //check integer??
-             * 
-             * ArrayList inTerms = new ArrayList(); for(Term<?> term : relIn.getTerms()){ //comprobar que insertar...y
-             * que no (hacerlo igual) inTerms.add(term.getTermValue()); } filterOptions.append("$in", inTerms);
-             * filterQuery.append(relation.getIdentifiers().get(0).getField(), filterOptions);
-             */
-            break;
-
-        case DISTINCT:
-        case GET:
-        case GT:
-        case LET:
-        case LT:
-        case EQ:
-            handleRelationCompare(relation);
-            break;
-        case LIKE:
-        case MATCH:
-        case ADD:
-        case DIVISION:
-        case ASSIGN:
-        case MULTIPLICATION:
-        case SUBTRACT:
-        default:
-            new RuntimeException("No soportado"); // TODO throwException
-            break;
-
-        }
+        filterQuery.append(fieldName, fieldQuery);
 
     }
 
     /**
+     * @param fieldQuery
+     *            previous query
      * @param operator
-     * 
+     *            operator to include in the filter
+     * @param rightSelector
+     *            selector to compare
+     * @return the field query updated
+     * @throws MongoValidationException
      */
-    private void handleRelationCompare(Relation relation) {
-        Operator operator = relation.getOperator();
+    private BasicDBObject handleRelation(BasicDBObject fieldQuery, Operator operator, Selector rightSelector)
+                    throws MongoValidationException {
+
         String lValue = null;
-        // check integer?? también hay que hacer para between strings
-        // relation.getIdentifiers().get(0).getField(); //si llega un equal se eliminan > < etc..
+        boolean floatingPointSupported = true;
+        boolean stringSupported = true;
+        boolean integerSupported = true;
+        boolean boolSupported = true;
+
         switch (operator) {
 
         case DISTINCT:
@@ -131,111 +95,67 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         case EQ:
             lValue = "$eq";
             break;
-        }
-
-        if (lValue != null) {
-
-            Selector selector = relation.getRightTerm();
-
-            switch (selector.getType()) {
-
-            case BOOLEAN:
-                filterOptions.append(lValue, ((BooleanSelector) selector).getValue());
-                break;
-            // TODO floating point get valued missing
-            // case FLOATING_POINT: filterOptions.append(lValue, ((FloatingPointSelector) selector). ); break;
-            case INTEGER:
-                filterOptions.append(lValue, ((IntegerSelector) selector).getValue());
-                break;
-            case STRING:
-                filterOptions.append(lValue, ((StringSelector) selector).getValue());
-                break;
-            case FLOATING_POINT:
-                // TODO
-                filterOptions.append(lValue, Double.parseDouble(((FloatingPointSelector) selector).toString()));
-                break;
-
-            case RELATION: // TODO between?
-            case COLUMN: // TODO $where ?
-            case ASTERISK:
-            case FUNCTION:
-
-            default:
-                throw new RuntimeException("Not implemented yet");
-                // break;
-            }
-            // TODO CHECK if numbers is supported
-            filterQuery.append(getFieldName(relation.getLeftTerm()), filterOptions);
-        }
-
-    }
-
-    /**
-     * @param textSearch
-     * @throws MongoQueryException
-     */
-    public void addTextSearch(Filter textSearch) throws MongoQueryException {
-        Relation relation = textSearch.getRelation();
-        filterOptions = new BasicDBObject();
-        switch (relation.getOperator()) {
         case LIKE:
-            handleLikeRelation(relation);
+            floatingPointSupported = false;
+            integerSupported = false;
+            boolSupported = false;
+            lValue = "$regex";
             break;
+        case BETWEEN:
+            new RuntimeException("Waiting for Meta to implement between filters");
+            break;
+        case IN:
+            new RuntimeException("Waiting for Meta to implement in filters");
+            break;
+        case ADD:
+        case ASSIGN:
+        case DIVISION:
+        case MULTIPLICATION:
+        case SUBTRACT:
         case MATCH:
-            handleMatchRelation(relation);
-            break;
         default:
-            throw new MongoQueryException("Operator: " + relation.getOperator().toString() + " is not allowed");
+            throw new MongoValidationException("The operator: " + operator.toString() + " is not supported");
+
         }
+        SelectorType selectorType = rightSelector.getType();
+
+        switch (selectorType) {
+
+        case BOOLEAN:
+            validateSelector(boolSupported, operator, selectorType);
+            fieldQuery.append(lValue, ((BooleanSelector) rightSelector).getValue());
+            break;
+        case INTEGER:
+            validateSelector(integerSupported, operator, selectorType);
+            fieldQuery.append(lValue, ((IntegerSelector) rightSelector).getValue());
+            break;
+        case STRING:
+            validateSelector(stringSupported, operator, selectorType);
+            fieldQuery.append(lValue, ((StringSelector) rightSelector).getValue());
+            break;
+        case FLOATING_POINT:
+            validateSelector(floatingPointSupported, operator, selectorType);
+            fieldQuery.append(lValue, ((FloatingPointSelector) rightSelector).getValue());
+            break;
+
+        case RELATION:
+        case COLUMN: // TODO $where?
+        case ASTERISK:
+        case FUNCTION:
+        default:
+            throw new RuntimeException("Not yet implemented");
+
+        }
+
+        return fieldQuery;
 
     }
 
-    /**
-     * @param relation
-     */
-    private void handleLikeRelation(Relation relation) {
-        Selector selector = relation.getRightTerm();
-
-        String patternSearch = null;
-
-        switch (selector.getType()) {
-
-        case STRING:
-            patternSearch = ((StringSelector) selector).getValue();
-            break;
-        // throw new RuntimeException("Not yet supported");
-        default:
-            throw new RuntimeException("Only string selector is supported");
-            // break;
-        }
-
-        filterQuery.append(getFieldName(relation.getLeftTerm()), patternSearch);
-
-    }
-
-    /**
-     * @param relation
-     */
-    private void handleMatchRelation(Relation relation) {
-
-        Selector selector = relation.getRightTerm();
-
-        String lValue = "$search";
-
-        switch (selector.getType()) {
-
-        case STRING:
-            filterOptions.append(lValue, ((StringSelector) selector).getValue());
-            break;
-        // throw new RuntimeException("Not yet supported");
-        default:
-            throw new RuntimeException("Only string selector is supported");
-            // break;
-        }
-
-        // TODO Only full-text search over a collection
-        filterQuery.append("$text", filterOptions);
-
+    private void validateSelector(boolean supported, Operator operator, SelectorType selType)
+                    throws MongoValidationException {
+        if (!supported)
+            throw new MongoValidationException("The selector type: " + selType.toString()
+                            + " is not supported with operator " + operator.toString());
     }
 
     public DBObject build() {

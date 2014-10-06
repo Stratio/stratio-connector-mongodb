@@ -28,12 +28,12 @@ import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsStorageEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.exceptions.MongoInsertException;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.data.Cell;
 import com.stratio.meta.common.data.Row;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta2.common.data.ColumnName;
-import com.stratio.meta2.common.metadata.ColumnMetadata;
 import com.stratio.meta2.common.metadata.ColumnType;
 import com.stratio.meta2.common.metadata.TableMetadata;
 
@@ -49,34 +49,24 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         super(connectionHandler);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.connector.commons.engine.CommonsStorageEngine#insert(com.stratio.meta2.common.data.ClusterName,
-     * com.stratio.meta2.common.metadata.TableMetadata, com.stratio.meta.common.data.Row,
-     * com.stratio.connector.commons.connection.Connection)
-     */
-    @Override
-    public void insert(TableMetadata targetTable, Row row, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
-        insert(connection.getNativeConnection(), targetTable, row);
-
-    }
-
     /**
      * Insert a document in MongoDB.
      *
-     * @param catalog
-     *            the database.
-     * @param tableName
-     *            the collection.
+     * 
+     * @param targetTable
+     *            the table metadata.
      * @param row
      *            the row.
+     * @param connection
+     * 
      * @throws ExecutionException
      *             in case of failure during the execution.
      */
-    private void insert(MongoClient mongoClient, TableMetadata targetTable, Row row) throws ExecutionException,
-                    UnsupportedException {
+    @Override
+    protected void insert(TableMetadata targetTable, Row row, Connection<MongoClient> connection)
+                    throws UnsupportedException, ExecutionException {
+
+        MongoClient mongoClient = connection.getNativeConnection();
 
         String catalog = targetTable.getName().getCatalogName().getName();
         String tableName = targetTable.getName().getName();
@@ -88,25 +78,25 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
             DB db = mongoClient.getDB(catalog);
             BasicDBObject doc = new BasicDBObject();
 
-            Object pk = null; // TODO MongoDB use reflection?
+            Object pk = null;
             DBObject bsonPK = null;
             String cellName;
             Object cellValue;
 
             List<ColumnName> primaryKeyList = targetTable.getPrimaryKey();
 
+            // Building the pk to insert in Mongo
             if (!primaryKeyList.isEmpty()) {
                 if (primaryKeyList.size() == 1) {
                     cellValue = row.getCell(primaryKeyList.get(0).getName()).getValue();
-                    validatePKDataType(cellValue, targetTable.getColumns().get(primaryKeyList.get(0)));
+                    validatePKDataType(targetTable.getColumns().get(primaryKeyList.get(0)).getColumnType());
                     pk = cellValue;
                 } else {
 
                     bsonPK = new BasicDBObject();
                     for (ColumnName columnName : primaryKeyList) {
                         cellValue = row.getCell(columnName.getName()).getValue();
-                        validatePKDataType(cellValue, targetTable.getColumns().get(columnName));
-                        // TODO columnName.getName() or "a", "b" .
+                        validatePKDataType(targetTable.getColumns().get(columnName).getColumnType());
                         bsonPK.put(columnName.getName(), cellValue);
                     }
                     pk = bsonPK;
@@ -114,12 +104,12 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
             }
 
+            // Building the fields to insert in Mongo
             for (Map.Entry<String, Cell> entry : row.getCells().entrySet()) {
                 cellName = entry.getKey();
                 cellValue = entry.getValue().getValue();
                 ColumnName cName = new ColumnName(catalog, tableName, cellName);
-
-                validateDataType(cellValue, targetTable.getColumns().get(cName));
+                validateDataType(targetTable.getColumns().get(cName).getColumnType());
                 doc.put(entry.getKey(), cellValue);
             }
 
@@ -144,124 +134,105 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     }
 
-    // if(key.contains(".") || metadata.contains(".")) {
-    // //TODO throw new ExecutionException("The character '.' is not allowed"){};
-
     /**
-     * @param cellValue
-     * @param columnMetadata
-     * @throws MongoInsertException
-     */
-    private void validateDataType(Object cellValue, ColumnMetadata columnMetadata) throws MongoInsertException {
-
-        // TODO review with meta. cellValue instanceof is not checked
-        ColumnType colType = columnMetadata.getColumnType();
-
-        switch (colType) {
-        case BIGINT:
-            break;
-        case BOOLEAN:
-            break;
-        case DOUBLE:
-            break;
-        case FLOAT:
-            break;
-        case INT:
-            break;
-        case LIST: // TODO isSupported?
-            break;
-        case MAP: // TODO isSupported?
-            break;
-        case NATIVE:
-            // instanceof
-            throw new MongoInsertException("Type not supported: " + colType.toString());
-            // TODO if(columnMetadata.getParameters())
-        case SET: // TODO isSupported?
-            break;
-        case TEXT:
-            break;
-        case VARCHAR:
-            break;
-        default:
-            throw new MongoInsertException("Type not supported as PK: " + colType.toString());
-
-        }
-
-    }
-
-    /**
-     * @param cellValue
-     * @param columnMetadata
-     * @throws MongoInsertException
-     */
-    private void validatePKDataType(Object cellValue, ColumnMetadata columnMetadata) throws MongoInsertException {
-        // TODO review with meta. cellValue instanceof is not checked
-
-        ColumnType colType = columnMetadata.getColumnType();
-        switch (colType) {
-        case BIGINT:
-            break;
-        case BOOLEAN:
-            break;
-        case DOUBLE:
-            break;
-        case FLOAT:
-            break;
-        case INT:
-            break;
-        case NATIVE:
-            // instanceof
-            // TODO if(columnMetadata.getParameters())
-            throw new MongoInsertException("Type not supported as PK: " + colType.toString());
-        case LIST:
-            throw new MongoInsertException("Type not supported as PK: " + colType.toString());
-        case MAP:
-            throw new MongoInsertException("Type not supported as PK: " + colType.toString());
-        case SET:
-            throw new MongoInsertException("Type not supported as PK: " + colType.toString());
-        case TEXT:
-            break;
-        case VARCHAR:
-            break;
-        default:
-            throw new MongoInsertException("Type not supported as PK: " + colType.toString());
-
-        }
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.connector.commons.engine.CommonsStorageEngine#insert(com.stratio.meta2.common.data.ClusterName,
-     * com.stratio.meta2.common.metadata.TableMetadata, java.util.Collection,
-     * com.stratio.connector.commons.connection.Connection)
-     */
-    @Override
-    public void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
-
-        insert(connection.getNativeConnection(), targetTable, rows);
-
-    }
-
-    /**
-     * Insert a set of documents in MongoDB.
+     * Insert a document in MongoDB.
      *
-     * @param catalog
-     *            the database.
-     * @param tableName
-     *            the collection.
-     * @param row
-     *            the row.
+     * 
+     * @param targetTable
+     *            the table metadata.
+     * @param rows
+     *            the set of rows.
+     * @param connection
+     * 
      * @throws ExecutionException
      *             in case of failure during the execution.
+     * @throws UnsupportedException
+     *             in case of the operation is not supported
      */
-    private void insert(MongoClient mongoClient, TableMetadata targetTable, Collection<Row> rows)
+    @Override
+    protected void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
                     throws UnsupportedException, ExecutionException {
 
         for (Row row : rows) {
-            insert(mongoClient, targetTable, row);
+            insert(targetTable, row, connection);
+        }
+
+    }
+
+    /**
+     * @param columnType
+     * @throws MongoInsertException
+     */
+    private void validateDataType(ColumnType columnType) throws MongoValidationException {
+        validateDataType(columnType, null);
+
+    }
+
+    /**
+     * @param cellValue
+     * @param columnMetadata
+     * @throws MongoInsertException
+     * @throws MongoValidationException
+     */
+    private void validateDataType(ColumnType colType, Object cellValue) throws MongoValidationException {
+
+        // TODO review with meta.
+
+        switch (colType) {
+        case BIGINT:
+        case BOOLEAN:
+        case INT:
+        case TEXT:
+        case VARCHAR:
+        case DOUBLE:
+        case FLOAT:
+            break;
+        case SET: // TODO isSupported?
+        case LIST:
+            validateDataType(colType.getDBInnerType());
+            break;
+        case MAP: // TODO isSupported?
+            validateDataType(colType.getDBInnerType());
+            validateDataType(colType.getDBInnerValueType());
+            break;
+
+        case NATIVE:
+            throw new MongoValidationException("Type not supported: " + colType.toString());
+            // // TODO if (!NativeTypes.DATE.getDbType().equals(colType.getDbType()))
+            // if (!(cellValue instanceof Date))
+            // throw new MongoInsertException("Type not supported: " + colType.toString());
+            // // TODO if(columnMetadata.getParameters())
+
+        default:
+            throw new MongoValidationException("Type not supported: " + colType.toString());
+
+        }
+
+    }
+
+    private void validatePKDataType(ColumnType columnType) throws MongoValidationException {
+        validatePKDataType(columnType, null);
+
+    }
+
+    private void validatePKDataType(ColumnType colType, Object cellValue) throws MongoValidationException {
+
+        switch (colType) {
+        case BIGINT:
+        case INT:
+        case TEXT:
+        case VARCHAR:
+        case DOUBLE:
+        case FLOAT:
+            break;
+        case BOOLEAN:
+        case SET:
+        case LIST:
+        case MAP:
+        case NATIVE:
+        default:
+            throw new MongoValidationException("Type not supported as PK: " + colType.toString());
+
         }
 
     }
