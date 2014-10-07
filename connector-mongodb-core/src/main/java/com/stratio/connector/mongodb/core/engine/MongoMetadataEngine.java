@@ -324,12 +324,12 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 
         if (indexType == IndexType.DEFAULT) {
 
-            for (ColumnMetadata columnMeta : indexMetadata.getColumns()) {
+            for (ColumnMetadata columnMeta : indexMetadata.getColumns().values()) {
                 indexDBObject.put(columnMeta.getName().getName(), 1);
             }
 
         } else if (indexType == IndexType.FULL_TEXT) {
-            for (ColumnMetadata columnMeta : indexMetadata.getColumns()) {
+            for (ColumnMetadata columnMeta : indexMetadata.getColumns().values()) {
                 indexDBObject.put(columnMeta.getName().getName(), "text");
             }
 
@@ -387,7 +387,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         } else {
             int i = 0;
             fields = new String[indexMetadata.getColumns().size()];
-            for (ColumnMetadata colMetadata : indexMetadata.getColumns()) {
+            for (ColumnMetadata colMetadata : indexMetadata.getColumns().values()) {
                 fields[i++] = colMetadata.getName().getName();
             }
         }
@@ -446,7 +446,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 
             if (indexMetadata.getType() == IndexType.DEFAULT) {
                 DBObject indexDBObject = new BasicDBObject();
-                for (ColumnMetadata columnMeta : indexMetadata.getColumns()) {
+                for (ColumnMetadata columnMeta : indexMetadata.getColumns().values()) {
                     indexDBObject.put(columnMeta.getName().getName(), 1);
                 }
                 try {
@@ -461,7 +461,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
                 int colNumber = 0;
                 int columnSize = indexMetadata.getColumns().size();
 
-                for (ColumnMetadata columnMeta : indexMetadata.getColumns()) {
+                for (ColumnMetadata columnMeta : indexMetadata.getColumns().values()) {
                     defaultTextIndexName += columnMeta.getName().getName() + "_";
 
                     if (++colNumber != columnSize)
