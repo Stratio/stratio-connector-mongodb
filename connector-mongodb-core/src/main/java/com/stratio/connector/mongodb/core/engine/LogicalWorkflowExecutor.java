@@ -268,7 +268,7 @@ public class LogicalWorkflowExecutor {
         for (ColumnName colName : select.getColumnMap().keySet()) {
 
             String field = colName.getName();
-            ColumnType colType = select.getTypeMap().get(field);
+            ColumnType colType = select.getTypeMap().get(colName.getQualifiedName());
 
             colType = updateColumnType(colType);
 
