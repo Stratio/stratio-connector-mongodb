@@ -24,7 +24,8 @@ import com.stratio.meta2.common.statements.structures.selectors.SelectorType;
 
 public enum IndexOptions {
 
-    INDEX_TYPE("index_type", SelectorType.STRING), COMPOUND_FIELDS("compound_fields", SelectorType.STRING);
+    INDEX_TYPE("index_type", SelectorType.STRING), COMPOUND_FIELDS("compound_fields", SelectorType.STRING), SPARSE(
+                    "sparse", SelectorType.BOOLEAN), UNIQUE("unique", SelectorType.BOOLEAN);
 
     private final String optionName;
     private final SelectorType selectorType;

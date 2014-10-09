@@ -20,6 +20,8 @@ import static com.stratio.connector.mongodb.core.configuration.CustomMongoIndexT
 import static com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType.GEOSPATIAL_SPHERE;
 import static com.stratio.connector.mongodb.core.configuration.IndexOptions.COMPOUND_FIELDS;
 import static com.stratio.connector.mongodb.core.configuration.IndexOptions.INDEX_TYPE;
+import static com.stratio.connector.mongodb.core.configuration.IndexOptions.SPARSE;
+import static com.stratio.connector.mongodb.core.configuration.IndexOptions.UNIQUE;
 import static com.stratio.connector.mongodb.core.configuration.ShardKeyType.ASC;
 import static com.stratio.connector.mongodb.core.configuration.ShardKeyType.HASHED;
 import static com.stratio.connector.mongodb.core.configuration.TableOptions.SHARDING_ENABLED;
@@ -317,7 +319,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
                         indexMetadata.getName().getTableName().getCatalogName().getName());
 
         DBObject indexDBObject = new BasicDBObject();
-        DBObject indexOptionsDBObject = null;
+        DBObject indexOptionsDBObject = new BasicDBObject();
         String indexName = indexMetadata.getName().getName();
 
         if (indexType == IndexType.DEFAULT) {
@@ -336,22 +338,43 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         } else
             throw new UnsupportedException("index type " + indexMetadata.getType().toString() + " is not supported");
 
+        indexOptionsDBObject = getCustomOptions(indexMetadata);
+
         if (indexName != null && !indexName.trim().isEmpty()) {
-            indexOptionsDBObject = new BasicDBObject("name", indexName);
-            try {
-                db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject,
-                                indexOptionsDBObject);
-            } catch (MongoException e) {
-                throw new ExecutionException(e.getMessage(), e);
+            indexOptionsDBObject.put("name", indexName);
+        }
+
+        try {
+            db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject,
+                            indexOptionsDBObject);
+        } catch (MongoException e) {
+            throw new ExecutionException(e.getMessage(), e);
+        }
+
+        logger.debug("Index created " + indexDBObject.toString() + indexOptionsDBObject);
+    }
+
+    /**
+     * @param indexMetadata
+     * @return
+     */
+    private DBObject getCustomOptions(IndexMetadata indexMetadata) {
+        DBObject indexOptionsDBObject = new BasicDBObject();
+
+        Map<String, Selector> options = processOptions(indexMetadata.getOptions());
+
+        Selector boolSelector = null;
+        if (options != null) {
+            if ((boolSelector = options.get(SPARSE.getOptionName())) != null) {
+                indexOptionsDBObject.put("sparse", ((BooleanSelector) boolSelector).getValue());
             }
-        } else
-            try {
-                db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject);
-            } catch (MongoException e) {
-                throw new ExecutionException(e.getMessage(), e);
+            if ((boolSelector = options.get(UNIQUE.getOptionName())) != null) {
+                indexOptionsDBObject.put("unique", ((BooleanSelector) boolSelector).getValue());
             }
 
-        logger.debug("Index created " + indexDBObject.toString());
+        }
+        return indexOptionsDBObject;
+
     }
 
     /**

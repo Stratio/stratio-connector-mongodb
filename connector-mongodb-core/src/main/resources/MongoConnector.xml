@@ -96,9 +96,18 @@
 		<OptionalProperties>
 			<Property>
 				<Name>compound_fields</Name>
-				<SelectorType>string</SelectorType><!--only in compound fields or single desc; fields=> field1:asc, [field2:desc...]...-->
+				<SelectorType>string</SelectorType>
+			</Property>
+			<Property>
+				<Name>sparse</Name>
+				<SelectorType>boolean</SelectorType>
+			</Property>
+			<Property>
+				<Name>unique</Name>
+				<SelectorType>boolean</SelectorType>
 			</Property>
 		</OptionalProperties>
+		
 	</IndexProperties>
 	<SupportedOperations>
 		<operation>DROP_CATALOG</operation>
