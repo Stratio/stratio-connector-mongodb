@@ -103,9 +103,9 @@ public class MongoClientConfiguration {
                 try {
                     seeds.add(new ServerAddress(hosts[i], Integer.parseInt(ports[i])));
                 } catch (NumberFormatException e) {
-                    throw new CreateNativeConnectionException("wrong port format");
+                    throw new CreateNativeConnectionException("wrong port format", e);
                 } catch (UnknownHostException e) {
-                    throw new CreateNativeConnectionException("connection failed with" + hosts[i]);
+                    throw new CreateNativeConnectionException("connection failed with" + hosts[i], e);
                     // TODO check if
                 }
 
@@ -161,7 +161,7 @@ public class MongoClientConfiguration {
             readPreference = ReadPreference.nearest();
             break;
         default:
-            new RuntimeException("read preference " + readSetting + " is not a legal value");
+            throw new RuntimeException("read preference " + readSetting + " is not a legal value");
         }
         return readPreference;
 
@@ -197,7 +197,7 @@ public class MongoClientConfiguration {
             writeConcern = WriteConcern.JOURNALED;
             break;
         default:
-            new RuntimeException("read preference " + writeSetting + " is not a legal value");
+            throw new RuntimeException("read preference " + writeSetting + " is not a legal value");
         }
         return writeConcern;
 

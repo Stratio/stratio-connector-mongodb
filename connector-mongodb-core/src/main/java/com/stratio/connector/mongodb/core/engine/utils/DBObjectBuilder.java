@@ -19,7 +19,7 @@ import com.mongodb.DBObject;
 
 public abstract class DBObjectBuilder {
 
-    final public boolean useAggregation;
+    private final boolean useAggregation;
 
     /**
      * @param useAggregation

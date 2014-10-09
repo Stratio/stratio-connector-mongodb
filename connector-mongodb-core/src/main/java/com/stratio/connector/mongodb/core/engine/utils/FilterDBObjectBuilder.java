@@ -102,10 +102,10 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             lValue = "$regex";
             break;
         case BETWEEN:
-            new RuntimeException("Waiting for Meta to implement between filters");
+            new MongoValidationException("Waiting for Meta to implement between filters");
             break;
         case IN:
-            new RuntimeException("Waiting for Meta to implement in filters");
+            new MongoValidationException("Waiting for Meta to implement in filters");
             break;
         case ADD:
         case ASSIGN:
@@ -143,7 +143,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         case ASTERISK:
         case FUNCTION:
         default:
-            throw new RuntimeException("Not yet implemented");
+            throw new MongoValidationException("Not yet supported");
 
         }
 
@@ -160,7 +160,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 
     public DBObject build() {
         DBObject container;
-        if (useAggregation) {
+        if (useAggregationPipeline()) {
             container = new BasicDBObject();
             container.put("$match", filterQuery);
         } else

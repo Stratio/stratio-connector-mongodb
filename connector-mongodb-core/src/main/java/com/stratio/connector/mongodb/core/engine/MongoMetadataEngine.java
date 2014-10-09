@@ -205,11 +205,9 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         db = mongoClient.getDB("admin");
 
         CommandResult result = db.command(new BasicDBObject("enableSharding", catalogName));
-        if (!result.ok()) {
-            if (!result.getErrorMessage().equals("already enabled")) {
-                logger.error("Command Error:" + result.getErrorMessage());
-                throw new ExecutionException(result.getErrorMessage());
-            }
+        if (!result.ok() && !result.getErrorMessage().equals("already enabled")) {
+            logger.error("Command Error:" + result.getErrorMessage());
+            throw new ExecutionException(result.getErrorMessage());
         }
     }
 
@@ -456,18 +454,18 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
                 }
             } else if (indexMetadata.getType() == IndexType.FULL_TEXT) {
 
-                String defaultTextIndexName = "";
+                String defaultTextIndexName;
+                StringBuffer strBuf = new StringBuffer();
 
                 int colNumber = 0;
                 int columnSize = indexMetadata.getColumns().size();
 
                 for (ColumnMetadata columnMeta : indexMetadata.getColumns().values()) {
-                    defaultTextIndexName += columnMeta.getName().getName() + "_";
-
+                    strBuf.append(columnMeta.getName().getName() + "_");
                     if (++colNumber != columnSize)
-                        defaultTextIndexName += "_";
-
+                        strBuf.append("_");
                 }
+                defaultTextIndexName = strBuf.toString();
                 try {
                     db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(defaultTextIndexName);
                 } catch (Exception e) {

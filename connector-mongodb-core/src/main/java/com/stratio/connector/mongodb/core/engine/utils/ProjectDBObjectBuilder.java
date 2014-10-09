@@ -49,7 +49,7 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
     public DBObject build() {
         DBObject projectDBObject;
 
-        if (useAggregation) {
+        if (useAggregationPipeline()) {
             projectDBObject = new BasicDBObject("$project", projectQuery);
         } else
             projectDBObject = projectQuery;

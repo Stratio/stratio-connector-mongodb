@@ -21,7 +21,7 @@ import com.stratio.meta.common.logicalplan.Limit;
 
 public class LimitDBObjectBuilder extends DBObjectBuilder {
 
-    int limit;
+    private int limit;
 
     public LimitDBObjectBuilder(Limit limit) {
         super(true);

@@ -19,7 +19,7 @@ package com.stratio.connector.mongodb.core.engine;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class LogicalWorkflowExecutor {
     /**
      * The list of filters without including full-text filters
      */
-    private ArrayList<Filter> filterList = null;
+    private List<Filter> filterList = null;
     private Filter textFilter = null;
     private Limit limit = null;
     private Select select = null;
@@ -249,14 +249,14 @@ public class LogicalWorkflowExecutor {
     private Row createRowWithAlias(DBObject rowDBObject) {
         Row row = new Row();
         Map<ColumnName, String> aliasMapping = select.getColumnMap();
-        Set<ColumnName> fieldNames = aliasMapping.keySet();
+
         String field;
-        for (ColumnName colName : fieldNames) {
-            field = colName.getName();
+        for (Entry<ColumnName, String> colInfo : aliasMapping.entrySet()) {
+            field = colInfo.getKey().getName();
             Object value = rowDBObject.get(field);
 
-            if (aliasMapping.containsKey(colName))
-                field = aliasMapping.get(colName);
+            if (colInfo.getValue() != null)
+                field = colInfo.getValue();
 
             row.addCell(field, new Cell(value));
         }
