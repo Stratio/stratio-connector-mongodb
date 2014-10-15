@@ -158,9 +158,7 @@ public class LogicalWorkflowExecutor {
 
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(aggregationRequired);
 
-        for (Filter f : filterList) {
-            filterDBObjectBuilder.add(f);
-        }
+        filterDBObjectBuilder.addAll(filterList);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Filter:" + filterDBObjectBuilder.build());
@@ -247,6 +245,7 @@ public class LogicalWorkflowExecutor {
      * @return the row.
      */
     private Row createRowWithAlias(DBObject rowDBObject) {
+        // TODO avoid double for => iterate rows here
         Row row = new Row();
         Map<ColumnName, String> aliasMapping = select.getColumnMap();
 

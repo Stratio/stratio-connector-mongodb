@@ -15,6 +15,8 @@
  */
 package com.stratio.connector.mongodb.core.engine.utils;
 
+import java.util.List;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
@@ -38,6 +40,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         filterQuery = new BasicDBObject();
     }
 
+    @Deprecated
     public void add(Filter filter) throws MongoValidationException {
 
         Relation relation = filter.getRelation();
@@ -179,4 +182,27 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         return field;
     }
 
+    /**
+     * @param filterList
+     * @throws MongoValidationException
+     */
+    public void addAll(List<Filter> filterList) throws MongoValidationException {
+        for (Filter filter : filterList) {
+
+            Relation relation = filter.getRelation();
+            String fieldName = getFieldName(relation.getLeftTerm());
+            BasicDBObject fieldQuery;
+
+            if (filterQuery.containsField(fieldName)) {
+                fieldQuery = (BasicDBObject) filterQuery.get(fieldName);
+            } else {
+                fieldQuery = new BasicDBObject();
+            }
+
+            fieldQuery = handleRelation(fieldQuery, relation.getOperator(), relation.getRightTerm());
+
+            filterQuery.append(fieldName, fieldQuery);
+        }
+
+    }
 }
