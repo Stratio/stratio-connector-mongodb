@@ -266,12 +266,12 @@ public class LogicalWorkflowExecutor {
         List<ColumnMetadata> retunColumnMetadata = new ArrayList<>();
         for (ColumnName colName : select.getColumnMap().keySet()) {
 
-            String field = colName.getName();
             ColumnType colType = select.getTypeMap().get(colName.getQualifiedName());
 
             colType = updateColumnType(colType);
 
-            ColumnMetadata columnMetadata = new ColumnMetadata(projection.getTableName().getName(), field, colType);
+            ColumnMetadata columnMetadata = new ColumnMetadata(projection.getTableName().getQualifiedName(),
+                            colName.getQualifiedName(), colType);
             columnMetadata.setColumnAlias(select.getColumnMap().get(colName));
 
             retunColumnMetadata.add(columnMetadata);
