@@ -16,21 +16,32 @@
 
 package com.stratio.connector.mongodb.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.stratio.connector.commons.CommonsConnector;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.MongoMetadataEngine;
 import com.stratio.connector.mongodb.core.engine.MongoQueryEngine;
 import com.stratio.connector.mongodb.core.engine.MongoStorageEngine;
+import com.stratio.connectors.ConnectorApp;
 import com.stratio.meta.common.connector.IConfiguration;
 import com.stratio.meta.common.connector.IMetadataEngine;
 import com.stratio.meta.common.connector.IQueryEngine;
 import com.stratio.meta.common.connector.IStorageEngine;
+import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
 
 /**
  * This class implements the connector for Mongo. Created by darroyo on 8/07/14.
  */
 public class MongoConnector extends CommonsConnector {
+
+    /**
+     * The Log.
+     */
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     /**
      * Create a connection to Mongo.
@@ -93,6 +104,26 @@ public class MongoConnector extends CommonsConnector {
     @Override
     public String[] getDatastoreName() {
         return new String[] { "Mongo" };
+    }
+
+    public static void main(String[] args) {
+
+        MongoConnector cassandraConnector = new MongoConnector();
+        ConnectorApp connectorApp = new ConnectorApp();
+        connectorApp.startup(cassandraConnector);
+        cassandraConnector.attachShutDownHook();
+    }
+    public void attachShutDownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    shutdown();
+                } catch (ExecutionException e) {
+                    logger.error("Fail ShutDown");
+                }
+            }
+        });
     }
 
 }

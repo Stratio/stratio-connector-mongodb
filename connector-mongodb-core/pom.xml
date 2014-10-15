@@ -30,6 +30,12 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.7</version>
         </dependency>
+        <dependency>
+            <groupId>com.stratio.meta</groupId>
+            <artifactId>meta-connector</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+        </dependency>
         
         
         <dependency>
