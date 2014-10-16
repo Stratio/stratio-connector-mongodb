@@ -46,6 +46,9 @@ import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
  */
 public class ShardUtils {
 
+    private ShardUtils() {
+    }
+
     /**
      * The Log.
      */
@@ -60,9 +63,9 @@ public class ShardUtils {
         boolean isSharded = false;
 
         if (options != null) {
-            Selector selectorSharded = null;
+            Selector selectorSharded = options.get(SHARDING_ENABLED.getOptionName());
 
-            if ((selectorSharded = options.get(SHARDING_ENABLED.getOptionName())) != null) {
+            if (selectorSharded != null) {
                 isSharded = ((BooleanSelector) selectorSharded).getValue();
             }
         }

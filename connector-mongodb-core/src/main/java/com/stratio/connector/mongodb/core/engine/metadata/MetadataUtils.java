@@ -26,6 +26,10 @@ import com.stratio.meta2.common.statements.structures.selectors.Selector;
  *
  */
 public class MetadataUtils {
+
+    private MetadataUtils() {
+    }
+
     /**
      * @param options
      * @return

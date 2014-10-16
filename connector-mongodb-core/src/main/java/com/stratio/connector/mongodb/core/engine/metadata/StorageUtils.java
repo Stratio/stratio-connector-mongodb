@@ -31,6 +31,9 @@ import com.stratio.meta2.common.metadata.TableMetadata;
  */
 public class StorageUtils {
 
+    private StorageUtils() {
+    }
+
     public static Object buildPK(TableMetadata targetTable, Row row) throws MongoValidationException {
 
         Object pk = null;

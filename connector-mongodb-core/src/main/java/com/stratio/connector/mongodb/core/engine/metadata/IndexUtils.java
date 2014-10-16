@@ -44,6 +44,9 @@ import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
  */
 public class IndexUtils {
 
+    private IndexUtils() {
+    }
+
     /**
      * @param indexMetadata
      * @return
@@ -53,12 +56,13 @@ public class IndexUtils {
         String indexName = indexMetadata.getName().getName();
         Map<String, Selector> options = MetadataUtils.processOptions(indexMetadata.getOptions());
 
-        Selector boolSelector = null;
         if (options != null) {
-            if ((boolSelector = options.get(SPARSE.getOptionName())) != null) {
+            Selector boolSelector = options.get(SPARSE.getOptionName());
+            if (boolSelector != null) {
                 indexOptionsDBObject.put("sparse", ((BooleanSelector) boolSelector).getValue());
             }
-            if ((boolSelector = options.get(UNIQUE.getOptionName())) != null) {
+            boolSelector = options.get(UNIQUE.getOptionName());
+            if (boolSelector != null) {
                 indexOptionsDBObject.put("unique", ((BooleanSelector) boolSelector).getValue());
             }
         }
