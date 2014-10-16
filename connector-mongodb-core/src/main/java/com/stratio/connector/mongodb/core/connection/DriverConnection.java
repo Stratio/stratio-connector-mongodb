@@ -24,6 +24,7 @@ import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.mongodb.core.configuration.MongoClientConfiguration;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.connector.ConnectorClusterConfig;
 import com.stratio.meta.common.security.ICredentials;
 
@@ -42,7 +43,7 @@ public class DriverConnection extends Connection<MongoClient> {
     private boolean isConnected = false;
 
     public DriverConnection(ICredentials credentials, ConnectorClusterConfig connectorClusterConfig)
-                    throws CreateNativeConnectionException {
+                    throws CreateNativeConnectionException, MongoValidationException {
         MongoClientConfiguration mongoClientConfiguration = new MongoClientConfiguration(connectorClusterConfig);
 
         if (credentials == null) {
