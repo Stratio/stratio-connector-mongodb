@@ -38,6 +38,7 @@ import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.util.ConnectorParser;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.connector.ConnectorClusterConfig;
 
 /**
@@ -57,8 +58,9 @@ public class MongoClientConfiguration {
 
     /**
      * @return the options for the java MongoDB driver
+     * @throws MongoValidationException
      */
-    public MongoClientOptions getMongoClientOptions() {
+    public MongoClientOptions getMongoClientOptions() throws MongoValidationException {
 
         int acceptableLatencyDifference = getIntegerSetting(ACCEPTABLE_LATENCY);
         int maxConnectionsPerHost = getIntegerSetting(MAX_CONNECTIONS_PER_HOST);
@@ -97,9 +99,9 @@ public class MongoClientConfiguration {
         }
 
         // TODO
-        if (hosts.length < 1 || (hosts.length != ports.length))
+        if (hosts.length < 1 || (hosts.length != ports.length)) {
             throw new CreateNativeConnectionException("invalid address");
-        else {
+        } else {
             for (int i = 0; i < hosts.length; i++) {
 
                 try {
@@ -131,7 +133,7 @@ public class MongoClientConfiguration {
 
     }
 
-    private ReadPreference getReadPreference() {
+    private ReadPreference getReadPreference() throws MongoValidationException {
         Map<String, String> config = configuration.getOptions();
         ReadPreference readPreference;
 
@@ -144,7 +146,7 @@ public class MongoClientConfiguration {
 
     }
 
-    private ReadPreference settingToReadPreference(String readSetting) {
+    private ReadPreference settingToReadPreference(String readSetting) throws MongoValidationException {
         ReadPreference readPreference = null;
         switch (readSetting.toLowerCase()) {
         case "primary":
@@ -163,13 +165,13 @@ public class MongoClientConfiguration {
             readPreference = ReadPreference.nearest();
             break;
         default:
-            throw new RuntimeException("read preference " + readSetting + " is not a legal value");
+            throw new MongoValidationException("read preference " + readSetting + " is not a legal value");
         }
         return readPreference;
 
     }
 
-    private WriteConcern getWriteConcern() {
+    private WriteConcern getWriteConcern() throws MongoValidationException {
         Map<String, String> config = configuration.getOptions();
         WriteConcern writeConcern;
 
@@ -182,7 +184,7 @@ public class MongoClientConfiguration {
 
     }
 
-    private WriteConcern settingToWritePreference(String writeSetting) {
+    private WriteConcern settingToWritePreference(String writeSetting) throws MongoValidationException {
 
         WriteConcern writeConcern = null;
         switch (writeSetting.toLowerCase()) {
@@ -199,7 +201,7 @@ public class MongoClientConfiguration {
             writeConcern = WriteConcern.JOURNALED;
             break;
         default:
-            throw new RuntimeException("read preference " + writeSetting + " is not a legal value");
+            throw new MongoValidationException("read preference " + writeSetting + " is not a legal value");
         }
         return writeConcern;
 

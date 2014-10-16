@@ -21,6 +21,7 @@ import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.UniqueProjectQueryEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
+import com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutor;
 import com.stratio.meta.common.connector.IResultHandler;
 import com.stratio.meta.common.data.ResultSet;
 import com.stratio.meta.common.exceptions.ExecutionException;

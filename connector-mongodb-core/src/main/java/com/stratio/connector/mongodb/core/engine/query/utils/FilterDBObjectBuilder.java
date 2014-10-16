@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.stratio.connector.mongodb.core.engine.utils;
+package com.stratio.connector.mongodb.core.engine.query.utils;
 
 import java.util.List;
 
@@ -75,37 +75,67 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
     private BasicDBObject handleRelation(BasicDBObject fieldQuery, Operator operator, Selector rightSelector)
                     throws MongoValidationException {
 
-        String lValue = null;
-        boolean floatingPointSupported = true;
-        boolean stringSupported = true;
-        boolean integerSupported = true;
-        boolean boolSupported = true;
+        String lValue = getMongoOperator(operator);
+
+        SelectorType selectorType = rightSelector.getType();
+        validateSelector(operator, selectorType);
+
+        switch (selectorType) {
+        case BOOLEAN:
+            fieldQuery.append(lValue, ((BooleanSelector) rightSelector).getValue());
+            break;
+        case INTEGER:
+            fieldQuery.append(lValue, ((IntegerSelector) rightSelector).getValue());
+            break;
+        case STRING:
+            fieldQuery.append(lValue, ((StringSelector) rightSelector).getValue());
+            break;
+        case FLOATING_POINT:
+            fieldQuery.append(lValue, ((FloatingPointSelector) rightSelector).getValue());
+            break;
+        case RELATION:
+        case COLUMN: // TODO $where?
+        case ASTERISK:
+        case FUNCTION:
+        default:
+            throw new MongoValidationException("Not yet supported");
+
+        }
+
+        return fieldQuery;
+
+    }
+
+    /**
+     * @param operator
+     * @return
+     * @throws MongoValidationException
+     */
+    private String getMongoOperator(Operator operator) throws MongoValidationException {
+        String mongoOperator = null;
 
         switch (operator) {
 
         case DISTINCT:
-            lValue = "$ne";
+            mongoOperator = "$ne";
             break;
         case GET:
-            lValue = "$gte";
+            mongoOperator = "$gte";
             break;
         case GT:
-            lValue = "$gt";
+            mongoOperator = "$gt";
             break;
         case LET:
-            lValue = "$lte";
+            mongoOperator = "$lte";
             break;
         case LT:
-            lValue = "$lt";
+            mongoOperator = "$lt";
             break;
         case EQ:
-            lValue = "$eq";
+            mongoOperator = "$eq";
             break;
         case LIKE:
-            floatingPointSupported = false;
-            integerSupported = false;
-            boolSupported = false;
-            lValue = "$regex";
+            mongoOperator = "$regex";
             break;
         case BETWEEN:
             new MongoValidationException("Waiting for Meta to implement between filters");
@@ -123,45 +153,17 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             throw new MongoValidationException("The operator: " + operator.toString() + " is not supported");
 
         }
-        SelectorType selectorType = rightSelector.getType();
-
-        switch (selectorType) {
-
-        case BOOLEAN:
-            validateSelector(boolSupported, operator, selectorType);
-            fieldQuery.append(lValue, ((BooleanSelector) rightSelector).getValue());
-            break;
-        case INTEGER:
-            validateSelector(integerSupported, operator, selectorType);
-            fieldQuery.append(lValue, ((IntegerSelector) rightSelector).getValue());
-            break;
-        case STRING:
-            validateSelector(stringSupported, operator, selectorType);
-            fieldQuery.append(lValue, ((StringSelector) rightSelector).getValue());
-            break;
-        case FLOATING_POINT:
-            validateSelector(floatingPointSupported, operator, selectorType);
-            fieldQuery.append(lValue, ((FloatingPointSelector) rightSelector).getValue());
-            break;
-
-        case RELATION:
-        case COLUMN: // TODO $where?
-        case ASTERISK:
-        case FUNCTION:
-        default:
-            throw new MongoValidationException("Not yet supported");
-
-        }
-
-        return fieldQuery;
+        return mongoOperator;
 
     }
 
-    private void validateSelector(boolean supported, Operator operator, SelectorType selType)
-                    throws MongoValidationException {
-        if (!supported)
-            throw new MongoValidationException("The selector type: " + selType.toString()
-                            + " is not supported with operator " + operator.toString());
+    private void validateSelector(Operator operator, SelectorType selType) throws MongoValidationException {
+        if (operator == Operator.LIKE) {
+            if (selType != SelectorType.STRING) {
+                throw new MongoValidationException("The selector type: " + selType.toString()
+                                + " is not supported with operator " + operator.toString());
+            }
+        }
     }
 
     public DBObject build() {
@@ -169,8 +171,9 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         if (useAggregationPipeline()) {
             container = new BasicDBObject();
             container.put("$match", filterQuery);
-        } else
+        } else {
             container = filterQuery;
+        }
 
         return container;
 

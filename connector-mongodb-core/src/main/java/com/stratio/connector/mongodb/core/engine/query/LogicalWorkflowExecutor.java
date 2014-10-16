@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package com.stratio.connector.mongodb.core.engine;
+package com.stratio.connector.mongodb.core.engine.query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +33,9 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
-import com.stratio.connector.mongodb.core.engine.utils.FilterDBObjectBuilder;
-import com.stratio.connector.mongodb.core.engine.utils.LimitDBObjectBuilder;
-import com.stratio.connector.mongodb.core.engine.utils.ProjectDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.query.utils.FilterDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.query.utils.LimitDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.query.utils.ProjectDBObjectBuilder;
 import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.data.Cell;
@@ -54,13 +54,13 @@ import com.stratio.meta2.common.metadata.ColumnType;
 
 public class LogicalWorkflowExecutor {
 
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
+    final private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Project projection = null;
     /**
      * The list of filters without including full-text filters
      */
-    private List<Filter> filterList = null;
+    private List<Filter> filterList = new ArrayList<Filter>();
     private Filter textFilter = null;
     private Limit limit = null;
     private Select select = null;
@@ -86,19 +86,19 @@ public class LogicalWorkflowExecutor {
     }
 
     private void readLogicalWorkflow(LogicalStep initialProject) throws MongoQueryException, UnsupportedException {
-
         LogicalStep logicalStep = initialProject;
 
-        filterList = new ArrayList<Filter>();
-
         do {
-            if (select != null)
+            if (select != null) {
                 throw new MongoValidationException("Select must be the last step");
+            }
+
             if (logicalStep instanceof Project) {
-                if (projection == null)
+                if (projection == null) {
                     projection = (Project) logicalStep;
-                else
+                } else {
                     throw new MongoValidationException(" # Project > 1");
+                }
             } else if (logicalStep instanceof Filter) {
                 Filter step = (Filter) logicalStep;
                 if (Operator.MATCH == step.getRelation().getOperator()) {
@@ -106,12 +106,12 @@ public class LogicalWorkflowExecutor {
                 } else {
                     filterList.add(step);
                 }
-
             } else if (logicalStep instanceof Limit) {
-                if (limit == null)
+                if (limit == null) {
                     limit = (Limit) logicalStep;
-                else
+                } else {
                     throw new MongoValidationException(" # Limit > 1");
+                }
             } else if (logicalStep instanceof Select) {
                 select = (Select) logicalStep;
             } else {
@@ -119,10 +119,12 @@ public class LogicalWorkflowExecutor {
             }
         } while ((logicalStep = logicalStep.getNextStep()) != null);
 
-        if (projection == null)
+        if (projection == null) {
             throw new MongoValidationException("Projection has not been found in the logical workflow");
-        if (select == null)
+        }
+        if (select == null) {
             throw new MongoValidationException("Select has not been found in the logical workflow");
+        }
 
     }
 
@@ -135,8 +137,9 @@ public class LogicalWorkflowExecutor {
 
         if (isAggregationRequired()) {
             // TODO It will be included in the following release
-            if (!filterList.isEmpty())
+            if (!filterList.isEmpty()) {
                 query.add(buildFilter());
+            }
             query.add(buildLimit());
         }
 
@@ -232,7 +235,6 @@ public class LogicalWorkflowExecutor {
 
         }
 
-        // if (!resultSet.isEmpty())
         resultSet.setColumnMetadata(createMetadata());
 
         return resultSet;
@@ -256,8 +258,9 @@ public class LogicalWorkflowExecutor {
             field = colInfo.getKey().getName();
             Object value = rowDBObject.get(field);
 
-            if (colInfo.getValue() != null)
+            if (colInfo.getValue() != null) {
                 field = colInfo.getValue();
+            }
 
             row.addCell(field, new Cell(value));
         }

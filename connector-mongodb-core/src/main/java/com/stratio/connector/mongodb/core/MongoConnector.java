@@ -42,7 +42,7 @@ public class MongoConnector extends CommonsConnector {
     /**
      * The Log.
      */
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Create a connection to Mongo.
@@ -117,10 +117,10 @@ public class MongoConnector extends CommonsConnector {
      */
     public static void main(String[] args) {
 
-        MongoConnector cassandraConnector = new MongoConnector();
+        MongoConnector mongoConnector = new MongoConnector();
         ConnectorApp connectorApp = new ConnectorApp();
-        connectorApp.startup(cassandraConnector);
-        cassandraConnector.attachShutDownHook();
+        connectorApp.startup(mongoConnector);
+        mongoConnector.attachShutDownHook();
     }
 
     /**

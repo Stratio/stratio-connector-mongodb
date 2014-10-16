@@ -1,34 +1,33 @@
 /*
-* Licensed to STRATIO (C) under one or more contributor license agreements.
-* See the NOTICE file distributed with this work for additional information
-* regarding copyright ownership. The STRATIO (C) licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Licensed to STRATIO (C) under one or more contributor license agreements.
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership. The STRATIO (C) licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.stratio.connector.mongodb.core.engine;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsStorageEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
+import com.stratio.connector.mongodb.core.engine.metadata.StorageUtils;
 import com.stratio.connector.mongodb.core.exceptions.MongoInsertException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.data.Cell;
@@ -75,63 +74,38 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
         if (isEmpty(catalog) || isEmpty(tableName) || row == null) {
             throw new MongoInsertException("The catalog name, the table name and a row must be specified");
+        }
+
+        DB db = mongoClient.getDB(catalog);
+        Object pk = StorageUtils.buildPK(targetTable, row);
+
+        // Building the fields to insert in Mongo
+        BasicDBObject doc = new BasicDBObject();
+        String cellName;
+        Object cellValue;
+        for (Map.Entry<String, Cell> entry : row.getCells().entrySet()) {
+            cellName = entry.getKey();
+            cellValue = entry.getValue().getValue();
+            ColumnName cName = new ColumnName(catalog, tableName, cellName);
+            validateDataType(targetTable.getColumns().get(cName).getColumnType());
+            doc.put(entry.getKey(), cellValue);
+        }
+
+        if (pk != null) {
+            // Upsert searching for _id
+            BasicDBObject find = new BasicDBObject();
+            find.put("_id", pk);
+            try {
+                db.getCollection(tableName).update(find, new BasicDBObject("$set", doc), true, false);
+            } catch (MongoException e) {
+                throw new MongoInsertException(e.getMessage(), e);
+            }
         } else {
-
-            DB db = mongoClient.getDB(catalog);
-            BasicDBObject doc = new BasicDBObject();
-
-            Object pk = null;
-            DBObject bsonPK = null;
-            String cellName;
-            Object cellValue;
-
-            List<ColumnName> primaryKeyList = targetTable.getPrimaryKey();
-
-            // Building the pk to insert in Mongo
-            if (!primaryKeyList.isEmpty()) {
-                if (primaryKeyList.size() == 1) {
-                    cellValue = row.getCell(primaryKeyList.get(0).getName()).getValue();
-                    validatePKDataType(targetTable.getColumns().get(primaryKeyList.get(0)).getColumnType());
-                    pk = cellValue;
-                } else {
-
-                    bsonPK = new BasicDBObject();
-                    for (ColumnName columnName : primaryKeyList) {
-                        cellValue = row.getCell(columnName.getName()).getValue();
-                        validatePKDataType(targetTable.getColumns().get(columnName).getColumnType());
-                        bsonPK.put(columnName.getName(), cellValue);
-                    }
-                    pk = bsonPK;
-                }
-
+            try {
+                db.getCollection(tableName).insert(doc);
+            } catch (MongoException e) {
+                throw new MongoInsertException(e.getMessage(), e);
             }
-
-            // Building the fields to insert in Mongo
-            for (Map.Entry<String, Cell> entry : row.getCells().entrySet()) {
-                cellName = entry.getKey();
-                cellValue = entry.getValue().getValue();
-                ColumnName cName = new ColumnName(catalog, tableName, cellName);
-                validateDataType(targetTable.getColumns().get(cName).getColumnType());
-                doc.put(entry.getKey(), cellValue);
-            }
-
-            if (pk != null) {
-                // Upsert searching for _id
-                BasicDBObject find = new BasicDBObject();
-                find.put("_id", pk);
-                try {
-                    db.getCollection(tableName).update(find, new BasicDBObject("$set", doc), true, false);
-                } catch (MongoException e) {
-                    throw new MongoInsertException(e.getMessage(), e);
-                }
-            } else {
-                try {
-                    db.getCollection(tableName).insert(doc);
-                } catch (MongoException e) {
-                    throw new MongoInsertException(e.getMessage(), e);
-                }
-            }
-
         }
 
     }
@@ -197,43 +171,14 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
             validateDataType(colType.getDBInnerType());
             validateDataType(colType.getDBInnerValueType());
             break;
-
         case NATIVE:
             throw new MongoValidationException("Type not supported: " + colType.toString());
             // // TODO if (!NativeTypes.DATE.getDbType().equals(colType.getDbType()))
             // if (!(cellValue instanceof Date))
             // throw new MongoInsertException("Type not supported: " + colType.toString());
             // // TODO if(columnMetadata.getParameters())
-
         default:
             throw new MongoValidationException("Type not supported: " + colType.toString());
-
-        }
-
-    }
-
-    private void validatePKDataType(ColumnType columnType) throws MongoValidationException {
-        validatePKDataType(columnType, null);
-
-    }
-
-    private void validatePKDataType(ColumnType colType, Object cellValue) throws MongoValidationException {
-
-        switch (colType) {
-        case BIGINT:
-        case INT:
-        case TEXT:
-        case VARCHAR:
-        case DOUBLE:
-        case FLOAT:
-            break;
-        case BOOLEAN:
-        case SET:
-        case LIST:
-        case MAP:
-        case NATIVE:
-        default:
-            throw new MongoValidationException("Type not supported as PK: " + colType.toString());
 
         }
 

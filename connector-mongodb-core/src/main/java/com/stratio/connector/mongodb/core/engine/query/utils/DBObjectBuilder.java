@@ -15,24 +15,29 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package com.stratio.connector.mongodb.core.engine.utils;
+package com.stratio.connector.mongodb.core.engine.query.utils;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.stratio.meta.common.logicalplan.Limit;
 
-public class LimitDBObjectBuilder extends DBObjectBuilder {
+public abstract class DBObjectBuilder {
 
-    private int limit;
+    private final boolean useAggregation;
 
-    public LimitDBObjectBuilder(Limit limit) {
-        super(true);
-        this.limit = limit.getLimit();
+    /**
+     * @param useAggregation
+     *            whether the query use the aggregation framework or not
+     */
+    public DBObjectBuilder(boolean useAggregation) {
+        this.useAggregation = useAggregation;
     }
 
-    @Override
-    public DBObject build() {
-        return new BasicDBObject("$limit", limit);
+    /**
+     * @return true if the query use the aggregation framework
+     */
+    public final boolean useAggregationPipeline() {
+        return useAggregation;
     }
+
+    public abstract DBObject build();
 
 }
