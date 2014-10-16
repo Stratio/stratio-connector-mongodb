@@ -29,7 +29,7 @@ public enum ConfigurationOptions {
                     "mongo.connectTimeout", "10000"), READ_PREFERENCE("mongo.readPreference", "primaryPreferred"), WRITE_CONCERN(
                     "mongo.writeConcern", "acknowledged"),
 
-    HOST("Hosts", new String[] { "localhost" }), PORT("Ports", new String[] { "27017" });
+    HOST("Hosts", new String[] { "localhost" }), PORT("Port", new String[] { "27017" });
 
     private final String optionName;
     private final String[] defaultValue;

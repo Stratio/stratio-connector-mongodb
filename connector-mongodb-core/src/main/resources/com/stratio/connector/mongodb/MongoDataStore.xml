@@ -25,7 +25,7 @@
 			<Description>The list of hosts ips . Example: [host1,host2,host3]</Description>
 		</Property>
 		<Property>
-			<PropertyName>Ports</PropertyName>
+			<PropertyName>Port</PropertyName>
 			<Description>The list of ports . Example: [port1,port2,port3]</Description>
 		</Property>
 	</RequiredProperties>
