@@ -29,6 +29,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta2.common.metadata.ColumnMetadata;
@@ -50,11 +51,12 @@ public class IndexUtils {
     /**
      * @param indexMetadata
      * @return
+     * @throws MongoValidationException 
      */
-    public static DBObject getCustomOptions(IndexMetadata indexMetadata) {
+    public static DBObject getCustomOptions(IndexMetadata indexMetadata) throws MongoValidationException {
         DBObject indexOptionsDBObject = new BasicDBObject();
         String indexName = indexMetadata.getName().getName();
-        Map<String, Selector> options = MetadataUtils.processOptions(indexMetadata.getOptions());
+        Map<String, Selector> options = SelectorOptionsUtils.processOptions(indexMetadata.getOptions());
 
         if (options != null) {
             Selector boolSelector = options.get(SPARSE.getOptionName());
@@ -110,7 +112,7 @@ public class IndexUtils {
      */
     private static DBObject getCustomIndexDBObject(IndexMetadata indexMetadata) throws UnsupportedException {
         DBObject indexDBObject = new BasicDBObject();
-        Map<String, Selector> options = MetadataUtils.processOptions(indexMetadata.getOptions());
+        Map<String, Selector> options = SelectorOptionsUtils.processOptions(indexMetadata.getOptions());
 
         if (options == null) {
             throw new UnsupportedException("The custom index must have an index type and fields");

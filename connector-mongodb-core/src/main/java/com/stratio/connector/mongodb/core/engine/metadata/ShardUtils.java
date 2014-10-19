@@ -90,7 +90,7 @@ public class ShardUtils {
 
         DBObject shardKey = new BasicDBObject();
 
-        Map<String, Selector> options = MetadataUtils.processOptions(tableMetadata.getOptions());
+        Map<String, Selector> options = SelectorOptionsUtils.processOptions(tableMetadata.getOptions());
 
         ShardKeyType shardKeyType = getShardKeyType(options);
 

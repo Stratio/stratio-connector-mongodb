@@ -22,11 +22,11 @@
 	<RequiredProperties>
 		<Property>
 			<PropertyName>Hosts</PropertyName>
-			<Description>The list of hosts ips . Example: [host1,host2,host3]</Description>
+			<Description>The list of hosts ips (csv). Example: host1,host2,host3</Description>
 		</Property>
 		<Property>
 			<PropertyName>Port</PropertyName>
-			<Description>The list of ports . Example: [port1,port2,port3]</Description>
+			<Description>The list of ports (csv).</Description>
 		</Property>
 	</RequiredProperties>
 	<OptionalProperties>

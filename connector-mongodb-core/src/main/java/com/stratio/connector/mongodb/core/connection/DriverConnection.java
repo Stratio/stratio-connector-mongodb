@@ -50,10 +50,10 @@ public class DriverConnection extends Connection<MongoClient> {
             mongoClient = new MongoClient(mongoClientConfiguration.getSeeds(),
                             mongoClientConfiguration.getMongoClientOptions());
             isConnected = true;
-            logger.info("MongoDB connection established ");
+            logger.info("New MongoDB connection established");
 
         } else {
-            throw new CreateNativeConnectionException("Credentials are not supported");
+            throw new CreateNativeConnectionException("Credentials are not supported yet");
         }
     }
 
@@ -67,8 +67,6 @@ public class DriverConnection extends Connection<MongoClient> {
         if (mongoClient != null) {
             mongoClient.close();
             mongoClient = null;
-            logger.info("Disconnected from Mongo");
-
         }
         isConnected = false;
     }

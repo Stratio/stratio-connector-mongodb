@@ -28,7 +28,7 @@ import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsMetadataEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.IndexUtils;
-import com.stratio.connector.mongodb.core.engine.metadata.MetadataUtils;
+import com.stratio.connector.mongodb.core.engine.metadata.SelectorOptionsUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.ShardUtils;
 import com.stratio.meta.common.exceptions.ExecutionException;
 import com.stratio.meta.common.exceptions.UnsupportedException;
@@ -99,7 +99,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
             throw new UnsupportedException("the table name is required");
         }
 
-        if (ShardUtils.collectionIsSharded(MetadataUtils.processOptions(tableMetadata.getOptions()))) {
+        if (ShardUtils.collectionIsSharded(SelectorOptionsUtils.processOptions(tableMetadata.getOptions()))) {
             ShardUtils.shardCollection((MongoClient) connection.getNativeConnection(), tableMetadata);
         }
     }
@@ -163,7 +163,9 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
             throw new ExecutionException(e.getMessage(), e);
         }
 
-        logger.debug("Index created " + indexDBObject.toString() + indexOptionsDBObject);
+        if(logger.isDebugEnabled()){
+        	logger.debug("Index created " + indexDBObject.toString() + indexOptionsDBObject);
+        }
     }
 
     /*
@@ -186,7 +188,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         if (indexName != null) {
             try {
                 db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(indexName);
-            } catch (Exception e) {
+            } catch (MongoException e) {
                 throw new ExecutionException(e.getMessage(), e);
             }
         } else {
