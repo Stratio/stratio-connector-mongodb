@@ -50,7 +50,7 @@ import com.stratio.meta2.common.data.ClusterName;
 @PrepareForTest(value = { MongoConnectionHandler.class })
 public class ConnectionHandlerTest {
 
-    private static final String CLUSTER_NAME = "CLUSTER_NAME";
+    private static final String CLUSTER_NAME = "cluster_name";
     private MongoConnectionHandler connectionHandler = null;
     @Mock
     private IConfiguration iConfiguration;

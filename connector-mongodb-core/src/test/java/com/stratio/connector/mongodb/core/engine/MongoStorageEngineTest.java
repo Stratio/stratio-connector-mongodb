@@ -50,13 +50,13 @@ import com.stratio.meta2.common.metadata.TableMetadata;
 @PrepareForTest({ DB.class, MongoClient.class, BasicDBObject.class, StorageUtils.class, MongoStorageEngine.class })
 public class MongoStorageEngineTest {
 
-    private static final String CLUSTER_NAME = "CLUSTER NAME";
-    private static final String COLLECTION_NAME = "COLL_NAME";
-    private static final String DB_NAME = "DB_NAME";
+    private static final String CLUSTER_NAME = "clustername";
+    private static final String COLLECTION_NAME = "coll_name";
+    private static final String DB_NAME = "db_name";
     private static final String ROW_NAME = "row_name";
     private static final String OTHER_ROW_NAME = "OTHER_ROW_NAME";
     private static final String CELL_VALUE = "cell_value";
-    private static final Object OTHER_CELL_VALUE = "other cell value";
+    private static final Object OTHER_CELL_VALUE = "othercellvalue";
     private static final Integer INTEGER_CELL_VALUE = new Integer(5);
     private static final ColumnType VARCHAR_COLUMN_TYPE = ColumnType.VARCHAR;
     private static final ColumnType INT_COLUMN_TYPE = ColumnType.INT;

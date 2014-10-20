@@ -59,12 +59,12 @@ import com.stratio.meta2.common.metadata.TableMetadata;
 @PrepareForTest(value = { MongoClient.class, Connection.class, IndexUtils.class })
 public class MongoMetadataEngineTest {
 
-    private final static String CLUSTER_NAME = "clusterName";
-    private static final String DB_NAME = "CATALOG_NAME";
-    private static final String TABLE_NAME = "tableName";
-    private final String INDEX_NAME = "indexName";
-    private final String COLUMN_NAME = "colName";
-    private final String COLUMN_NAME2 = "colName2";
+    private final static String CLUSTER_NAME = "clustername";
+    private static final String DB_NAME = "catalog_name";
+    private static final String TABLE_NAME = "tablename";
+    private final String INDEX_NAME = "indexname";
+    private final String COLUMN_NAME = "colname";
+    private final String COLUMN_NAME2 = "colname2";
 
     MongoMetadataEngine mongoMetadataEngine;
     @Mock
