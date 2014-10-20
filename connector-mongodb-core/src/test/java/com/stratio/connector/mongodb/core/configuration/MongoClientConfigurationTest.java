@@ -97,43 +97,40 @@ public class MongoClientConfigurationTest {
         assertEquals(config.getSeeds().get(0).getPort(), Integer.parseInt(SERVER_PORT));
 
     }
-    
+
     @Test
     public void wrongReadPreferenceTest() {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(READ_PREFERENCE.getOptionName(), "falseReadPreference");
-      
-        
 
         ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
-        
-        	MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
-        	try{
-        		config.getMongoClientOptions();
-        	fail("A exception must be thrown when no match any option");
-        }catch(MongoValidationException e ){
+
+        MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
+        try {
+            config.getMongoClientOptions();
+            fail("A exception must be thrown when no match any option");
+        } catch (MongoValidationException e) {
         }
 
     }
-    
-    
+
     @Test
-    public void wrongIntegerPreferenceTest(){
+    public void wrongIntegerPreferenceTest() {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(MAX_CONNECTIONS_PER_HOST.getOptionName(), "ten");
 
         ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
-    	try{
-    		config.getMongoClientOptions();
-        	fail("An exception must be thrown when a non integer received");
-        }catch(MongoValidationException e ){
+        try {
+            config.getMongoClientOptions();
+            fail("An exception must be thrown when a non integer received");
+        } catch (MongoValidationException e) {
         }
 
     }
-    
+
     @Test
-    public void multipleHostsTest() throws CreateNativeConnectionException{
+    public void multipleHostsTest() throws CreateNativeConnectionException {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(HOST.getOptionName(), SERVER_IP_LIST);
         properties.put(PORT.getOptionName(), SERVER_PORT_LIST);
@@ -141,30 +138,27 @@ public class MongoClientConfigurationTest {
         ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
 
-       assertTrue(config.getSeeds().size() == 2);
-       
-       assertEquals( 2700, config.getSeeds().get(0).getPort());
-       assertEquals( 2701, config.getSeeds().get(1).getPort());
-      
+        assertTrue(config.getSeeds().size() == 2);
+
+        assertEquals(2700, config.getSeeds().get(0).getPort());
+        assertEquals(2701, config.getSeeds().get(1).getPort());
+
     }
-    
+
     @Test
-    public void wrongSeedsTest() throws CreateNativeConnectionException{
+    public void wrongSeedsTest() throws CreateNativeConnectionException {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(HOST.getOptionName(), SERVER_IP_LIST);
         properties.put(PORT.getOptionName(), SERVER_PORT);
 
         ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
-        try{
-        	config.getSeeds();
-       		fail("An exception must be thrown when number of ports and hosts are different");
-        }catch(CreateNativeConnectionException e ){
+        try {
+            config.getSeeds();
+            fail("An exception must be thrown when number of ports and hosts are different");
+        } catch (CreateNativeConnectionException e) {
         }
-       
-       
-      
+
     }
-    
 
 }

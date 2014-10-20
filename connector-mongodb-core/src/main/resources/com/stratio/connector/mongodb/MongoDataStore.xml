@@ -55,6 +55,3 @@
 		<Behavior>UPSERT_ON_INSERT</Behavior>
 	</Behaviors>
 </DataStore>
-
-
-

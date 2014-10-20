@@ -18,7 +18,6 @@
 
 package com.stratio.connector.mongodb.core.connection;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -31,7 +30,6 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,12 +46,8 @@ import com.stratio.meta.common.connector.IConfiguration;
 import com.stratio.meta.common.security.ICredentials;
 import com.stratio.meta2.common.data.ClusterName;
 
-
-
 @RunWith(PowerMockRunner.class)
-
 @PrepareForTest(value = { MongoConnectionHandler.class })
-
 public class ConnectionHandlerTest {
 
     private static final String CLUSTER_NAME = "CLUSTER_NAME";
@@ -67,10 +61,8 @@ public class ConnectionHandlerTest {
 
     }
 
-
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	@Test
+    @Test
     public void createDriverConnectionTest() throws Exception, HandlerConnectionException {
 
         ICredentials credentials = mock(ICredentials.class);
@@ -82,8 +74,8 @@ public class ConnectionHandlerTest {
 
         connectionHandler.createConnection(credentials, config);
 
-        Map<String, Connection> mapConnection = (Map<String, Connection>) Whitebox
-                .getInternalState(connectionHandler, "connections");
+        Map<String, Connection> mapConnection = (Map<String, Connection>) Whitebox.getInternalState(connectionHandler,
+                        "connections");
 
         DriverConnection recoveredConnection = (DriverConnection) mapConnection.get(CLUSTER_NAME);
 
@@ -93,11 +85,11 @@ public class ConnectionHandlerTest {
     }
 
     @SuppressWarnings("unchecked")
-	@Test
+    @Test
     public void closeConnectionTest() throws Exception {
 
-        Map<String, DriverConnection> mapConnection = (Map<String, DriverConnection>) Whitebox
-                .getInternalState(connectionHandler, "connections");
+        Map<String, DriverConnection> mapConnection = (Map<String, DriverConnection>) Whitebox.getInternalState(
+                        connectionHandler, "connections");
         DriverConnection connection = mock(DriverConnection.class);
         mapConnection.put(CLUSTER_NAME, connection);
 
@@ -109,19 +101,18 @@ public class ConnectionHandlerTest {
     }
 
     @SuppressWarnings("unchecked")
-	@Test
+    @Test
     public void getConnectionTest() throws HandlerConnectionException {
-        Map<String, DriverConnection> mapConnection = (Map<String, DriverConnection>) Whitebox
-                .getInternalState(connectionHandler, "connections");
+        Map<String, DriverConnection> mapConnection = (Map<String, DriverConnection>) Whitebox.getInternalState(
+                        connectionHandler, "connections");
         DriverConnection connection = mock(DriverConnection.class);
         mapConnection.put(CLUSTER_NAME, connection);
 
         Connection<MongoClient> recoveredConnection = connectionHandler.getConnection(CLUSTER_NAME);
-        
+
         assertNotNull("The connection is not null", recoveredConnection);
         assertSame("The connection is correct", connection, recoveredConnection);
 
     }
-    
 
-} 
+}

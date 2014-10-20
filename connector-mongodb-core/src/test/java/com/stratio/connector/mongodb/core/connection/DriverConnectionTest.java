@@ -18,6 +18,8 @@
 
 package com.stratio.connector.mongodb.core.connection;
 
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.HOST;
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.PORT;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
@@ -27,22 +29,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.HOST;
-import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.PORT;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.mongodb.MongoClient;
-
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.meta.common.connector.ConnectorClusterConfig;
@@ -52,62 +49,53 @@ import com.stratio.meta2.common.data.ClusterName;
 @RunWith(PowerMockRunner.class)
 public class DriverConnectionTest {
 
-	@Mock
-	MongoClient client;
-	DriverConnection driverConnection;
+    @Mock
+    MongoClient client;
+    DriverConnection driverConnection;
 
-	@Before
-	public void before() throws Exception {
-		ICredentials credentials = null;
+    @Before
+    public void before() throws Exception {
+        ICredentials credentials = null;
 
-		Map<String, String> options = new HashMap<>();
-		options.put(HOST.getOptionName(), "10.200.0.58,10.200.0.59,10.200.0.60");
-		options.put(PORT.getOptionName(), "2800,2802,2809");
-		ConnectorClusterConfig configuration = new ConnectorClusterConfig(
-				new ClusterName("CLUSTER_NAME"), options);
-		driverConnection = new DriverConnection(credentials, configuration);
+        Map<String, String> options = new HashMap<>();
+        options.put(HOST.getOptionName(), "10.200.0.58,10.200.0.59,10.200.0.60");
+        options.put(PORT.getOptionName(), "2800,2802,2809");
+        ConnectorClusterConfig configuration = new ConnectorClusterConfig(new ClusterName("CLUSTER_NAME"), options);
+        driverConnection = new DriverConnection(credentials, configuration);
 
-	}
+    }
 
-	@Test
-	public void initialStateTest() throws Exception {
-		assertNotNull("The connection is not null",
-				Whitebox.getInternalState(driverConnection, "mongoClient"));
-		assertTrue("The connection is  connected",
-				(Boolean) Whitebox.getInternalState(driverConnection,
-						"isConnected"));
-	}
-	
-	@Test
-	public void withoutCredentialsTest() throws MongoValidationException {
+    @Test
+    public void initialStateTest() throws Exception {
+        assertNotNull("The connection is not null", Whitebox.getInternalState(driverConnection, "mongoClient"));
+        assertTrue("The connection is  connected", (Boolean) Whitebox.getInternalState(driverConnection, "isConnected"));
+    }
 
-		ICredentials credentials = mock(ICredentials.class);
+    @Test
+    public void withoutCredentialsTest() throws MongoValidationException {
 
-		Map<String, String> options = new HashMap<>();
-		ConnectorClusterConfig configuration = new ConnectorClusterConfig(
-				new ClusterName("CLUSTER_NAME"), options);
-		try {
-			driverConnection = new DriverConnection(credentials, configuration);
-			fail("credentials should not be accepted");
-		} catch (CreateNativeConnectionException exception) {
+        ICredentials credentials = mock(ICredentials.class);
 
-		}
-	}
+        Map<String, String> options = new HashMap<>();
+        ConnectorClusterConfig configuration = new ConnectorClusterConfig(new ClusterName("CLUSTER_NAME"), options);
+        try {
+            driverConnection = new DriverConnection(credentials, configuration);
+            fail("credentials should not be accepted");
+        } catch (CreateNativeConnectionException exception) {
 
-	@Test
-	public void closeTest() throws Exception {
+        }
+    }
 
-		Whitebox.setInternalState(driverConnection, "mongoClient", client);
-		driverConnection.close();
+    @Test
+    public void closeTest() throws Exception {
 
-		verify(client, times(1)).close();
-		assertNull("The connection is null",
-				Whitebox.getInternalState(driverConnection, "mongoClient"));
-		assertFalse("The connection is not connected",
-				(Boolean) Whitebox.getInternalState(driverConnection,
-						"isConnected"));
-	}
+        Whitebox.setInternalState(driverConnection, "mongoClient", client);
+        driverConnection.close();
 
-	
+        verify(client, times(1)).close();
+        assertNull("The connection is null", Whitebox.getInternalState(driverConnection, "mongoClient"));
+        assertFalse("The connection is not connected",
+                        (Boolean) Whitebox.getInternalState(driverConnection, "isConnected"));
+    }
 
 }

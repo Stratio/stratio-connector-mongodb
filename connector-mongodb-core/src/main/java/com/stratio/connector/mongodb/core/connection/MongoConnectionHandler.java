@@ -49,7 +49,8 @@ public class MongoConnectionHandler extends ConnectionHandler {
     @Override
     protected Connection<MongoClient> createNativeConnection(ICredentials credentials,
                     ConnectorClusterConfig connectorClusterConfig) throws CreateNativeConnectionException {
-    	try {
+
+        try {
             return new DriverConnection(credentials, connectorClusterConfig);
         } catch (MongoValidationException e) {
             throw new CreateNativeConnectionException("Validation error", e);

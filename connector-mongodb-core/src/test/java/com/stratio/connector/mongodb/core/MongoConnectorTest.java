@@ -18,13 +18,12 @@
 
 package com.stratio.connector.mongodb.core;
 
-import java.util.HashMap;
-import java.util.Map;
-
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,73 +42,64 @@ import com.stratio.meta2.common.data.ClusterName;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(value = { DriverConnection.class, MongoConnector.class })
 public class MongoConnectorTest {
-	private static final String CLUSTER_NAME = "CLUSTER_NAME";
-	private static final String CLUSTER_NAME_OTHER = "OTHER_CLUSTER_NAME";
+    private static final String CLUSTER_NAME = "CLUSTER_NAME";
+    private static final String CLUSTER_NAME_OTHER = "OTHER_CLUSTER_NAME";
 
-	@Test
-	public void connectTest() throws Exception, HandlerConnectionException {
-		MongoConnector mongoConnector = new MongoConnector();
-		ICredentials iCredentials = mock(ICredentials.class);
-		ClusterName clusterName = new ClusterName(CLUSTER_NAME);
-		Map<String, String> options = new HashMap<>();
-		ConnectorClusterConfig config = new ConnectorClusterConfig(clusterName,
-				options);
-		MongoConnectionHandler connectionHandler = mock(MongoConnectionHandler.class);
-		Whitebox.setInternalState(mongoConnector, "connectionHandler",
-				connectionHandler);
-		mongoConnector.connect(iCredentials, config);
-		verify(connectionHandler, times(1)).createConnection(iCredentials,
-				config);
-	}
-	
-	@Test
-	public void multipleConnectTest() throws Exception, HandlerConnectionException {
-		MongoConnector mongoConnector = new MongoConnector();
-		ICredentials iCredentials = mock(ICredentials.class);
-		ClusterName clusterName = new ClusterName(CLUSTER_NAME);
-		ClusterName clusterNameOther = new ClusterName(CLUSTER_NAME_OTHER);
-		Map<String, String> options = new HashMap<>();
-		ConnectorClusterConfig configCluster1 = new ConnectorClusterConfig(clusterName,
-				options);
-		ConnectorClusterConfig configCluster2 = new ConnectorClusterConfig(clusterNameOther,
-				options);
-		MongoConnectionHandler connectionHandler = mock(MongoConnectionHandler.class);
-		Whitebox.setInternalState(mongoConnector, "connectionHandler",
-				connectionHandler);
-		mongoConnector.connect(iCredentials, configCluster1);
-		mongoConnector.connect(iCredentials, configCluster2);
-		
-		verify(connectionHandler, times(1)).createConnection(iCredentials,
-				configCluster1);
-		verify(connectionHandler, times(1)).createConnection(iCredentials,
-				configCluster2);
-	}
-	
-	
-	@Test
-	public void connectorNameTest() {
-		MongoConnector mongoConnector = new MongoConnector();
-		if (isEmpty(mongoConnector.getConnectorName())) {
-			Assert.fail("Connector name is empty");
-		}
-	}
+    @Test
+    public void connectTest() throws Exception, HandlerConnectionException {
+        MongoConnector mongoConnector = new MongoConnector();
+        ICredentials iCredentials = mock(ICredentials.class);
+        ClusterName clusterName = new ClusterName(CLUSTER_NAME);
+        Map<String, String> options = new HashMap<>();
+        ConnectorClusterConfig config = new ConnectorClusterConfig(clusterName, options);
+        MongoConnectionHandler connectionHandler = mock(MongoConnectionHandler.class);
+        Whitebox.setInternalState(mongoConnector, "connectionHandler", connectionHandler);
+        mongoConnector.connect(iCredentials, config);
+        verify(connectionHandler, times(1)).createConnection(iCredentials, config);
+    }
 
-	@Test
-	public void connectorDatastoreNameTest() {
-		MongoConnector mongoConnector = new MongoConnector();
-		if (isEmpty(mongoConnector.getDatastoreName())) {
-			Assert.fail("Datastore name is empty");
-		}
-	}
+    @Test
+    public void multipleConnectTest() throws Exception, HandlerConnectionException {
+        MongoConnector mongoConnector = new MongoConnector();
+        ICredentials iCredentials = mock(ICredentials.class);
+        ClusterName clusterName = new ClusterName(CLUSTER_NAME);
+        ClusterName clusterNameOther = new ClusterName(CLUSTER_NAME_OTHER);
+        Map<String, String> options = new HashMap<>();
+        ConnectorClusterConfig configCluster1 = new ConnectorClusterConfig(clusterName, options);
+        ConnectorClusterConfig configCluster2 = new ConnectorClusterConfig(clusterNameOther, options);
+        MongoConnectionHandler connectionHandler = mock(MongoConnectionHandler.class);
+        Whitebox.setInternalState(mongoConnector, "connectionHandler", connectionHandler);
+        mongoConnector.connect(iCredentials, configCluster1);
+        mongoConnector.connect(iCredentials, configCluster2);
 
-	private boolean isEmpty(String... strings) {
-		boolean empty = false;
-		int length = strings.length;
-		int i = 0;
-		do {
-			empty = (strings[i] == null || strings[i].trim().isEmpty());
-		} while (!empty && ++i < length);
-		return empty;
-	}
+        verify(connectionHandler, times(1)).createConnection(iCredentials, configCluster1);
+        verify(connectionHandler, times(1)).createConnection(iCredentials, configCluster2);
+    }
+
+    @Test
+    public void connectorNameTest() {
+        MongoConnector mongoConnector = new MongoConnector();
+        if (isEmpty(mongoConnector.getConnectorName())) {
+            Assert.fail("Connector name is empty");
+        }
+    }
+
+    @Test
+    public void connectorDatastoreNameTest() {
+        MongoConnector mongoConnector = new MongoConnector();
+        if (isEmpty(mongoConnector.getDatastoreName())) {
+            Assert.fail("Datastore name is empty");
+        }
+    }
+
+    private boolean isEmpty(String... strings) {
+        boolean empty = false;
+        int length = strings.length;
+        int i = 0;
+        do {
+            empty = (strings[i] == null || strings[i].trim().isEmpty());
+        } while (!empty && ++i < length);
+        return empty;
+    }
 
 }

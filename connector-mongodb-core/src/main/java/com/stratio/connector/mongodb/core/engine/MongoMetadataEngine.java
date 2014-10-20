@@ -163,8 +163,8 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
             throw new ExecutionException(e.getMessage(), e);
         }
 
-        if(logger.isDebugEnabled()){
-        	logger.debug("Index created " + indexDBObject.toString() + indexOptionsDBObject);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Index created " + indexDBObject.toString() + indexOptionsDBObject);
         }
     }
 
