@@ -96,7 +96,7 @@ public class MongoConnector extends CommonsConnector {
      */
     @Override
     public String getConnectorName() {
-        return "Mongo";
+        return "MongoConnector";
     }
 
     /**

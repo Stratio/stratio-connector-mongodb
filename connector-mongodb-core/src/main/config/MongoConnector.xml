@@ -16,14 +16,12 @@
 ~ specific language governing permissions and limitations
 ~ under the License.
 -->
-
 <Connector>
 	<ConnectorName>MongoConnector</ConnectorName>
 	<DataStores>
-		<DatastoreName>Mongo</DatastoreName>
+		<DataStoreName>Mongo</DataStoreName>
 	</DataStores>
 	<Version>0.4.0</Version>
-	
 	<SupportedOperations>
 		<operation>DROP_CATALOG</operation>
 		<operation>CREATE_TABLE</operation>

@@ -153,7 +153,6 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     private void validateDataType(ColumnType colType, Object cellValue) throws MongoValidationException {
 
         // TODO review with meta.
-
         switch (colType) {
         case BIGINT:
         case BOOLEAN:
@@ -179,7 +178,6 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
             // // TODO if(columnMetadata.getParameters())
         default:
             throw new MongoValidationException("Type not supported: " + colType.toString());
-
         }
 
     }

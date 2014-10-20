@@ -31,24 +31,28 @@
 	</RequiredProperties>
 	<OptionalProperties>
 		<Property>
-			<Name>mongo.readPreference</Name>
+			<PropertyName>mongo.readPreference</PropertyName>
 			<Description>primary, primarypreferred(default), secondary, secondarypreferred or nearest</Description>
 		</Property>
 		<Property>
-			<Name>mongo.writeConcern</Name>
+			<PropertyName>mongo.writeConcern</PropertyName>
 			<Description>acknowledged(default), unacknowledged, replica_acknowledged or journaled</Description>
 		</Property>
 		<Property>
-			<Name>mongo.acceptableLatencyDifference</Name>
+			<PropertyName>mongo.acceptableLatencyDifference</PropertyName>
+			<Description>the acceptable latency difference(ms)</Description>
 		</Property>
 		<Property>
-			<Name>mongo.maxConnectionsPerHost</Name>
+			<PropertyName>mongo.maxConnectionsPerHost</PropertyName>
+			<Description>the maximum number of connections allowed per host</Description>
 		</Property>
 		<Property>
-			<Name>mongo.maxConnectionIdleTime</Name>
+			<PropertyName>mongo.maxConnectionIdleTime</PropertyName>
+			<Description>The maximum idle time of a pooled connection(ms). A zero value indicates no limit</Description>
 		</Property>
 		<Property>
-			<Name>mongo.connectTimeout</Name>
+			<PropertyName>mongo.connectTimeout</PropertyName>
+			<Description>the connection timeout(ms). A zero value indicates no timeout</Description>
 		</Property>
 	</OptionalProperties>
 	<Behaviors>
