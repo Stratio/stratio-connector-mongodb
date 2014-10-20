@@ -36,6 +36,15 @@ public class StorageUtils {
     private StorageUtils() {
     }
 
+    /**
+     * Builds the primaryKey. Only the value will be stored when receiving a single primaryKey. Otherwise, either the
+     * name or the value will be stored.
+     * 
+     * @param targetTable
+     * @param row
+     * @return
+     * @throws MongoValidationException
+     */
     public static Object buildPK(TableMetadata targetTable, Row row) throws MongoValidationException {
 
         Object pk = null;

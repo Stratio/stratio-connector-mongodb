@@ -137,7 +137,6 @@ public class MongoMetadataEngineTest {
             fail("An execution exception must be thown");
         } catch (ExecutionException e) {
         }
-        ;
 
         verify(client, times(1)).dropDatabase(Matchers.anyString());
 
@@ -146,7 +145,6 @@ public class MongoMetadataEngineTest {
     @Test
     public void dropTableTest() throws ExecutionException, UnsupportedException {
 
-        TableName tableName = new TableName(DB_NAME, TABLE_NAME);
         DBCollection collection = mock(DBCollection.class);
 
         when(client.getDB(DB_NAME)).thenReturn(database);
@@ -161,7 +159,6 @@ public class MongoMetadataEngineTest {
     @Test
     public void dropTableExecutionExceptionTest() throws ExecutionException, UnsupportedException {
 
-        TableName tableName = new TableName(DB_NAME, TABLE_NAME);
         DBCollection collection = mock(DBCollection.class);
 
         when(client.getDB(DB_NAME)).thenReturn(database);

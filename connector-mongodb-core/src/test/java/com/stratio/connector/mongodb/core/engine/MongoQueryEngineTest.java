@@ -17,6 +17,93 @@
  */
 package com.stratio.connector.mongodb.core.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import com.mongodb.MongoClient;
+import com.stratio.connector.commons.connection.Connection;
+import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
+import com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutor;
+import com.stratio.meta.common.connector.IResultHandler;
+import com.stratio.meta.common.data.ResultSet;
+import com.stratio.meta.common.exceptions.ExecutionException;
+import com.stratio.meta.common.exceptions.UnsupportedException;
+import com.stratio.meta.common.logicalplan.LogicalWorkflow;
+import com.stratio.meta.common.logicalplan.Project;
+import com.stratio.meta.common.result.QueryResult;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ MongoQueryEngine.class, LogicalWorkflowExecutor.class, QueryResult.class, ResultSet.class })
 public class MongoQueryEngineTest {
+
+    private MongoQueryEngine mongoQueryEngine;
+    @Mock
+    MongoConnectionHandler connectionHandler;
+
+    @Before
+    public void before() throws Exception {
+        mongoQueryEngine = new MongoQueryEngine(connectionHandler);
+    }
+
+    /**
+     *
+     * Method: execute(Project logicalWorkflow, Connection<Client> connection)
+     *
+     */
+    @Test
+    public void testExecute() throws Exception {
+        Project project = mock(Project.class);
+        LogicalWorkflowExecutor logicalWorkflowExecutor = mock(LogicalWorkflowExecutor.class);
+        Connection<MongoClient> connection = mock(Connection.class);
+        MongoClient mongoClient = mock(MongoClient.class);
+        when(connection.getNativeConnection()).thenReturn(mongoClient);
+        PowerMockito.whenNew(LogicalWorkflowExecutor.class).withArguments(project).thenReturn(logicalWorkflowExecutor);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(logicalWorkflowExecutor.executeQuery(mongoClient)).thenReturn(resultSet);
+        QueryResult queryResult = mock(QueryResult.class);
+        PowerMockito.mockStatic(QueryResult.class);
+        PowerMockito.when(QueryResult.createQueryResult(resultSet)).thenReturn(queryResult);
+
+        QueryResult returnQueryResult = mongoQueryEngine.execute(project, connection);
+
+        verify(logicalWorkflowExecutor, times(1)).executeQuery(mongoClient);
+
+        PowerMockito.verifyStatic(times(1));
+        QueryResult.createQueryResult(resultSet);
+
+        assertEquals("The query result is correct", queryResult, returnQueryResult);
+    }
+
+    /**
+     *
+     * Method: asyncExecute(String queryId, LogicalWorkflow workflow, IResultHandler resultHandler)
+     *
+     */
+    @Test(expected = UnsupportedException.class)
+    public void testAsyncExecute() throws UnsupportedException, ExecutionException {
+        mongoQueryEngine.asyncExecute("", Mockito.mock(LogicalWorkflow.class), Mockito.mock(IResultHandler.class));
+    }
+
+    /**
+     *
+     * Method: stop(String queryId)
+     *
+     */
+    @Test(expected = UnsupportedException.class)
+    public void testStop() throws UnsupportedException, ExecutionException {
+        mongoQueryEngine.stop("");
+    }
 
 }
