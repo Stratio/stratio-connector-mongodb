@@ -17,23 +17,167 @@
  */
 package com.stratio.connector.mongodb.core.engine.query.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+
+import org.bson.types.BasicBSONList;
+import org.junit.Test;
+import org.mockito.internal.util.reflection.Whitebox;
+
+import com.mongodb.DBObject;
+import com.mongodb.QueryBuilder;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
+import com.stratio.meta.common.connector.Operations;
+import com.stratio.meta.common.logicalplan.Filter;
+import com.stratio.meta.common.statements.structures.relationships.Operator;
+import com.stratio.meta.common.statements.structures.relationships.Relation;
+import com.stratio.meta2.common.data.ColumnName;
+import com.stratio.meta2.common.statements.structures.selectors.BooleanSelector;
+import com.stratio.meta2.common.statements.structures.selectors.ColumnSelector;
+import com.stratio.meta2.common.statements.structures.selectors.IntegerSelector;
+import com.stratio.meta2.common.statements.structures.selectors.Selector;
+import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
 
 /**
  * @author david
  *
  */
 public class FilterDBObjectBuilderTest {
-    //
-    // @Test
-    // public void logicalWorkflowExecutorAggregationTest() throws Exception {
-    //
-    // LogicalWorkFlowCreator logWorkFlowCreator = new LogicalWorkFlowCreator(CATALOG, TABLE, CLUSTER_NAME);
-    // LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
-    //
-    // LogicalWorkflowExecutor lwExecutor = new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
-    //
-    // boolean aggregationRequired = (Boolean) Whitebox.getInternalState(lwExecutor, "aggregationRequired");
-    //
-    // assertFalse(aggregationRequired);
-    // }
+
+    public static final String COLUMN_1 = "column1";
+    public static final String COLUMN_2 = "column2";
+    public static final String COLUMN_3 = "column3";
+    public static final String COLUMN_AGE = "age";
+    public static final String COLUMN_MONEY = "money";
+    public static final String TABLE = "table_unit_test";
+    public static final String CATALOG = "catalog_unit_test";
+
+    @Test
+    public void addSimpleFilterTest() throws Exception {
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false);
+        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
+
+        Filter filter = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.GET, 5);
+
+        filterDBObjectBuilder.addAll(Arrays.asList(filter));
+
+        DBObject filterQuery = (DBObject) Whitebox.getInternalState(filterDBObjectBuilder, "filterQuery");
+        assertNotNull(filterQuery);
+        assertEquals(1, filterQuery.keySet().size());
+        assertTrue(filterQuery.containsField(COLUMN_1));
+        DBObject condition = (DBObject) filterQuery.get(COLUMN_1);
+        assertTrue(condition.containsField("$gte"));
+        assertEquals(5l, condition.get("$gte"));
+
+    }
+
+    @Test
+    public void addMultipleFiltersTest() throws Exception {
+
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false);
+        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
+
+        Filter filtergte = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.GET, 5);
+        Filter filterdi = buildFilter(Operations.FILTER_NON_INDEXED_DISTINCT, CATALOG, TABLE, COLUMN_1,
+                        Operator.DISTINCT, "five");
+
+        filterDBObjectBuilder.addAll(Arrays.asList(filtergte, filterdi));
+
+        DBObject filterQuery = (DBObject) Whitebox.getInternalState(filterDBObjectBuilder, "filterQuery");
+        assertNotNull(filterQuery);
+        assertEquals(1, filterQuery.keySet().size());
+        assertTrue(filterQuery.containsField("$and"));
+        BasicBSONList filters = (BasicBSONList) filterQuery.get("$and");
+
+        DBObject dbFilters = (DBObject) filters.get(0);
+        DBObject condition = (DBObject) dbFilters.get(COLUMN_1);
+        assertTrue(condition.containsField("$gte"));
+        assertEquals(5l, condition.get("$gte"));
+
+        DBObject dbFilters2 = (DBObject) filters.get(1);
+        DBObject condition2 = (DBObject) dbFilters2.get(COLUMN_1);
+        assertTrue(condition2.containsField("$ne"));
+        assertEquals("five", condition2.get("$ne"));
+
+    }
+
+    @Test(expected = MongoValidationException.class)
+    public void addNotSupportedFilterTest() throws Exception {
+
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false);
+        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
+
+        Filter filter = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.MATCH, 5);
+
+        filterDBObjectBuilder.addAll(Arrays.asList(filter));
+
+    }
+
+    // TODO add $regex and floatingpoint test
+
+    @Test
+    public void buildTest() throws Exception {
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false);
+
+        DBObject dbObject = QueryBuilder.start(COLUMN_1).greaterThanEquals(5).get();
+
+        Whitebox.setInternalState(filterDBObjectBuilder, "filterQuery", dbObject);
+        Whitebox.setInternalState(filterDBObjectBuilder, "useAggregation", false);
+
+        DBObject filterQuery = filterDBObjectBuilder.build();
+
+        assertNotNull(filterQuery);
+        assertEquals(1, filterQuery.keySet().size());
+        assertTrue(filterQuery.containsField(COLUMN_1));
+        DBObject condition = (DBObject) filterQuery.get(COLUMN_1);
+        assertTrue(condition.containsField("$gte"));
+        assertEquals(5, condition.get("$gte"));
+
+    }
+
+    @Test
+    public void buildAggregationTest() throws Exception {
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(true);
+
+        DBObject dbObject = QueryBuilder.start(COLUMN_1).greaterThanEquals(5).get();
+
+        Whitebox.setInternalState(filterDBObjectBuilder, "filterQuery", dbObject);
+        Whitebox.setInternalState(filterDBObjectBuilder, "useAggregation", true);
+
+        DBObject filterQuery = filterDBObjectBuilder.build();
+
+        assertNotNull(filterQuery);
+        assertEquals(1, filterQuery.keySet().size());
+        assertTrue(filterQuery.containsField("$match"));
+        DBObject condition = (DBObject) ((DBObject) filterQuery.get("$match")).get(COLUMN_1);
+        assertTrue(condition.containsField("$gte"));
+        assertEquals(5, condition.get("$gte"));
+
+    }
+
+    private Filter buildFilter(Operations operation, String catalog, String table, String columnName,
+                    Operator operator, Object value) {
+        Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)), operator,
+                        returnSelector(value));
+        return new Filter(operation, relation);
+    }
+
+    private Selector returnSelector(Object value) {
+        Selector valueSelector = null;
+
+        if (value instanceof String) {
+            valueSelector = new StringSelector((String) value);
+
+        } else if (value instanceof Integer) {
+            valueSelector = new IntegerSelector((Integer) value);
+        }
+        if (value instanceof Boolean) {
+            valueSelector = new BooleanSelector((Boolean) value);
+        }
+        return valueSelector;
+    }
 }

@@ -70,8 +70,9 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             filterQuery = new BasicDBObject("$and", filterExpressions);
         } else if (filterList.size() == 1) {
             filterQuery = getFilterQuery(filterList.get(0));
-        } else
+        } else {
             filterQuery = new BasicDBObject();
+        }
 
     }
 
@@ -88,7 +89,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 
     }
 
-    private static String getFieldName(Selector selector) {
+    private String getFieldName(Selector selector) {
         String field = null;
         if (selector instanceof ColumnSelector) {
             ColumnSelector columnSelector = (ColumnSelector) selector;
