@@ -184,9 +184,6 @@ public class LogicalWorkflowExecutor {
             // AggregationOptions aggOptions = AggregationOptions.builder()
             // .allowDiskUse(true)
             // .batchSize(size)
-            // .maxTime(maxTime, timeUnit)
-            // .outputMode(OutputMode.CURSOR) or INLINE
-            // .build();
             // pipeline,aggOptions => dbcursor
 
             int stage = 1;
@@ -195,7 +192,6 @@ public class LogicalWorkflowExecutor {
             }
 
             AggregationOutput aggOutput = coll.aggregate(query);
-
             for (DBObject result : aggOutput.results()) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("AggResult: " + result);
@@ -206,14 +202,12 @@ public class LogicalWorkflowExecutor {
         } else {
 
             DBCursor cursor = coll.find(query.get(0), buildProject());
-
             if (limit != null) {
                 cursor = cursor.limit(limit.getLimit());
             }
-
             DBObject rowDBObject;
             try {
-                while (cursor.hasNext()) { // Si no hay resultados => excepción..
+                while (cursor.hasNext()) {
 
                     rowDBObject = cursor.next();
                     if (logger.isDebugEnabled()) {
@@ -226,11 +220,9 @@ public class LogicalWorkflowExecutor {
             } finally {
                 cursor.close();
             }
-
         }
 
         resultSet.setColumnMetadata(MetaResultUtils.createMetadata(projection, select));
-
         return resultSet;
 
     }

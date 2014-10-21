@@ -23,29 +23,22 @@ import static org.junit.Assert.assertFalse;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.connector.mongodb.testutils.LogicalWorkFlowCreator;
 import com.stratio.meta.common.connector.Operations;
-import com.stratio.meta.common.data.ResultSet;
 import com.stratio.meta.common.logicalplan.Filter;
 import com.stratio.meta.common.logicalplan.Limit;
 import com.stratio.meta.common.logicalplan.LogicalStep;
 import com.stratio.meta.common.logicalplan.LogicalWorkflow;
 import com.stratio.meta.common.logicalplan.Project;
 import com.stratio.meta.common.logicalplan.Select;
-import com.stratio.meta.common.result.QueryResult;
 import com.stratio.meta.common.statements.structures.relationships.Operator;
 import com.stratio.meta2.common.data.ClusterName;
 import com.stratio.meta2.common.data.TableName;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ LogicalWorkflowExecutor.class, QueryResult.class, ResultSet.class })
 public class LogicalWorkflowExecutorTest {
 
     public static final String COLUMN_1 = "column1";

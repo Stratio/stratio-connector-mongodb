@@ -37,61 +37,90 @@ import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
 
 public class FilterDBObjectBuilder extends DBObjectBuilder {
 
-    private BasicDBObject filterQuery = null;
+    private DBObject filterQuery = null;
 
     public FilterDBObjectBuilder(boolean useAggregation) {
         super(useAggregation);
     }
 
-    @Deprecated
-    public void add(Filter filter) throws MongoValidationException {
-
-        Relation relation = filter.getRelation();
-        String fieldName = getFieldName(relation.getLeftTerm());
-        BasicDBObject fieldQuery;
-
-        if (filterQuery.containsField(fieldName)) {
-            fieldQuery = (BasicDBObject) filterQuery.get(fieldName);
+    public DBObject build() {
+        DBObject container;
+        if (useAggregationPipeline()) {
+            container = new BasicDBObject();
+            container.put("$match", filterQuery);
         } else {
-            fieldQuery = new BasicDBObject();
+            container = filterQuery;
         }
 
-        fieldQuery = handleRelation(fieldQuery, relation.getOperator(), relation.getRightTerm());
-
-        filterQuery.append(fieldName, fieldQuery);
+        return container;
 
     }
 
     /**
-     * @param fieldQuery
-     *            previous query
-     * @param operator
-     *            operator to include in the filter
-     * @param rightSelector
-     *            selector to compare
-     * @return the field query updated
+     * @param filterList
      * @throws MongoValidationException
      */
-    private BasicDBObject handleRelation(BasicDBObject fieldQuery, Operator operator, Selector rightSelector)
-                    throws MongoValidationException {
+    public void addAll(List<Filter> filterList) throws MongoValidationException {
 
-        String lValue = getMongoOperator(operator);
+        if (filterList.size() > 1) {
+            BasicBSONList filterExpressions = new BasicBSONList();
+            for (Filter filter : filterList) {
+                filterExpressions.add(getFilterQuery(filter));
+            }
+            filterQuery = new BasicDBObject("$and", filterExpressions);
+        } else if (filterList.size() == 1) {
+            filterQuery = getFilterQuery(filterList.get(0));
+        } else
+            filterQuery = new BasicDBObject();
 
-        SelectorType selectorType = rightSelector.getType();
-        validateSelector(operator, selectorType);
+    }
 
-        switch (selectorType) {
+    private DBObject getFilterQuery(Filter filter) throws MongoValidationException {
+
+        Relation relation = filter.getRelation();
+        Operator operator = relation.getOperator();
+        Selector rightSelector = relation.getRightTerm();
+
+        String fieldName = getFieldName(relation.getLeftTerm());
+        validateSelector(operator, rightSelector.getType());
+        DBObject fieldQuery = new BasicDBObject(getMongoOperator(operator), getMongoRightTerm(rightSelector));
+        return new BasicDBObject(fieldName, fieldQuery);
+
+    }
+
+    private static String getFieldName(Selector selector) {
+        String field = null;
+        if (selector instanceof ColumnSelector) {
+            ColumnSelector columnSelector = (ColumnSelector) selector;
+            field = columnSelector.getName().getName();
+        }
+        return field;
+    }
+
+    private void validateSelector(Operator operator, SelectorType selType) throws MongoValidationException {
+        if (operator == Operator.LIKE) {
+            if (selType != SelectorType.STRING) {
+                throw new MongoValidationException("The selector type: " + selType.toString()
+                                + " is not supported with operator " + operator.toString());
+            }
+        }
+    }
+
+    private Object getMongoRightTerm(Selector rightSelector) throws MongoValidationException {
+
+        Object value;
+        switch (rightSelector.getType()) {
         case BOOLEAN:
-            fieldQuery.append(lValue, ((BooleanSelector) rightSelector).getValue());
+            value = ((BooleanSelector) rightSelector).getValue();
             break;
         case INTEGER:
-            fieldQuery.append(lValue, ((IntegerSelector) rightSelector).getValue());
+            value = ((IntegerSelector) rightSelector).getValue();
             break;
         case STRING:
-            fieldQuery.append(lValue, ((StringSelector) rightSelector).getValue());
+            value = ((StringSelector) rightSelector).getValue();
             break;
         case FLOATING_POINT:
-            fieldQuery.append(lValue, ((FloatingPointSelector) rightSelector).getValue());
+            value = ((FloatingPointSelector) rightSelector).getValue();
             break;
         case RELATION:
         case COLUMN: // TODO $where?
@@ -101,8 +130,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             throw new MongoValidationException("Not yet supported");
 
         }
-
-        return fieldQuery;
+        return value;
 
     }
 
@@ -157,75 +185,4 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 
     }
 
-    private void validateSelector(Operator operator, SelectorType selType) throws MongoValidationException {
-        if (operator == Operator.LIKE) {
-            if (selType != SelectorType.STRING) {
-                throw new MongoValidationException("The selector type: " + selType.toString()
-                                + " is not supported with operator " + operator.toString());
-            }
-        }
-    }
-
-    public DBObject build() {
-        DBObject container;
-        if (useAggregationPipeline()) {
-            container = new BasicDBObject();
-            container.put("$match", filterQuery);
-        } else {
-            container = filterQuery;
-        }
-
-        return container;
-
-    }
-
-    private static String getFieldName(Selector selector) {
-        String field = null;
-        if (selector instanceof ColumnSelector) {
-            ColumnSelector columnSelector = (ColumnSelector) selector;
-            field = columnSelector.getName().getName();
-        }
-        return field;
-    }
-
-    /**
-     * @param filterList
-     * @throws MongoValidationException
-     */
-    public void addAll(List<Filter> filterList) throws MongoValidationException {
-
-        if (filterList.size() > 1) {
-            BasicBSONList filterExpressions = new BasicBSONList();
-            for (Filter filter : filterList) {
-
-                Relation relation = filter.getRelation();
-                String fieldName = getFieldName(relation.getLeftTerm());
-                BasicDBObject fieldQuery = new BasicDBObject();
-
-                fieldQuery = handleRelation(fieldQuery, relation.getOperator(), relation.getRightTerm());
-
-                filterExpressions.add(new BasicDBObject(fieldName, fieldQuery));
-            }
-            filterQuery = new BasicDBObject("$and", filterExpressions);
-        } else {
-            filterQuery = new BasicDBObject();
-            for (Filter filter : filterList) {
-
-                Relation relation = filter.getRelation();
-                String fieldName = getFieldName(relation.getLeftTerm());
-                BasicDBObject fieldQuery;
-
-                if (filterQuery.containsField(fieldName)) {
-                    fieldQuery = (BasicDBObject) filterQuery.get(fieldName);
-                } else {
-                    fieldQuery = new BasicDBObject();
-                }
-
-                fieldQuery = handleRelation(fieldQuery, relation.getOperator(), relation.getRightTerm());
-
-                filterQuery.append(fieldName, fieldQuery);
-            }
-        }
-
-    }
 }
