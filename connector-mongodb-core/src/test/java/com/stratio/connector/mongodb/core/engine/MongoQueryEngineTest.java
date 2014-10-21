@@ -63,7 +63,7 @@ public class MongoQueryEngineTest {
      *
      */
     @Test
-    public void testExecute() throws Exception {
+    public void executeTest() throws Exception {
         Project project = mock(Project.class);
         LogicalWorkflowExecutor logicalWorkflowExecutor = mock(LogicalWorkflowExecutor.class);
         Connection<MongoClient> connection = mock(Connection.class);
@@ -92,7 +92,7 @@ public class MongoQueryEngineTest {
      *
      */
     @Test(expected = UnsupportedException.class)
-    public void testAsyncExecute() throws UnsupportedException, ExecutionException {
+    public void asyncExecuteTest() throws UnsupportedException, ExecutionException {
         mongoQueryEngine.asyncExecute("", Mockito.mock(LogicalWorkflow.class), Mockito.mock(IResultHandler.class));
     }
 
@@ -102,7 +102,7 @@ public class MongoQueryEngineTest {
      *
      */
     @Test(expected = UnsupportedException.class)
-    public void testStop() throws UnsupportedException, ExecutionException {
+    public void stopTest() throws UnsupportedException, ExecutionException {
         mongoQueryEngine.stop("");
     }
 

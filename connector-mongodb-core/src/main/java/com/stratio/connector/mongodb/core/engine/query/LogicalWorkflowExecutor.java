@@ -20,8 +20,6 @@ package com.stratio.connector.mongodb.core.engine.query;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,22 +33,18 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.stratio.connector.mongodb.core.engine.query.utils.FilterDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.query.utils.LimitDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.query.utils.MetaResultUtils;
 import com.stratio.connector.mongodb.core.engine.query.utils.ProjectDBObjectBuilder;
 import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.meta.common.data.Cell;
 import com.stratio.meta.common.data.ResultSet;
-import com.stratio.meta.common.data.Row;
 import com.stratio.meta.common.exceptions.UnsupportedException;
 import com.stratio.meta.common.logicalplan.Filter;
 import com.stratio.meta.common.logicalplan.Limit;
 import com.stratio.meta.common.logicalplan.LogicalStep;
 import com.stratio.meta.common.logicalplan.Project;
 import com.stratio.meta.common.logicalplan.Select;
-import com.stratio.meta.common.metadata.structures.ColumnMetadata;
 import com.stratio.meta.common.statements.structures.relationships.Operator;
-import com.stratio.meta2.common.data.ColumnName;
-import com.stratio.meta2.common.metadata.ColumnType;
 
 public class LogicalWorkflowExecutor {
 
@@ -206,7 +200,7 @@ public class LogicalWorkflowExecutor {
                 if (logger.isDebugEnabled()) {
                     logger.debug("AggResult: " + result);
                 }
-                resultSet.add(createRowWithAlias(result));
+                resultSet.add(MetaResultUtils.createRowWithAlias(result, select));
             }
 
         } else {
@@ -225,7 +219,7 @@ public class LogicalWorkflowExecutor {
                     if (logger.isDebugEnabled()) {
                         logger.debug("SResult: " + rowDBObject);
                     }
-                    resultSet.add(createRowWithAlias(rowDBObject));
+                    resultSet.add(MetaResultUtils.createRowWithAlias(rowDBObject, select));
                 }
             } catch (MongoException e) {
                 throw new MongoQueryException(e.getMessage(), e);
@@ -235,97 +229,10 @@ public class LogicalWorkflowExecutor {
 
         }
 
-        resultSet.setColumnMetadata(createMetadata());
+        resultSet.setColumnMetadata(MetaResultUtils.createMetadata(projection, select));
 
         return resultSet;
 
     }
 
-    /**
-     * This method creates a row from a Mongo result. If there is no result a null value is inserted
-     *
-     * @param rowDBObject
-     *            a bson containing the result.
-     * @return the row.
-     */
-    private Row createRowWithAlias(DBObject rowDBObject) {
-        // TODO avoid double for => iterate rows here
-        Row row = new Row();
-        Map<ColumnName, String> aliasMapping = select.getColumnMap();
-
-        String field;
-        for (Entry<ColumnName, String> colInfo : aliasMapping.entrySet()) {
-            field = colInfo.getKey().getName();
-            Object value = rowDBObject.get(field);
-
-            if (colInfo.getValue() != null) {
-                field = colInfo.getValue();
-            }
-
-            row.addCell(field, new Cell(value));
-        }
-        return row;
-    }
-
-    private List<ColumnMetadata> createMetadata() {
-        List<ColumnMetadata> retunColumnMetadata = new ArrayList<>();
-        for (ColumnName colName : select.getColumnMap().keySet()) {
-
-            ColumnType colType = select.getTypeMap().get(colName.getQualifiedName());
-
-            colType = updateColumnType(colType);
-
-            ColumnMetadata columnMetadata = new ColumnMetadata(projection.getTableName().getQualifiedName(),
-                            colName.getQualifiedName(), colType);
-            columnMetadata.setColumnAlias(select.getColumnMap().get(colName));
-
-            retunColumnMetadata.add(columnMetadata);
-
-        }
-        return retunColumnMetadata;
-    }
-
-    private ColumnType updateColumnType(ColumnType colType) {
-        String dbType;
-        switch (colType) {
-        case FLOAT:
-            // TODO check the meaning of DBType
-            dbType = colType.getODBCType();
-            colType.setDBMapping(dbType, Double.class);
-            break;
-        case SET:
-        case LIST:
-            // TODO Set? BasicDBList extends ArrayList<Object>. how to define??
-            dbType = colType.getODBCType();
-            colType.setDBMapping(dbType, List.class);
-            colType.setDBCollectionType(updateColumnType(colType.getDBInnerType()));
-            break;
-        case MAP:
-            // TODO DBObject?
-            dbType = colType.getODBCType();
-            colType.setDBMapping(dbType, Map.class);
-            colType.setDBMapType((updateColumnType(colType.getDBInnerType())),
-                            updateColumnType(colType.getDBInnerValueType()));
-            break;
-
-        case NATIVE:
-            // TODO Case not supported
-            // // TODO check? and setOdbcType??
-            // dbType = colType.getDbType();
-            // // TODO check the row??
-            // if (NativeTypes.DATE.equals(colType.getDbType()))
-            // colType.setDBMapping(dbType, Date.class);
-            break;
-        case BIGINT:
-        case BOOLEAN:
-        case DOUBLE:
-        case INT:
-        case TEXT:
-        case VARCHAR:
-        default:
-            break;
-        }
-        return colType;
-
-    }
 }
