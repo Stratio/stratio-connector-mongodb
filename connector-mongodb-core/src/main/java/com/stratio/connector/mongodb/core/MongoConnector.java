@@ -1,17 +1,17 @@
 /*
  * Licensed to STRATIO (C) under one or more contributor license agreements.
  * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. The STRATIO (C) licenses this file
+ * regarding copyright ownership.  The STRATIO (C) licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -47,9 +47,7 @@ public class MongoConnector extends CommonsConnector {
     /**
      * Create a connection to Mongo.
      *
-     * @param configuration
-     *            the connection configuration. It must be not null.
-     * 
+     * @param configuration the connection configuration. It must be not null.
      */
     @Override
     public void init(IConfiguration configuration) {
@@ -58,7 +56,7 @@ public class MongoConnector extends CommonsConnector {
 
     /**
      * Return the StorageEngine.
-     * 
+     *
      * @return the StorageEngine
      */
     @Override
@@ -69,7 +67,7 @@ public class MongoConnector extends CommonsConnector {
 
     /**
      * Return the QueryEngine.
-     * 
+     *
      * @return the QueryEngine
      */
     @Override
@@ -81,8 +79,7 @@ public class MongoConnector extends CommonsConnector {
      * Return the MetadataEngine.
      *
      * @return the MetadataEngine
-     * @throws UnsupportedException
-     *             the unsupported exception
+     * @throws UnsupportedException the unsupported exception
      */
     @Override
     public IMetadataEngine getMetadataEngine() throws UnsupportedException {
@@ -91,7 +88,7 @@ public class MongoConnector extends CommonsConnector {
 
     /**
      * Return the Connector Name.
-     * 
+     *
      * @return Connector Name
      */
     @Override
@@ -101,7 +98,7 @@ public class MongoConnector extends CommonsConnector {
 
     /**
      * Return the DataStore Name.
-     * 
+     *
      * @return DataStore Name
      */
     @Override
@@ -112,8 +109,7 @@ public class MongoConnector extends CommonsConnector {
     /**
      * The main method.
      *
-     * @param args
-     *            the arguments
+     * @param args the arguments
      */
     public static void main(String[] args) {
 

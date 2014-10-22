@@ -1,20 +1,21 @@
 /*
  * Licensed to STRATIO (C) under one or more contributor license agreements.
  * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. The STRATIO (C) licenses this file
+ * regarding copyright ownership.  The STRATIO (C) licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.stratio.connector.mongodb.core.engine.metadata;
 
 import static com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType.COMPOUND;
@@ -43,7 +44,6 @@ import com.stratio.crossdata.common.statements.structures.selectors.StringSelect
 
 /**
  * @author david
- *
  */
 public class IndexUtils {
 
@@ -133,7 +133,7 @@ public class IndexUtils {
                 String[] fieldInfo = field.split(":");
                 if (fieldInfo.length != 2) {
                     throw new UnsupportedException(
-                                    "Format error. The fields in a compound index must be: fieldname:asc|desc [, field2:desc ...] ");
+                            "Format error. The fields in a compound index must be: fieldname:asc|desc [, field2:desc ...] ");
                 }
                 int order = fieldInfo[1].trim().equals("asc") ? 1 : -1;
                 indexDBObject.put(fieldInfo[0], order);
@@ -165,7 +165,7 @@ public class IndexUtils {
      * @throws UnsupportedException
      */
     private static String[] getCustomIndexDBObjectFields(Map<String, Selector> options, String indexType,
-                    Selector selector, IndexMetadata indexMetadata) throws UnsupportedException {
+            Selector selector, IndexMetadata indexMetadata) throws UnsupportedException {
         String[] fields;
         if (COMPOUND.getIndexType().equals(indexType)) {
             if ((selector = options.get(COMPOUND_FIELDS.getOptionName())) != null) {
@@ -190,7 +190,7 @@ public class IndexUtils {
      * @throws ExecutionException
      */
     public static void dropIndexWithDefaultName(IndexMetadata indexMetadata, DB db) throws UnsupportedException,
-                    ExecutionException {
+            ExecutionException {
         if (indexMetadata.getType() == IndexType.DEFAULT) {
             DBObject indexDBObject = new BasicDBObject();
             for (ColumnMetadata columnMeta : indexMetadata.getColumns().values()) {
@@ -222,7 +222,7 @@ public class IndexUtils {
             }
         } else {
             throw new UnsupportedException("Dropping without the index name is not supported for the index type: "
-                            + indexMetadata.getType().toString());
+                    + indexMetadata.getType().toString());
         }
 
     }

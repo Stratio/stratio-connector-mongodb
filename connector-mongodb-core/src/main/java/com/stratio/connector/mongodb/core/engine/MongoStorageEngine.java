@@ -1,20 +1,21 @@
 /*
  * Licensed to STRATIO (C) under one or more contributor license agreements.
  * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. The STRATIO (C) licenses this file
+ * regarding copyright ownership.  The STRATIO (C) licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.stratio.connector.mongodb.core.engine;
 
 import java.util.Collection;
@@ -53,21 +54,16 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     /**
      * Insert a document in MongoDB.
      *
-     * 
-     * @param targetTable
-     *            the table metadata.
-     * @param row
-     *            the row.
+     * @param targetTable the table metadata.
+     * @param row         the row.
      * @param connection
      * @throws MongoInsertException
      * @throws MongoValidationException
-     * 
-     * @throws ExecutionException
-     *             in case of failure during the execution.
+     * @throws ExecutionException       in case of failure during the execution.
      */
     @Override
     protected void insert(TableMetadata targetTable, Row row, Connection<MongoClient> connection)
-                    throws MongoInsertException, MongoValidationException {
+            throws MongoInsertException, MongoValidationException {
 
         MongoClient mongoClient = connection.getNativeConnection();
 
@@ -115,23 +111,17 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     /**
      * Insert a document in MongoDB.
      *
-     * 
-     * @param targetTable
-     *            the table metadata.
-     * @param rows
-     *            the set of rows.
+     * @param targetTable the table metadata.
+     * @param rows        the set of rows.
      * @param connection
      * @throws MongoValidationException
      * @throws MongoInsertException
-     * 
-     * @throws ExecutionException
-     *             in case of failure during the execution.
-     * @throws UnsupportedException
-     *             in case of the operation is not supported
+     * @throws ExecutionException       in case of failure during the execution.
+     * @throws UnsupportedException     in case of the operation is not supported
      */
     @Override
     protected void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
-                    throws MongoInsertException, MongoValidationException {
+            throws MongoInsertException, MongoValidationException {
 
         for (Row row : rows) {
             insert(targetTable, row, connection);

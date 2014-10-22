@@ -50,7 +50,6 @@ import com.stratio.crossdata.common.security.ICredentials;
 
 /**
  * @author darroyo
- *
  */
 public class MongoConnectorHelper implements IConnectorHelper {
 
@@ -64,7 +63,7 @@ public class MongoConnectorHelper implements IConnectorHelper {
     protected ClusterName clusterName;
 
     public MongoConnectorHelper(ClusterName clusterName) throws ConnectionException, InitializationException,
-                    CreateNativeConnectionException {
+            CreateNativeConnectionException {
         super();
         this.clusterName = clusterName;
         MongoClientConfiguration clientConfig = new MongoClientConfiguration(getConnectorClusterConfig());
@@ -94,7 +93,7 @@ public class MongoConnectorHelper implements IConnectorHelper {
         optionsNode.put(HOST.getOptionName(), SERVER_IP);
         optionsNode.put(PORT.getOptionName(), SERVER_PORT);
         optionsNode.put(READ_PREFERENCE.getOptionName(), readPreference); // primary,primiaryPreferred,secondary,
-                                                                          // secondaryPreferred, nearest
+        // secondaryPreferred, nearest
         optionsNode.put(WRITE_CONCERN.getOptionName(), writeConcern);
         return new ConnectorClusterConfig(clusterName, optionsNode);
     }

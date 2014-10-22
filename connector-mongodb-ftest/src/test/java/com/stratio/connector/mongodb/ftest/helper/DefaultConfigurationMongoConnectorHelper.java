@@ -31,7 +31,6 @@ import com.stratio.crossdata.common.exceptions.InitializationException;
 
 /**
  * @author darroyo
- *
  */
 public class DefaultConfigurationMongoConnectorHelper extends MongoConnectorHelper {
 
@@ -42,7 +41,7 @@ public class DefaultConfigurationMongoConnectorHelper extends MongoConnectorHelp
      * @throws CreateNativeConnectionException
      */
     public DefaultConfigurationMongoConnectorHelper(ClusterName clusterName) throws ConnectionException,
-                    InitializationException, CreateNativeConnectionException {
+            InitializationException, CreateNativeConnectionException {
         super(clusterName);
     }
 

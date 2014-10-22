@@ -1,19 +1,19 @@
 /*
  * Licensed to STRATIO (C) under one or more contributor license agreements.
- *  See the NOTICE file distributed with this work for additional information
- *  regarding copyright ownership. The STRATIO (C) licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License. You may obtain a copy of the License at
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.  The STRATIO (C) licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied. See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package com.stratio.connector.mongodb.testutils;
@@ -178,7 +178,7 @@ public class LogicalWorkFlowCreator {
     public LogicalWorkFlowCreator addGreaterEqualFilter(String columnName, Object term, Boolean indexed, boolean pk) {
 
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)), Operator.GET,
-                        returnSelector(term));
+                returnSelector(term));
 
         if (pk) {
             filters.add(new Filter(Operations.FILTER_PK_GET, relation));
@@ -196,7 +196,7 @@ public class LogicalWorkFlowCreator {
     public LogicalWorkFlowCreator addGreaterFilter(String columnName, Object term, Boolean indexed) {
 
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)), Operator.GT,
-                        returnSelector(term));
+                returnSelector(term));
         if (indexed) {
             filters.add(new Filter(Operations.FILTER_INDEXED_GT, relation));
         } else {
@@ -210,7 +210,7 @@ public class LogicalWorkFlowCreator {
     public LogicalWorkFlowCreator addLowerEqualFilter(String columnName, Object term, Boolean indexed) {
 
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)), Operator.LET,
-                        returnSelector(term));
+                returnSelector(term));
         if (indexed) {
             filters.add(new Filter(Operations.FILTER_INDEXED_LET, relation));
         } else {
@@ -223,7 +223,7 @@ public class LogicalWorkFlowCreator {
 
     public LogicalWorkFlowCreator addNLowerFilter(String columnName, Object term, Boolean indexed) {
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)), Operator.LT,
-                        returnSelector(term));
+                returnSelector(term));
         if (indexed) {
             filters.add(new Filter(Operations.FILTER_INDEXED_LT, relation));
         } else {
@@ -235,7 +235,7 @@ public class LogicalWorkFlowCreator {
 
     public LogicalWorkFlowCreator addDistinctFilter(String columnName, Object term, Boolean indexed) {
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)),
-                        Operator.DISTINCT, returnSelector(term));
+                Operator.DISTINCT, returnSelector(term));
         if (indexed) {
             filters.add(new Filter(Operations.FILTER_INDEXED_DISTINCT, relation));
         } else {
@@ -248,7 +248,7 @@ public class LogicalWorkFlowCreator {
     public LogicalWorkFlowCreator addMatchFilter(String columnName, String textToFind) {
 
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)),
-                        Operator.MATCH, returnSelector(textToFind));
+                Operator.MATCH, returnSelector(textToFind));
 
         filters.add(new Filter(Operations.FILTER_FULLTEXT, relation));
 
@@ -258,7 +258,7 @@ public class LogicalWorkFlowCreator {
     public LogicalWorkFlowCreator addLikeFilter(String columnName, String textToFind) {
 
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)), Operator.LIKE,
-                        returnSelector(textToFind));
+                returnSelector(textToFind));
 
         filters.add(new Filter(Operations.FILTER_FULLTEXT, relation));
 
@@ -272,7 +272,7 @@ public class LogicalWorkFlowCreator {
         for (ConnectorField connectorField : fields) {
             mapping.put(new ColumnName(catalog, table, connectorField.name), connectorField.alias);
             types.put(QualifiedNames.getColumnQualifiedName(catalog, table, connectorField.name),
-                            connectorField.columnType);
+                    connectorField.columnType);
         }
 
         select = new Select(Operations.PROJECT, mapping, types);

@@ -1,20 +1,21 @@
 /*
  * Licensed to STRATIO (C) under one or more contributor license agreements.
  * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. The STRATIO (C) licenses this file
+ * regarding copyright ownership.  The STRATIO (C) licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.stratio.connector.mongodb.core.connection;
 
 import org.slf4j.Logger;
@@ -30,7 +31,6 @@ import com.stratio.crossdata.common.security.ICredentials;
 
 /**
  * @author darroyo
- *
  */
 public class DriverConnection extends Connection<MongoClient> {
 
@@ -43,12 +43,12 @@ public class DriverConnection extends Connection<MongoClient> {
     private boolean isConnected = false;
 
     public DriverConnection(ICredentials credentials, ConnectorClusterConfig connectorClusterConfig)
-                    throws CreateNativeConnectionException, MongoValidationException {
+            throws CreateNativeConnectionException, MongoValidationException {
         MongoClientConfiguration mongoClientConfiguration = new MongoClientConfiguration(connectorClusterConfig);
 
         if (credentials == null) {
             mongoClient = new MongoClient(mongoClientConfiguration.getSeeds(),
-                            mongoClientConfiguration.getMongoClientOptions());
+                    mongoClientConfiguration.getMongoClientOptions());
             isConnected = true;
             logger.info("New MongoDB connection established");
 

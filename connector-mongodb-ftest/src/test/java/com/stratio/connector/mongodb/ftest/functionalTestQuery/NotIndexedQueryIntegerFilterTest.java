@@ -17,7 +17,6 @@
 */
 package com.stratio.connector.mongodb.ftest.functionalTestQuery;
 
-
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.ftest.functionalTestQuery.GenericNotIndexedQueryIntegerFilterTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
@@ -25,26 +24,24 @@ import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
-
 /**
  * Created by jmgomez on 17/07/14.
  */
-public class NotIndexedQueryIntegerFilterTest extends GenericNotIndexedQueryIntegerFilterTest{
+public class NotIndexedQueryIntegerFilterTest extends GenericNotIndexedQueryIntegerFilterTest {
 
-	@Override
-	protected IConnectorHelper getConnectorHelper() {
-		MongoConnectorHelper mongoConnectorHelper = null;
-	try {
-		mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
-	} catch (ConnectionException e) {
-		e.printStackTrace();
-	} catch (InitializationException e) {
-		e.printStackTrace();
-	} catch (CreateNativeConnectionException e) {
-		e.printStackTrace();
-	}
-		return mongoConnectorHelper;
-	}
-
+    @Override
+    protected IConnectorHelper getConnectorHelper() {
+        MongoConnectorHelper mongoConnectorHelper = null;
+        try {
+            mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
+        } catch (ConnectionException e) {
+            e.printStackTrace();
+        } catch (InitializationException e) {
+            e.printStackTrace();
+        } catch (CreateNativeConnectionException e) {
+            e.printStackTrace();
+        }
+        return mongoConnectorHelper;
+    }
 
 }

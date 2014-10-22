@@ -26,7 +26,6 @@ import com.stratio.crossdata.common.exceptions.InitializationException;
 
 /**
  * @author darroyo
- *
  */
 public class WorkflowTest extends ExampleWorkflowsTest {
     @Override

@@ -70,7 +70,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     public void testInsertFloat() throws UnsupportedException, ExecutionException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
-                        + clusterName.getName() + " ***********************************");
+                + clusterName.getName() + " ***********************************");
         Object value4 = new Float(25.32);
         insertRow(clusterName, value4, ColumnType.FLOAT, VALUE_1, true);
 
@@ -79,12 +79,13 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
         for (Row recoveredRow : resultIterator) {
 
             boolean typeCorrect = Float.class.getCanonicalName().equals(
-                            recoveredRow.getCell(COLUMN_4).getValue().getClass().getCanonicalName())
-                            || Double.class.getCanonicalName().equals(
-                                            resultIterator.getColumnMetadata().get(3).getType().getDbClass()
-                                                            .getCanonicalName());
+                    recoveredRow.getCell(COLUMN_4).getValue().getClass().getCanonicalName())
+                    || Double.class.getCanonicalName().equals(
+                    resultIterator.getColumnMetadata().get(3).getType().getDbClass()
+                            .getCanonicalName());
             assertTrue("The type is correct ", typeCorrect);
-            assertEquals("The value is correct ", new Double((float) value4), recoveredRow.getCell(COLUMN_4).getValue());
+            assertEquals("The value is correct ", new Double((float) value4),
+                    recoveredRow.getCell(COLUMN_4).getValue());
         }
 
     }
@@ -93,7 +94,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     public void testInsertSet() throws UnsupportedException, ExecutionException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
-                        + clusterName.getName() + " ***********************************");
+                + clusterName.getName() + " ***********************************");
         Set<Integer> valueSet = new HashSet<Integer>();
         valueSet.add(5);
         valueSet.add(8);
@@ -120,7 +121,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     public void testInsertList() throws UnsupportedException, ExecutionException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
-                        + clusterName.getName() + " ***********************************");
+                + clusterName.getName() + " ***********************************");
         List<Integer> al = Arrays.asList(1, 2, 3, 4);
         Object value4 = al;
 
@@ -145,7 +146,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     public void testInsertMap() throws UnsupportedException, ExecutionException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
-                        + clusterName.getName() + " ***********************************");
+                + clusterName.getName() + " ***********************************");
         Map<String, Integer> map = new HashMap<String, Integer>(2);
         map.put("a", 1);
         map.put("b", 2);
@@ -173,7 +174,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     public void testInsertDate() throws UnsupportedException, ExecutionException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
-                        + clusterName.getName() + " ***********************************");
+                + clusterName.getName() + " ***********************************");
         Object value4 = new Date();
         ColumnType colType = ColumnType.NATIVE;
 
@@ -183,7 +184,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
         assertEquals("It has only one result", 1, resultIterator.size());
         for (Row recoveredRow : resultIterator) {
             assertEquals("The type is correct ", Date.class.getCanonicalName(), recoveredRow.getCell(COLUMN_4)
-                            .getValue().getClass().getCanonicalName());
+                    .getValue().getClass().getCanonicalName());
             assertEquals("The value is correct ", value4, recoveredRow.getCell(COLUMN_4).getValue());
         }
     }
@@ -192,7 +193,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     public void testInsertNull() throws UnsupportedException, ExecutionException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
-                        + clusterName.getName() + " ***********************************");
+                + clusterName.getName() + " ***********************************");
         Object value4 = null;
         ColumnType colType = ColumnType.INT;
 
@@ -209,7 +210,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     public void testInsertWithouthColumn4() throws UnsupportedException, ExecutionException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
-                        + clusterName.getName() + " ***********************************");
+                + clusterName.getName() + " ***********************************");
         Object value4 = null;
         ColumnType colType = ColumnType.INT;
 
@@ -223,7 +224,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     }
 
     protected void insertRowWithoutColumn4(ClusterName cluesterName, Object value_4, ColumnType colType_4,
-                    String PK_VALUE, boolean withPK) throws UnsupportedException, ExecutionException {
+            String PK_VALUE, boolean withPK) throws UnsupportedException, ExecutionException {
         Row row = new Row();
         Map<String, Cell> cells = new HashMap<>();
 
@@ -236,7 +237,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
 
         TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(CATALOG, TABLE);
         tableMetadataBuilder.addColumn(COLUMN_1, ColumnType.VARCHAR).addColumn(COLUMN_2, ColumnType.VARCHAR)
-                        .addColumn(COLUMN_3, ColumnType.VARCHAR).addColumn(COLUMN_4, colType_4);
+                .addColumn(COLUMN_3, ColumnType.VARCHAR).addColumn(COLUMN_4, colType_4);
         if (withPK) {
             tableMetadataBuilder.withPartitionKey(COLUMN_1);
         }

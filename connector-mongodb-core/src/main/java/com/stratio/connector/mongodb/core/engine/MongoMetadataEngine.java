@@ -1,20 +1,21 @@
 /*
  * Licensed to STRATIO (C) under one or more contributor license agreements.
  * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. The STRATIO (C) licenses this file
+ * regarding copyright ownership.  The STRATIO (C) licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.stratio.connector.mongodb.core.engine;
 
 import org.slf4j.Logger;
@@ -40,7 +41,6 @@ import com.stratio.crossdata.common.metadata.TableMetadata;
 
 /**
  * @author darroyo
- *
  */
 public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 
@@ -50,8 +50,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * @param connectionHandler
-     *            the connector handler
+     * @param connectionHandler the connector handler
      */
     public MongoMetadataEngine(MongoConnectionHandler connectionHandler) {
         super(connectionHandler);
@@ -60,36 +59,28 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     /**
      * Create a database in MongoDB.
      *
-     * @param catalogMetadata
-     *            the catalogMetadata.
-     * @param connection
-     *            the connection which contains the native connector.
-     * @throws UnsupportedException
-     *             if any operation is not supported.
-     * @throws ExecutionException
-     *             if an error occur.
+     * @param catalogMetadata the catalogMetadata.
+     * @param connection      the connection which contains the native connector.
+     * @throws UnsupportedException if any operation is not supported.
+     * @throws ExecutionException   if an error occur.
      */
     @Override
     protected void createCatalog(CatalogMetadata catalogMetadata, Connection<MongoClient> connection)
-                    throws UnsupportedException {
+            throws UnsupportedException {
         throw new UnsupportedException("Create catalog is not supported");
     }
 
     /**
      * Create a collection in MongoDB.
      *
-     * @param tableMetadata
-     *            the tableMetadata.
-     * @param connection
-     *            the connection which contains the native connector.
-     * @throws UnsupportedException
-     *             if any operation is not supported.
-     * @throws ExecutionException
-     *             if an error occur.
+     * @param tableMetadata the tableMetadata.
+     * @param connection    the connection which contains the native connector.
+     * @throws UnsupportedException if any operation is not supported.
+     * @throws ExecutionException   if an error occur.
      */
     @Override
     protected void createTable(TableMetadata tableMetadata, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
+            throws UnsupportedException, ExecutionException {
 
         if (tableMetadata == null) {
             throw new UnsupportedException("the table metadata is required");
@@ -107,10 +98,8 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     /**
      * Drop a database in MongoDB.
      *
-     * @param targetCluster
-     *            the cluster to be dropped.
-     * @param name
-     *            the database name.
+     * @param targetCluster the cluster to be dropped.
+     * @param name          the database name.
      */
     @Override
     protected void dropCatalog(CatalogName name, Connection<MongoClient> connection) throws ExecutionException {
@@ -124,10 +113,8 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     /**
      * Drop a collection in MongoDB.
      *
-     * @param targetCluster
-     *            the cluster to be dropped.
-     * @param name
-     *            the database name.
+     * @param targetCluster the cluster to be dropped.
+     * @param name          the database name.
      */
     @Override
     protected void dropTable(TableName name, Connection<MongoClient> connection) throws ExecutionException {
@@ -148,17 +135,17 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      */
     @Override
     protected void createIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
+            throws UnsupportedException, ExecutionException {
 
         DB db = connection.getNativeConnection().getDB(
-                        indexMetadata.getName().getTableName().getCatalogName().getName());
+                indexMetadata.getName().getTableName().getCatalogName().getName());
 
         DBObject indexDBObject = IndexUtils.getIndexDBObject(indexMetadata);
         DBObject indexOptionsDBObject = IndexUtils.getCustomOptions(indexMetadata);
 
         try {
             db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject,
-                            indexOptionsDBObject);
+                    indexOptionsDBObject);
         } catch (MongoException e) {
             throw new ExecutionException(e.getMessage(), e);
         }
@@ -176,9 +163,9 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      */
     @Override
     protected void dropIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)
-                    throws ExecutionException, UnsupportedException {
+            throws ExecutionException, UnsupportedException {
         DB db = connection.getNativeConnection().getDB(
-                        indexMetadata.getName().getTableName().getCatalogName().getName());
+                indexMetadata.getName().getTableName().getCatalogName().getName());
 
         String indexName = null;
         if (indexMetadata.getName() != null) {

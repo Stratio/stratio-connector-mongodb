@@ -1,20 +1,21 @@
 /*
  * Licensed to STRATIO (C) under one or more contributor license agreements.
  * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership. The STRATIO (C) licenses this file
+ * regarding copyright ownership.  The STRATIO (C) licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.stratio.connector.mongodb.core.engine;
 
 import static org.junit.Assert.fail;
@@ -180,7 +181,7 @@ public class MongoMetadataEngineTest {
     public void createIndexTest() throws ExecutionException, UnsupportedException {
 
         IndexMetadataBuilder indexMetadataBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                        IndexType.DEFAULT);
+                IndexType.DEFAULT);
         indexMetadataBuilder.addColumn(COLUMN_NAME, ColumnType.VARCHAR);
         indexMetadataBuilder.addColumn(COLUMN_NAME2, ColumnType.INT);
         IndexMetadata indexMetadata = indexMetadataBuilder.build();
@@ -209,7 +210,7 @@ public class MongoMetadataEngineTest {
     public void dropIndexTest() throws ExecutionException, UnsupportedException {
 
         IndexMetadataBuilder indexMetadataBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                        IndexType.DEFAULT);
+                IndexType.DEFAULT);
         indexMetadataBuilder.addColumn(COLUMN_NAME, ColumnType.VARCHAR);
         indexMetadataBuilder.addColumn(COLUMN_NAME2, ColumnType.INT);
         IndexMetadata indexMetadata = indexMetadataBuilder.build();
