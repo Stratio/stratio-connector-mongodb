@@ -19,19 +19,40 @@
 package com.stratio.connector.mongodb.core.configuration;
 
 /**
- * @author darroyo Set of options for the mongo connector.
+ * The ConfigurationOptions. Set of custom index types allowed in Mongo.
+ *
+ * @author darroyo
  */
 
 public enum CustomMongoIndexType {
 
-    HASHED("hashed"), COMPOUND("compound"), GEOSPATIAL_SPHERE("geo_sphere"), GEOSPATIAL_FLAT("geo_flat");
+    /** The hashed. */
+    HASHED("hashed"),
+    /** The compound. */
+    COMPOUND("compound"),
+    /** The geospatial sphere. */
+    GEOSPATIAL_SPHERE("geo_sphere"),
+    /** The geospatial flat. */
+    GEOSPATIAL_FLAT("geo_flat");
 
+    /** The index type. */
     private final String indexType;
 
+    /**
+     * Gets the index type.
+     *
+     * @return the index type
+     */
     public String getIndexType() {
         return indexType;
     }
 
+    /**
+     * Instantiates a new custom Mongo index type.
+     *
+     * @param indexType
+     *            the index type
+     */
     CustomMongoIndexType(String indexType) {
         this.indexType = indexType;
     }

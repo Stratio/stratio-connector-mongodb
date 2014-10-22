@@ -19,31 +19,63 @@
 package com.stratio.connector.mongodb.core.configuration;
 
 /**
- * @author darroyo Set of options for the mongo connector. A default value is provided.
+ * The ConfigurationOptions. They could be set in the ConnectorClusterConfiguration Set of options for the Mongo
+ * Connector. A default value is provided.
+ * 
+ * @author darroyo
  */
 
 public enum ConfigurationOptions {
 
-    ACCEPTABLE_LATENCY("mongo.acceptableLatencyDifference", "15"), MAX_CONNECTIONS_PER_HOST(
-            "mongo.maxConnectionsPerHost", "10000"), MAX_IDLE_TIME("mongo.maxConnectionIdleTime",
-            "0"), CONNECTION_TIMEOUT(
-            "mongo.connectTimeout", "10000"), READ_PREFERENCE("mongo.readPreference",
-            "primaryPreferred"), WRITE_CONCERN(
-            "mongo.writeConcern", "acknowledged"),
+    /** The acceptable latency. */
+    ACCEPTABLE_LATENCY("mongo.acceptableLatencyDifference", "15"),
+    /** The max connections per host. */
+    MAX_CONNECTIONS_PER_HOST("mongo.maxConnectionsPerHost", "10000"),
+    /** The max idle time. */
+    MAX_IDLE_TIME("mongo.maxConnectionIdleTime", "0"),
+    /** The connection timeout. */
+    CONNECTION_TIMEOUT("mongo.connectTimeout", "10000"),
+    /** The read preference. */
+    READ_PREFERENCE("mongo.readPreference", "primaryPreferred"),
+    /** The write concern. */
+    WRITE_CONCERN("mongo.writeConcern", "acknowledged"),
+    /** The host. */
+    HOST("Hosts", new String[] { "localhost" }),
+    /** The port. */
+    PORT("Port", new String[] { "27017" });
 
-    HOST("Hosts", new String[] { "localhost" }), PORT("Port", new String[] { "27017" });
-
+    /** The option name. */
     private final String optionName;
+
+    /** The default value. */
     private final String[] defaultValue;
 
+    /**
+     * Gets the default value.
+     *
+     * @return the default value
+     */
     public String[] getDefaultValue() {
         return defaultValue.clone();
     }
 
+    /**
+     * Gets the option name.
+     *
+     * @return the option name
+     */
     public String getOptionName() {
         return optionName;
     }
 
+    /**
+     * Instantiates a new configuration options.
+     *
+     * @param optionName
+     *            the option name
+     * @param defaultValue
+     *            the default value
+     */
     ConfigurationOptions(String optionName, String... defaultValue) {
         this.optionName = optionName;
         this.defaultValue = defaultValue;

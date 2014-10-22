@@ -31,7 +31,6 @@ import com.stratio.crossdata.common.connector.IMetadataEngine;
 import com.stratio.crossdata.common.connector.IQueryEngine;
 import com.stratio.crossdata.common.connector.IStorageEngine;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.connectors.ConnectorApp;
 
 /**
@@ -47,7 +46,8 @@ public class MongoConnector extends CommonsConnector {
     /**
      * Create a connection to Mongo.
      *
-     * @param configuration the connection configuration. It must be not null.
+     * @param configuration
+     *            the connection configuration. It must be not null.
      */
     @Override
     public void init(IConfiguration configuration) {
@@ -79,10 +79,10 @@ public class MongoConnector extends CommonsConnector {
      * Return the MetadataEngine.
      *
      * @return the MetadataEngine
-     * @throws UnsupportedException the unsupported exception
+     * 
      */
     @Override
-    public IMetadataEngine getMetadataEngine() throws UnsupportedException {
+    public IMetadataEngine getMetadataEngine() {
         return new MongoMetadataEngine((MongoConnectionHandler) connectionHandler);
     }
 
@@ -109,7 +109,8 @@ public class MongoConnector extends CommonsConnector {
     /**
      * The main method.
      *
-     * @param args the arguments
+     * @param args
+     *            the arguments
      */
     public static void main(String[] args) {
 
