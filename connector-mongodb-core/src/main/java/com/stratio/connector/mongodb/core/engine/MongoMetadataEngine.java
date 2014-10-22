@@ -72,7 +72,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     @Override
     protected void createCatalog(CatalogMetadata catalogMetadata, Connection<MongoClient> connection)
                     throws ExecutionException, UnsupportedException {
-        throw new UnsupportedException("Create catalog is not supported");
+        // throw new UnsupportedException("Create catalog is not supported");
     }
 
     /**
