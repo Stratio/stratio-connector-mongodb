@@ -48,8 +48,9 @@ public class SelectorOptionsUtils {
                 leftSelector = e.getKey();
                 if (leftSelector instanceof StringSelector) {
                     stringOptions.put(((StringSelector) e.getKey()).getValue(), e.getValue());
-                } else
+                } else {
                     throw new MongoValidationException("The left term must be a string selector");
+                }
             }
         }
         return stringOptions;

@@ -99,11 +99,10 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
     }
 
     private void validateSelector(Operator operator, SelectorType selType) throws MongoValidationException {
-        if (operator == Operator.LIKE) {
-            if (selType != SelectorType.STRING) {
-                throw new MongoValidationException("The selector type: " + selType.toString()
-                                + " is not supported with operator " + operator.toString());
-            }
+        if (operator == Operator.LIKE && selType != SelectorType.STRING) {
+            throw new MongoValidationException("The selector type: " + selType.toString()
+                            + " is not supported with operator " + operator.toString());
+
         }
     }
 

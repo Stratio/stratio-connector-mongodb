@@ -54,7 +54,7 @@ public class ShardUtils {
     /**
      * The Log.
      */
-    private final static Logger logger = LoggerFactory.getLogger(ShardUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShardUtils.class);
 
     /**
      * @param tableMetadata
@@ -115,7 +115,7 @@ public class ShardUtils {
 
         CommandResult result = mongoClient.getDB("admin").command(cmd);
         if (!result.ok()) {
-            logger.error("Command Error:" + result.getErrorMessage());
+            LOGGER.error("Command Error:" + result.getErrorMessage());
             throw new ExecutionException(result.getErrorMessage());
         }
 
@@ -129,7 +129,7 @@ public class ShardUtils {
 
         CommandResult result = db.command(new BasicDBObject("enableSharding", catalogName));
         if (!result.ok() && !result.getErrorMessage().equals("already enabled")) {
-            logger.error("Command Error:" + result.getErrorMessage());
+            LOGGER.error("Command Error:" + result.getErrorMessage());
             throw new ExecutionException(result.getErrorMessage());
         }
     }
@@ -155,7 +155,7 @@ public class ShardUtils {
         } else if (ASC.getKeyType().equals(shardKeyType)) {
             return ASC;
         } else {
-            logger.info("Using the asc key as the default type");
+            LOGGER.info("Using the asc key as the default type");
             return (ShardKeyType) SHARD_KEY_TYPE.getDefaultValue();
         }
 
@@ -181,12 +181,10 @@ public class ShardUtils {
         }
 
         if (shardKey == null || shardKey.length == 0) {
-            logger.info("Using the _id as the default shard key");
+            LOGGER.info("Using the _id as the default shard key");
             shardKey = ((String[]) SHARD_KEY_FIELDS.getDefaultValue());
-        } else if (shardKeyType == ShardKeyType.HASHED) {
-            if (shardKey.length > 1) {
-                throw new MongoValidationException("The hashed key must have a single field");
-            }
+        } else if (shardKeyType == ShardKeyType.HASHED && shardKey.length > 1) {
+            throw new MongoValidationException("The hashed key must have a single field");
         }
         return shardKey;
 

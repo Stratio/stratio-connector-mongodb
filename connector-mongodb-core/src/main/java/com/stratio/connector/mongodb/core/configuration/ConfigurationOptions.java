@@ -35,7 +35,7 @@ public enum ConfigurationOptions {
     private final String[] defaultValue;
 
     public String[] getDefaultValue() {
-        return defaultValue;
+        return defaultValue.clone();
     }
 
     public String getOptionName() {

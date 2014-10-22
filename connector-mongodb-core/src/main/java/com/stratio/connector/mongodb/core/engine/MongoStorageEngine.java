@@ -59,13 +59,15 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      * @param row
      *            the row.
      * @param connection
+     * @throws MongoInsertException
+     * @throws MongoValidationException
      * 
      * @throws ExecutionException
      *             in case of failure during the execution.
      */
     @Override
     protected void insert(TableMetadata targetTable, Row row, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
+                    throws MongoInsertException, MongoValidationException {
 
         MongoClient mongoClient = connection.getNativeConnection();
 
@@ -119,6 +121,8 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      * @param rows
      *            the set of rows.
      * @param connection
+     * @throws MongoValidationException
+     * @throws MongoInsertException
      * 
      * @throws ExecutionException
      *             in case of failure during the execution.
@@ -127,7 +131,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      */
     @Override
     protected void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
+                    throws MongoInsertException, MongoValidationException {
 
         for (Row row : rows) {
             insert(targetTable, row, connection);

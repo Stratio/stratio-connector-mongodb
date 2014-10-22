@@ -48,14 +48,14 @@ import com.stratio.crossdata.common.statements.structures.relationships.Operator
 
 public class LogicalWorkflowExecutor {
 
-    final private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Project projection = null;
     /**
      * The list of filters without including full-text filters
      */
     private List<Filter> filterList = new ArrayList<Filter>();
-    private Filter textFilter = null;
+    // private Filter textFilter = null;
     private Limit limit = null;
     private Select select = null;
     /**

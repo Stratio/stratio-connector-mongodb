@@ -22,9 +22,9 @@ import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.UniqueProjectQueryEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutor;
+import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
 import com.stratio.crossdata.common.connector.IResultHandler;
 import com.stratio.crossdata.common.data.ResultSet;
-import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
 import com.stratio.crossdata.common.logicalplan.Project;
@@ -40,7 +40,7 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
     }
 
     @Override
-    public QueryResult execute(Project workflow, Connection<MongoClient> connection) throws ExecutionException,
+    public QueryResult execute(Project workflow, Connection<MongoClient> connection) throws MongoQueryException,
                     UnsupportedException {
 
         ResultSet resultSet = null;
@@ -61,7 +61,7 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
      */
     @Override
     public void asyncExecute(String queryId, LogicalWorkflow workflow, IResultHandler resultHandler)
-                    throws UnsupportedException, ExecutionException {
+                    throws UnsupportedException {
         throw new UnsupportedException("Not yet supported");
 
     }
@@ -72,7 +72,7 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
      * @see com.stratio.meta.common.connector.IQueryEngine#stop(java.lang.String)
      */
     @Override
-    public void stop(String queryId) throws UnsupportedException, ExecutionException {
+    public void stop(String queryId) throws UnsupportedException {
         throw new UnsupportedException("Not yet supported");
 
     }

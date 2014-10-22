@@ -32,9 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
@@ -49,8 +46,6 @@ import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
  */
 
 public class MongoClientConfiguration {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private ConnectorClusterConfig configuration;
 

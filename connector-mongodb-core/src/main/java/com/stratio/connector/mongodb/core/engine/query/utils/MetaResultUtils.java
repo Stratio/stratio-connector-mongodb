@@ -37,6 +37,9 @@ import com.stratio.crossdata.common.metadata.structures.ColumnMetadata;
  */
 public class MetaResultUtils {
 
+    private MetaResultUtils() {
+    }
+
     /**
      * This method creates a row from a Mongo result. If there is no result a null value is inserted
      *

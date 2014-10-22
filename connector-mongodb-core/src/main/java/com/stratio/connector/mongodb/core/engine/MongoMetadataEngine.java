@@ -47,7 +47,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     /**
      * The Log.
      */
-    final private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * @param connectionHandler
@@ -71,7 +71,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      */
     @Override
     protected void createCatalog(CatalogMetadata catalogMetadata, Connection<MongoClient> connection)
-                    throws ExecutionException, UnsupportedException {
+                    throws UnsupportedException {
         throw new UnsupportedException("Create catalog is not supported");
     }
 
@@ -89,7 +89,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      */
     @Override
     protected void createTable(TableMetadata tableMetadata, Connection<MongoClient> connection)
-                    throws ExecutionException, UnsupportedException {
+                    throws UnsupportedException, ExecutionException {
 
         if (tableMetadata == null) {
             throw new UnsupportedException("the table metadata is required");
@@ -148,7 +148,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      */
     @Override
     protected void createIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)
-                    throws ExecutionException, UnsupportedException {
+                    throws UnsupportedException, ExecutionException {
 
         DB db = connection.getNativeConnection().getDB(
                         indexMetadata.getName().getTableName().getCatalogName().getName());
