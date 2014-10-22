@@ -42,23 +42,30 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 
 /**
- * The configuration for Mongo connector.
+ * Contains the configuration for Mongo connector.
  */
 
 public class MongoClientConfiguration {
 
+    /** The connector cluster configuration. */
     private ConnectorClusterConfig configuration;
 
     /**
+     * Instantiates a new mongo client configuration.
+     *
      * @param connectorClusterConfig
+     *            the connector cluster config
      */
     public MongoClientConfiguration(ConnectorClusterConfig connectorClusterConfig) {
         this.configuration = connectorClusterConfig;
     }
 
     /**
+     * Retrieves the mongo client options. if any option is not specified a default value is set.
+     *
      * @return the options for the java MongoDB driver
      * @throws MongoValidationException
+     *             the mongo validation exception
      */
     public MongoClientOptions getMongoClientOptions() throws MongoValidationException {
 
@@ -72,16 +79,20 @@ public class MongoClientConfiguration {
         WriteConcern writeConcern = getWriteConcern();
 
         MongoClientOptions clientOptions = new MongoClientOptions.Builder()
-                .acceptableLatencyDifference(acceptableLatencyDifference)
-                .connectionsPerHost(maxConnectionsPerHost).connectTimeout(connectTimeout)
-                .maxConnectionIdleTime(maxConnectionIdleTime).readPreference(readPreference)
-                .writeConcern(writeConcern).build();
+                        .acceptableLatencyDifference(acceptableLatencyDifference)
+                        .connectionsPerHost(maxConnectionsPerHost).connectTimeout(connectTimeout)
+                        .maxConnectionIdleTime(maxConnectionIdleTime).readPreference(readPreference)
+                        .writeConcern(writeConcern).build();
 
         return clientOptions;
     }
 
     /**
+     * Gets the seeds.
+     *
      * @return the seeds
+     * @throws CreateNativeConnectionException
+     *             if the list of server address cannot be retrieved
      */
     public List<ServerAddress> getSeeds() throws CreateNativeConnectionException {
 
@@ -123,7 +134,6 @@ public class MongoClientConfiguration {
                     throw new CreateNativeConnectionException("wrong port format " + ports[i], e);
                 } catch (UnknownHostException e) {
                     throw new CreateNativeConnectionException("connection failed with" + hosts[i], e);
-                    // TODO check if
                 }
 
             }
@@ -134,6 +144,15 @@ public class MongoClientConfiguration {
 
     }
 
+    /**
+     * Retrieve the value of a option
+     *
+     * @param option
+     *            the option
+     * @return the value specified. If not exist, the default value is returned
+     * @throws MongoValidationException
+     *             if the value can't be parsed to int
+     */
     private int getIntegerSetting(ConfigurationOptions option) throws MongoValidationException {
         Map<String, String> config = configuration.getOptions();
         int value;
@@ -142,7 +161,7 @@ public class MongoClientConfiguration {
                 value = Integer.parseInt(config.get(option.getOptionName()));
             } catch (NumberFormatException numberFormatException) {
                 throw new MongoValidationException("The " + option.getOptionName() + " must be an integer",
-                        numberFormatException);
+                                numberFormatException);
             }
         } else {
             value = Integer.parseInt(option.getDefaultValue()[0]);
@@ -151,6 +170,13 @@ public class MongoClientConfiguration {
 
     }
 
+    /**
+     * Gets the read preference.
+     *
+     * @return the read preference specified. If not exist, the default value is returned
+     * @throws MongoValidationException
+     *             if the value cannot be parsed to ReadPreference
+     */
     private ReadPreference getReadPreference() throws MongoValidationException {
         Map<String, String> config = configuration.getOptions();
         ReadPreference readPreference;
@@ -164,6 +190,15 @@ public class MongoClientConfiguration {
 
     }
 
+    /**
+     * Convert the mongo connector string option to the appropriate read preference
+     *
+     * @param readSetting
+     *            the read preference string setting
+     * @return the read preference.
+     * @throws MongoValidationException
+     *             if the value cannot be parsed to a ReadPreference
+     */
     private ReadPreference settingToReadPreference(String readSetting) throws MongoValidationException {
         ReadPreference readPreference = null;
         switch (readSetting.trim().toLowerCase()) {
@@ -189,6 +224,13 @@ public class MongoClientConfiguration {
 
     }
 
+    /**
+     * Gets the write concern.
+     *
+     * @return the write concern specified. If not exist, the default value is returned
+     * @throws MongoValidationException
+     *             if the value cannot be parsed to WriteConcern
+     */
     private WriteConcern getWriteConcern() throws MongoValidationException {
         Map<String, String> config = configuration.getOptions();
         WriteConcern writeConcern;
@@ -202,6 +244,15 @@ public class MongoClientConfiguration {
 
     }
 
+    /**
+     * Convert the mongo connector string option to the appropriate write concern
+     *
+     * @param writeSetting
+     *            the write concern string setting
+     * @return the write concern
+     * @throws MongoValidationException
+     *             if the value cannot be parsed to a WriteConcern
+     */
     private WriteConcern settingToWritePreference(String writeSetting) throws MongoValidationException {
 
         WriteConcern writeConcern = null;

@@ -19,19 +19,36 @@
 package com.stratio.connector.mongodb.core.configuration;
 
 /**
- * @author darroyo Set of options for the mongo connector.
+ * Types for the shard key.
+ * 
+ * @author darroyo
  */
 
 public enum ShardKeyType {
 
-    HASHED("hashed"), ASC("asc");
+    /** The hashed. */
+    HASHED("hashed"),
+    /** The asc. */
+    ASC("asc");
 
+    /** The shard key type. */
     private final String keyType;
 
+    /**
+     * Gets the shard key type.
+     *
+     * @return the key type
+     */
     public String getKeyType() {
         return keyType;
     }
 
+    /**
+     * Instantiates a new shard key type.
+     *
+     * @param keyType
+     *            the key type
+     */
     ShardKeyType(String keyType) {
         this.keyType = keyType;
     }

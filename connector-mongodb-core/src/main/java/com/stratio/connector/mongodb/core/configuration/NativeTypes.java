@@ -19,24 +19,48 @@
 package com.stratio.connector.mongodb.core.configuration;
 
 /**
- * @author darroyo Set of options for the mongo connector.
+ * Native types supported in Mongo.
+ * 
+ * @author darroyo
  */
 
 public enum NativeTypes {
 
+    /** The date. */
     DATE("date", java.util.Date.class);
 
+    /** The db type. */
     private final String dbType;
+
+    /** The class type. */
     private final Class<?> classType;
 
+    /**
+     * Gets the db type.
+     *
+     * @return the db type
+     */
     public String getDbType() {
         return dbType;
     }
 
+    /**
+     * Gets the class type.
+     *
+     * @return the class type
+     */
     public Class<?> getClassType() {
         return classType;
     }
 
+    /**
+     * Instantiates a new native types.
+     *
+     * @param dbType
+     *            the db type
+     * @param classType
+     *            the class type
+     */
     NativeTypes(String dbType, Class<?> classType) {
         this.dbType = dbType;
         this.classType = classType;

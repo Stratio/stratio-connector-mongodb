@@ -21,25 +21,54 @@ package com.stratio.connector.mongodb.core.configuration;
 import com.stratio.crossdata.common.statements.structures.selectors.SelectorType;
 
 /**
- * @author darroyo Set of options for the mongo connector. A default value is provided.
+ * Set of index options
+ *
+ * @author darroyo
  */
 
 public enum IndexOptions {
 
-    INDEX_TYPE("index_type", SelectorType.STRING), COMPOUND_FIELDS("compound_fields", SelectorType.STRING), SPARSE(
-            "sparse", SelectorType.BOOLEAN), UNIQUE("unique", SelectorType.BOOLEAN);
+    /** The custom index type. */
+    INDEX_TYPE("index_type", SelectorType.STRING),
+    /** The compound fields. */
+    COMPOUND_FIELDS("compound_fields", SelectorType.STRING),
+    /** Wheter the index is sparse or not. */
+    SPARSE("sparse", SelectorType.BOOLEAN),
+    /** Wheter the index is unique or not. */
+    UNIQUE("unique", SelectorType.BOOLEAN);
 
+    /** The option name. */
     private final String optionName;
+
+    /** The selector type. */
     private final SelectorType selectorType;
 
+    /**
+     * Gets the option name.
+     *
+     * @return the option name
+     */
     public String getOptionName() {
         return optionName;
     }
 
+    /**
+     * Gets the selector type.
+     *
+     * @return the selector type
+     */
     public SelectorType getSelectorType() {
         return selectorType;
     }
 
+    /**
+     * Instantiates a new index options.
+     *
+     * @param optionName
+     *            the option name
+     * @param selectorType
+     *            the selector type
+     */
     IndexOptions(String optionName, SelectorType selectorType) {
         this.optionName = optionName;
         this.selectorType = selectorType;
