@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.meta2.common.statements.structures.selectors.Selector;
-import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
+import com.stratio.crossdata.common.statements.structures.selectors.Selector;
+import com.stratio.crossdata.common.statements.structures.selectors.StringSelector;
 
 /**
  * @author david

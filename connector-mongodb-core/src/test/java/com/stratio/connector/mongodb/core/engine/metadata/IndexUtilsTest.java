@@ -26,10 +26,10 @@ import com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType;
 import com.stratio.connector.mongodb.core.configuration.IndexOptions;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.connector.mongodb.testutils.IndexMetadataBuilder;
-import com.stratio.meta.common.exceptions.UnsupportedException;
-import com.stratio.meta2.common.metadata.ColumnType;
-import com.stratio.meta2.common.metadata.IndexMetadata;
-import com.stratio.meta2.common.metadata.IndexType;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
+import com.stratio.crossdata.common.metadata.ColumnType;
+import com.stratio.crossdata.common.metadata.IndexMetadata;
+import com.stratio.crossdata.common.metadata.IndexType;
 
 /**
  * @author david

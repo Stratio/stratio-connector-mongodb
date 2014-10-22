@@ -37,14 +37,14 @@ import com.stratio.connector.mongodb.core.engine.query.utils.MetaResultUtils;
 import com.stratio.connector.mongodb.core.engine.query.utils.ProjectDBObjectBuilder;
 import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.meta.common.data.ResultSet;
-import com.stratio.meta.common.exceptions.UnsupportedException;
-import com.stratio.meta.common.logicalplan.Filter;
-import com.stratio.meta.common.logicalplan.Limit;
-import com.stratio.meta.common.logicalplan.LogicalStep;
-import com.stratio.meta.common.logicalplan.Project;
-import com.stratio.meta.common.logicalplan.Select;
-import com.stratio.meta.common.statements.structures.relationships.Operator;
+import com.stratio.crossdata.common.data.ResultSet;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
+import com.stratio.crossdata.common.logicalplan.Filter;
+import com.stratio.crossdata.common.logicalplan.Limit;
+import com.stratio.crossdata.common.logicalplan.LogicalStep;
+import com.stratio.crossdata.common.logicalplan.Project;
+import com.stratio.crossdata.common.logicalplan.Select;
+import com.stratio.crossdata.common.statements.structures.relationships.Operator;
 
 public class LogicalWorkflowExecutor {
 

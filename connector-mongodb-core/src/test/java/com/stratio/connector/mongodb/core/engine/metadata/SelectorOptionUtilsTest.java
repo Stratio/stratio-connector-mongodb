@@ -25,10 +25,10 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.meta2.common.statements.structures.selectors.BooleanSelector;
-import com.stratio.meta2.common.statements.structures.selectors.IntegerSelector;
-import com.stratio.meta2.common.statements.structures.selectors.Selector;
-import com.stratio.meta2.common.statements.structures.selectors.StringSelector;
+import com.stratio.crossdata.common.statements.structures.selectors.BooleanSelector;
+import com.stratio.crossdata.common.statements.structures.selectors.IntegerSelector;
+import com.stratio.crossdata.common.statements.structures.selectors.Selector;
+import com.stratio.crossdata.common.statements.structures.selectors.StringSelector;
 
 /**
  * @author david

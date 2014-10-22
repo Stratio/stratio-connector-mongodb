@@ -26,13 +26,13 @@ import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.MongoMetadataEngine;
 import com.stratio.connector.mongodb.core.engine.MongoQueryEngine;
 import com.stratio.connector.mongodb.core.engine.MongoStorageEngine;
-import com.stratio.connectors.ConnectorApp;
-import com.stratio.meta.common.connector.IConfiguration;
-import com.stratio.meta.common.connector.IMetadataEngine;
-import com.stratio.meta.common.connector.IQueryEngine;
-import com.stratio.meta.common.connector.IStorageEngine;
-import com.stratio.meta.common.exceptions.ExecutionException;
-import com.stratio.meta.common.exceptions.UnsupportedException;
+import com.stratio.crossdata.common.connector.IConfiguration;
+import com.stratio.crossdata.common.connector.IMetadataEngine;
+import com.stratio.crossdata.common.connector.IQueryEngine;
+import com.stratio.crossdata.common.connector.IStorageEngine;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
+import com.stratio.crossdata.connectors.ConnectorApp;
 
 /**
  * This class implements the connector for Mongo. Created by darroyo on 8/07/14.

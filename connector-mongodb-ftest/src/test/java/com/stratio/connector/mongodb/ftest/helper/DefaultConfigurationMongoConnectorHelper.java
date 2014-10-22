@@ -24,10 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
-import com.stratio.meta.common.connector.ConnectorClusterConfig;
-import com.stratio.meta.common.exceptions.ConnectionException;
-import com.stratio.meta.common.exceptions.InitializationException;
-import com.stratio.meta2.common.data.ClusterName;
+import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
+import com.stratio.crossdata.common.data.ClusterName;
+import com.stratio.crossdata.common.exceptions.ConnectionException;
+import com.stratio.crossdata.common.exceptions.InitializationException;
 
 /**
  * @author darroyo

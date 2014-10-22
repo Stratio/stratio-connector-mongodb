@@ -22,13 +22,13 @@ import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.UniqueProjectQueryEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutor;
-import com.stratio.meta.common.connector.IResultHandler;
-import com.stratio.meta.common.data.ResultSet;
-import com.stratio.meta.common.exceptions.ExecutionException;
-import com.stratio.meta.common.exceptions.UnsupportedException;
-import com.stratio.meta.common.logicalplan.LogicalWorkflow;
-import com.stratio.meta.common.logicalplan.Project;
-import com.stratio.meta.common.result.QueryResult;
+import com.stratio.crossdata.common.connector.IResultHandler;
+import com.stratio.crossdata.common.data.ResultSet;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
+import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
+import com.stratio.crossdata.common.logicalplan.Project;
+import com.stratio.crossdata.common.result.QueryResult;
 
 public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
 

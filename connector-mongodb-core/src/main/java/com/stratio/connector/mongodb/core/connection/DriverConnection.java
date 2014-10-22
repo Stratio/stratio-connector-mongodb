@@ -25,8 +25,8 @@ import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.mongodb.core.configuration.MongoClientConfiguration;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.meta.common.connector.ConnectorClusterConfig;
-import com.stratio.meta.common.security.ICredentials;
+import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
+import com.stratio.crossdata.common.security.ICredentials;
 
 /**
  * @author darroyo

@@ -42,7 +42,7 @@ import com.mongodb.WriteConcern;
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.util.ConnectorParser;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.meta.common.connector.ConnectorClusterConfig;
+import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 
 /**
  * The configuration for Mongo connector.

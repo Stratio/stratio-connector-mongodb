@@ -17,7 +17,7 @@
  */
 package com.stratio.connector.mongodb.core.exceptions;
 
-import com.stratio.meta.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
 
 public class MongoInsertException extends ExecutionException {
 

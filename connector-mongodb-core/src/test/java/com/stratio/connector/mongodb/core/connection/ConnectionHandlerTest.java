@@ -41,10 +41,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
-import com.stratio.meta.common.connector.ConnectorClusterConfig;
-import com.stratio.meta.common.connector.IConfiguration;
-import com.stratio.meta.common.security.ICredentials;
-import com.stratio.meta2.common.data.ClusterName;
+import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
+import com.stratio.crossdata.common.connector.IConfiguration;
+import com.stratio.crossdata.common.data.ClusterName;
+import com.stratio.crossdata.common.security.ICredentials;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(value = { MongoConnectionHandler.class })

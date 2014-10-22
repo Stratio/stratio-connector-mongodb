@@ -28,16 +28,16 @@ import org.mockito.internal.util.reflection.Whitebox;
 import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.connector.mongodb.testutils.LogicalWorkFlowCreator;
-import com.stratio.meta.common.connector.Operations;
-import com.stratio.meta.common.logicalplan.Filter;
-import com.stratio.meta.common.logicalplan.Limit;
-import com.stratio.meta.common.logicalplan.LogicalStep;
-import com.stratio.meta.common.logicalplan.LogicalWorkflow;
-import com.stratio.meta.common.logicalplan.Project;
-import com.stratio.meta.common.logicalplan.Select;
-import com.stratio.meta.common.statements.structures.relationships.Operator;
-import com.stratio.meta2.common.data.ClusterName;
-import com.stratio.meta2.common.data.TableName;
+import com.stratio.crossdata.common.connector.Operations;
+import com.stratio.crossdata.common.data.ClusterName;
+import com.stratio.crossdata.common.data.TableName;
+import com.stratio.crossdata.common.logicalplan.Filter;
+import com.stratio.crossdata.common.logicalplan.Limit;
+import com.stratio.crossdata.common.logicalplan.LogicalStep;
+import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
+import com.stratio.crossdata.common.logicalplan.Project;
+import com.stratio.crossdata.common.logicalplan.Select;
+import com.stratio.crossdata.common.statements.structures.relationships.Operator;
 
 public class LogicalWorkflowExecutorTest {
 

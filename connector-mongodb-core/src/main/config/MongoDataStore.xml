@@ -18,7 +18,7 @@
 -->
 <DataStore>
 	<Name>Mongo</Name>
-	<Version>2.4.9</Version>
+	<Version>2.6.4</Version>
 	<RequiredProperties>
 		<Property>
 			<PropertyName>Hosts</PropertyName>

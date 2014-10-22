@@ -22,8 +22,8 @@ import java.util.Set;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.meta.common.logicalplan.Select;
-import com.stratio.meta2.common.data.ColumnName;
+import com.stratio.crossdata.common.data.ColumnName;
+import com.stratio.crossdata.common.logicalplan.Select;
 
 public class ProjectDBObjectBuilder extends DBObjectBuilder {
 

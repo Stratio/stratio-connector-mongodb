@@ -17,7 +17,7 @@
 */
 package com.stratio.connector.mongodb.core.exceptions;
 
-import com.stratio.meta.common.exceptions.UnsupportedException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
 
 public class MongoValidationException extends UnsupportedException {
 
