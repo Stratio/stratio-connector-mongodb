@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.bson.types.BasicBSONList;
 import org.junit.Test;
@@ -58,12 +59,11 @@ public class FilterDBObjectBuilderTest {
 
     @Test
     public void addSimpleFilterTest() throws Exception {
-        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false);
-        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
 
         Filter filter = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.GET, 5);
 
-        filterDBObjectBuilder.addAll(Arrays.asList(filter));
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false, Arrays.asList(filter));
+        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
 
         DBObject filterQuery = (DBObject) Whitebox.getInternalState(filterDBObjectBuilder, "filterQuery");
         assertNotNull(filterQuery);
@@ -78,14 +78,12 @@ public class FilterDBObjectBuilderTest {
     @Test
     public void addMultipleFiltersTest() throws Exception {
 
-        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false);
-        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
-
         Filter filtergte = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.GET, 5);
         Filter filterdi = buildFilter(Operations.FILTER_NON_INDEXED_DISTINCT, CATALOG, TABLE, COLUMN_1,
                         Operator.DISTINCT, "five");
-
-        filterDBObjectBuilder.addAll(Arrays.asList(filtergte, filterdi));
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false, Arrays.asList(filtergte,
+                        filterdi));
+        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
 
         DBObject filterQuery = (DBObject) Whitebox.getInternalState(filterDBObjectBuilder, "filterQuery");
         assertNotNull(filterQuery);
@@ -108,12 +106,10 @@ public class FilterDBObjectBuilderTest {
     @Test(expected = MongoValidationException.class)
     public void addNotSupportedFilterTest() throws Exception {
 
-        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false);
-        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
-
         Filter filter = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.MATCH, 5);
 
-        filterDBObjectBuilder.addAll(Arrays.asList(filter));
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false, Arrays.asList(filter));
+        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
 
     }
 
@@ -121,7 +117,7 @@ public class FilterDBObjectBuilderTest {
 
     @Test
     public void buildTest() throws Exception {
-        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false);
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false, Collections.EMPTY_LIST);
 
         DBObject dbObject = QueryBuilder.start(COLUMN_1).greaterThanEquals(5).get();
 
@@ -141,7 +137,7 @@ public class FilterDBObjectBuilderTest {
 
     @Test
     public void buildAggregationTest() throws Exception {
-        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(true);
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(true, Collections.EMPTY_LIST);
 
         DBObject dbObject = QueryBuilder.start(COLUMN_1).greaterThanEquals(5).get();
 

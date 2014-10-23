@@ -22,15 +22,30 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.stratio.crossdata.common.logicalplan.Limit;
 
+/**
+ * The Class LimitDBObjectBuilder.
+ */
 public class LimitDBObjectBuilder extends DBObjectBuilder {
 
+    /** The limit. */
     private int limit;
 
+    /**
+     * Instantiates a new limit builder.
+     *
+     * @param limit
+     *            the limit
+     */
     public LimitDBObjectBuilder(Limit limit) {
         super(true);
         this.limit = limit.getLimit();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.stratio.connector.mongodb.core.engine.query.utils.DBObjectBuilder#build()
+     */
     @Override
     public DBObject build() {
         return new BasicDBObject("$limit", limit);

@@ -46,26 +46,41 @@ import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.logicalplan.Select;
 import com.stratio.crossdata.common.statements.structures.relationships.Operator;
 
+/**
+ * Prepares and performs MongoDB queries from a logical workflow.
+ */
 public class LogicalWorkflowExecutor {
 
+    /** The logger. */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /** The projection. */
     private Project projection = null;
-    /**
-     * The list of filters without including full-text filters
-     */
+
+    /** The list of filters without including full-text filters. */
     private List<Filter> filterList = new ArrayList<Filter>();
     // private Filter textFilter = null;
+    /** The limit. */
     private Limit limit = null;
+
+    /** The select. */
     private Select select = null;
-    /**
-     * Whether the aggregation framework is compulsory for logicalworkflow
-     */
+
+    /** Whether the aggregation framework is compulsory for logicalworkflow or not. */
     private boolean aggregationRequired;
 
+    /** The query. */
     private List<DBObject> query = null;
 
-    public LogicalWorkflowExecutor(LogicalStep initialProject) throws MongoQueryException, UnsupportedException {
+    /**
+     * Instantiates a new logical workflow executor ready for the execution.
+     *
+     * @param initialProject
+     *            the initial project
+     * @throws UnsupportedException
+     *             if the query specified in the logical workflow is not supported
+     */
+    public LogicalWorkflowExecutor(LogicalStep initialProject) throws UnsupportedException {
 
         readLogicalWorkflow(initialProject);
         aggregationRequired();
@@ -73,13 +88,24 @@ public class LogicalWorkflowExecutor {
 
     }
 
+    /**
+     * Computes if the aggregation is required.
+     */
     private void aggregationRequired() {
         // Aggregation features will be included in the next release
         aggregationRequired = false;
 
     }
 
-    private void readLogicalWorkflow(LogicalStep initialProject) throws MongoQueryException, UnsupportedException {
+    /**
+     * Validates the logical workflow and stores the needed steps.
+     *
+     * @param initialProject
+     *            the initial project
+     * @throws UnsupportedException
+     *             the unsupported exception
+     */
+    private void readLogicalWorkflow(LogicalStep initialProject) throws UnsupportedException {
         LogicalStep logicalStep = initialProject;
 
         do {
@@ -122,10 +148,21 @@ public class LogicalWorkflowExecutor {
 
     }
 
+    /**
+     * Checks if the aggregation is required.
+     *
+     * @return true, if the aggregation is required
+     */
     private boolean isAggregationRequired() {
         return aggregationRequired;
     }
 
+    /**
+     * Creates the corresponding MongoDB query.
+     *
+     * @throws MongoValidationException
+     *             if the query specified in the logical workflow is not supported
+     */
     private void buildQuery() throws MongoValidationException {
         query = new ArrayList<DBObject>();
 
@@ -141,21 +178,38 @@ public class LogicalWorkflowExecutor {
 
     }
 
+    /**
+     * Builds the limit.
+     *
+     * @return the DB object
+     */
     private DBObject buildLimit() {
         LimitDBObjectBuilder limitDBObject = new LimitDBObjectBuilder(limit);
         return limitDBObject.build();
     }
 
+    /**
+     * Builds the project.
+     *
+     * @return the DB object
+     * @throws MongoValidationException
+     *             if the project specified in the logical workflow is not supported
+     */
     private DBObject buildProject() throws MongoValidationException {
         ProjectDBObjectBuilder projectDBObject = new ProjectDBObjectBuilder(aggregationRequired, select);
         return projectDBObject.build();
     }
 
+    /**
+     * Builds the filter.
+     *
+     * @return the DB object
+     * @throws MongoValidationException
+     *             if any filters specified in the logical workflow is not supported
+     */
     private DBObject buildFilter() throws MongoValidationException {
 
-        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(aggregationRequired);
-
-        filterDBObjectBuilder.addAll(filterList);
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(aggregationRequired, filterList);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Filter:" + filterDBObjectBuilder.build());
@@ -164,65 +218,100 @@ public class LogicalWorkflowExecutor {
     }
 
     /**
-     * Execute the query
+     * Execute the query.
      *
      * @param mongoClient
+     *            the mongo client
      * @return the result set
      * @throws MongoQueryException
+     *             if an error exist during the execution
      * @throws MongoValidationException
+     *             if the query specified in the logical workflow is not supported
      */
     public ResultSet executeQuery(MongoClient mongoClient) throws MongoQueryException, MongoValidationException {
 
         DB db = mongoClient.getDB(projection.getCatalogName());
-        DBCollection coll = db.getCollection(projection.getTableName().getName());
-        ResultSet resultSet = new ResultSet();
+        DBCollection collection = db.getCollection(projection.getTableName().getName());
+        ResultSet resultSet;
 
         if (isAggregationRequired()) {
+            resultSet = executeAggregationQuery(collection);
+        } else {
+            resultSet = executeBasicQuery(collection);
+        }
 
-            // AggregationOptions aggOptions = AggregationOptions.builder()
-            // .allowDiskUse(true)
-            // .batchSize(size)
-            // pipeline,aggOptions => dbcursor
+        resultSet.setColumnMetadata(MetaResultUtils.createMetadata(projection, select));
 
+        return resultSet;
+    }
+
+    /**
+     * Execute an usual query.
+     *
+     * @param collection
+     *            the collection
+     * @return the result set
+     * @throws MongoQueryException
+     *             if an error exist during the execution
+     * @throws MongoValidationException
+     *             if the query specified in the logical workflow is not supported
+     */
+    private ResultSet executeBasicQuery(DBCollection collection) throws MongoQueryException, MongoValidationException {
+        ResultSet resultSet = new ResultSet();
+        DBCursor cursor = collection.find(query.get(0), buildProject());
+        if (limit != null) {
+            cursor = cursor.limit(limit.getLimit());
+        }
+        DBObject rowDBObject;
+        try {
+            while (cursor.hasNext()) {
+
+                rowDBObject = cursor.next();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("SResult: " + rowDBObject);
+                }
+                resultSet.add(MetaResultUtils.createRowWithAlias(rowDBObject, select));
+            }
+        } catch (MongoException e) {
+            throw new MongoQueryException(e.getMessage(), e);
+        } finally {
+            cursor.close();
+        }
+        return resultSet;
+    }
+
+    /**
+     * Execute an aggregation query.
+     *
+     * @param collection
+     *            the collection
+     * @return the result set
+     * @throws MongoQueryException
+     *             if an error exist during the execution
+     */
+    private ResultSet executeAggregationQuery(DBCollection collection) throws MongoQueryException {
+        ResultSet resultSet = new ResultSet();
+        // AggregationOptions aggOptions = AggregationOptions.builder()
+        // .allowDiskUse(true)
+        // .batchSize(size)
+        // pipeline,aggOptions => dbcursor
+        try {
             int stage = 1;
             for (DBObject aggregationStage : query) {
                 logger.debug("Aggregate framework stage (" + (stage++) + ") : " + aggregationStage.toString());
             }
 
-            AggregationOutput aggOutput = coll.aggregate(query);
+            AggregationOutput aggOutput = collection.aggregate(query);
             for (DBObject result : aggOutput.results()) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("AggResult: " + result);
                 }
                 resultSet.add(MetaResultUtils.createRowWithAlias(result, select));
             }
-
-        } else {
-
-            DBCursor cursor = coll.find(query.get(0), buildProject());
-            if (limit != null) {
-                cursor = cursor.limit(limit.getLimit());
-            }
-            DBObject rowDBObject;
-            try {
-                while (cursor.hasNext()) {
-
-                    rowDBObject = cursor.next();
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("SResult: " + rowDBObject);
-                    }
-                    resultSet.add(MetaResultUtils.createRowWithAlias(rowDBObject, select));
-                }
-            } catch (MongoException e) {
-                throw new MongoQueryException(e.getMessage(), e);
-            } finally {
-                cursor.close();
-            }
+        } catch (MongoException mongoException) {
+            throw new MongoQueryException(mongoException.getMessage(), mongoException);
         }
-
-        resultSet.setColumnMetadata(MetaResultUtils.createMetadata(projection, select));
         return resultSet;
-
     }
 
 }

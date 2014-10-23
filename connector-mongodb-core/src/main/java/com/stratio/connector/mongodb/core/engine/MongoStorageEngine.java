@@ -34,36 +34,41 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.Cell;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.Row;
-import com.stratio.crossdata.common.exceptions.ExecutionException;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
 /**
- * This class performs operations insert and delete in Mongo. Created by darroyo on 10/07/14.
+ * This class performs insert and delete operations in Mongo.
  */
 public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     /**
+     * Instantiates a new mongo storage engine.
+     *
      * @param connectionHandler
+     *            the connection handler
      */
     public MongoStorageEngine(MongoConnectionHandler connectionHandler) {
         super(connectionHandler);
     }
 
     /**
-     * Insert a document in MongoDB.
+     * Inserts a document in MongoDB.
      *
-     * @param targetTable the table metadata.
-     * @param row         the row.
+     * @param targetTable
+     *            the table metadata
+     * @param row
+     *            the row. it will be the MongoDB document
      * @param connection
+     *            the connection
      * @throws MongoInsertException
+     *             if an error exist when inserting data
      * @throws MongoValidationException
-     * @throws ExecutionException       in case of failure during the execution.
+     *             if the specified operation is not supported
      */
     @Override
     protected void insert(TableMetadata targetTable, Row row, Connection<MongoClient> connection)
-            throws MongoInsertException, MongoValidationException {
+                    throws MongoInsertException, MongoValidationException {
 
         MongoClient mongoClient = connection.getNativeConnection();
 
@@ -109,19 +114,22 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     }
 
     /**
-     * Insert a document in MongoDB.
+     * Inserts a collection of documents in MongoDB.
      *
-     * @param targetTable the table metadata.
-     * @param rows        the set of rows.
+     * @param targetTable
+     *            the table metadata.
+     * @param rows
+     *            the set of rows.
      * @param connection
-     * @throws MongoValidationException
+     *            the connection
      * @throws MongoInsertException
-     * @throws ExecutionException       in case of failure during the execution.
-     * @throws UnsupportedException     in case of the operation is not supported
+     *             if an error exist when inserting data
+     * @throws MongoValidationException
+     *             if the specified operation is not supported
      */
     @Override
     protected void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
-            throws MongoInsertException, MongoValidationException {
+                    throws MongoInsertException, MongoValidationException {
 
         for (Row row : rows) {
             insert(targetTable, row, connection);
@@ -130,8 +138,12 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     }
 
     /**
+     * Validates the data type.
+     *
      * @param columnType
-     * @throws MongoInsertException
+     *            the column type
+     * @throws MongoValidationException
+     *             if the type is not supported
      */
     private void validateDataType(ColumnType columnType) throws MongoValidationException {
         validateDataType(columnType, null);
@@ -139,15 +151,19 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     }
 
     /**
+     * Validates the data type.
+     *
+     * @param colType
+     *            the column type
      * @param cellValue
-     * @param columnMetadata
-     * @throws MongoInsertException
+     *            the cell value
      * @throws MongoValidationException
+     *             if the type is not supported
      */
-    private void validateDataType(ColumnType colType, Object cellValue) throws MongoValidationException {
+    private void validateDataType(ColumnType columnType, Object cellValue) throws MongoValidationException {
 
         // TODO review with meta.
-        switch (colType) {
+        switch (columnType) {
         case BIGINT:
         case BOOLEAN:
         case INT:
@@ -158,24 +174,31 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
             break;
         case SET: // TODO isSupported?
         case LIST:
-            validateDataType(colType.getDBInnerType());
+            validateDataType(columnType.getDBInnerType());
             break;
         case MAP: // TODO isSupported?
-            validateDataType(colType.getDBInnerType());
-            validateDataType(colType.getDBInnerValueType());
+            validateDataType(columnType.getDBInnerType());
+            validateDataType(columnType.getDBInnerValueType());
             break;
         case NATIVE:
-            throw new MongoValidationException("Type not supported: " + colType.toString());
+            throw new MongoValidationException("Type not supported: " + columnType.toString());
             // // TODO if (!NativeTypes.DATE.getDbType().equals(colType.getDbType()))
             // if (!(cellValue instanceof Date))
             // throw new MongoInsertException("Type not supported: " + colType.toString());
             // // TODO if(columnMetadata.getParameters())
         default:
-            throw new MongoValidationException("Type not supported: " + colType.toString());
+            throw new MongoValidationException("Type not supported: " + columnType.toString());
         }
 
     }
 
+    /**
+     * Checks if is empty.
+     *
+     * @param value
+     *            the value
+     * @return true, if is empty
+     */
     private boolean isEmpty(String value) {
         return value == null || value.trim().isEmpty();
     }

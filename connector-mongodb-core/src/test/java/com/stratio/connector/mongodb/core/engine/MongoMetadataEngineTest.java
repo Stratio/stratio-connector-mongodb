@@ -181,7 +181,7 @@ public class MongoMetadataEngineTest {
     public void createIndexTest() throws ExecutionException, UnsupportedException {
 
         IndexMetadataBuilder indexMetadataBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                IndexType.DEFAULT);
+                        IndexType.DEFAULT);
         indexMetadataBuilder.addColumn(COLUMN_NAME, ColumnType.VARCHAR);
         indexMetadataBuilder.addColumn(COLUMN_NAME2, ColumnType.INT);
         IndexMetadata indexMetadata = indexMetadataBuilder.build();
@@ -210,7 +210,7 @@ public class MongoMetadataEngineTest {
     public void dropIndexTest() throws ExecutionException, UnsupportedException {
 
         IndexMetadataBuilder indexMetadataBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                IndexType.DEFAULT);
+                        IndexType.DEFAULT);
         indexMetadataBuilder.addColumn(COLUMN_NAME, ColumnType.VARCHAR);
         indexMetadataBuilder.addColumn(COLUMN_NAME2, ColumnType.INT);
         IndexMetadata indexMetadata = indexMetadataBuilder.build();

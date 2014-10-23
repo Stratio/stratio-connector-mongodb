@@ -41,9 +41,7 @@ import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.ConnectorException;
-import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
@@ -68,7 +66,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     }
 
     @Test
-    public void testInsertFloat() throws UnsupportedException, ExecutionException {
+    public void testInsertFloat() throws ConnectorException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
                         + clusterName.getName() + " ***********************************");
@@ -91,7 +89,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     }
 
     @Test
-    public void testInsertSet() throws UnsupportedException, ExecutionException {
+    public void testInsertSet() throws ConnectorException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
                         + clusterName.getName() + " ***********************************");
@@ -118,7 +116,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     }
 
     @Test
-    public void testInsertList() throws UnsupportedException, ExecutionException {
+    public void testInsertList() throws ConnectorException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
                         + clusterName.getName() + " ***********************************");
@@ -143,7 +141,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     }
 
     @Test
-    public void testInsertMap() throws UnsupportedException, ExecutionException {
+    public void testInsertMap() throws ConnectorException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
                         + clusterName.getName() + " ***********************************");
@@ -171,7 +169,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     }
 
     @Override
-    public void testInsertDate() throws UnsupportedException, ExecutionException {
+    public void testInsertDate() throws ConnectorException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
                         + clusterName.getName() + " ***********************************");
@@ -190,7 +188,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
     }
 
     @Test
-    public void testInsertNull() throws UnsupportedException, ExecutionException {
+    public void testInsertNull() throws ConnectorException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
                         + clusterName.getName() + " ***********************************");

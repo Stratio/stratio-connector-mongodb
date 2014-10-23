@@ -28,11 +28,17 @@ import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class StorageUtils.
+ *
  * @author david
  */
 public final class StorageUtils {
 
+    /**
+     * Instantiates a new storage utils.
+     */
     private StorageUtils() {
     }
 
@@ -40,31 +46,34 @@ public final class StorageUtils {
      * Builds the primaryKey. Only the value will be stored when receiving a single primaryKey. Otherwise, either the
      * name or the value will be stored.
      *
-     * @param targetTable
+     * @param tableMetadata
+     *            the table metadata
      * @param row
-     * @return
+     *            the row
+     * @return the primary key value
      * @throws MongoValidationException
+     *             if the specified primary key is not valid
      */
-    public static Object buildPK(TableMetadata targetTable, Row row) throws MongoValidationException {
+    public static Object buildPK(TableMetadata tableMetadata, Row row) throws MongoValidationException {
 
         Object pk = null;
         DBObject bsonPK = null;
         Object cellValue;
 
-        List<ColumnName> primaryKeyList = targetTable.getPrimaryKey();
+        List<ColumnName> primaryKeyList = tableMetadata.getPrimaryKey();
 
         // Building the pk to insert in Mongo
         if (!primaryKeyList.isEmpty()) {
             if (primaryKeyList.size() == 1) {
                 cellValue = row.getCell(primaryKeyList.get(0).getName()).getValue();
-                validatePKDataType(targetTable.getColumns().get(primaryKeyList.get(0)).getColumnType());
+                validatePKDataType(tableMetadata.getColumns().get(primaryKeyList.get(0)).getColumnType());
                 pk = cellValue;
             } else {
 
                 bsonPK = new BasicDBObject();
                 for (ColumnName columnName : primaryKeyList) {
                     cellValue = row.getCell(columnName.getName()).getValue();
-                    validatePKDataType(targetTable.getColumns().get(columnName).getColumnType());
+                    validatePKDataType(tableMetadata.getColumns().get(columnName).getColumnType());
                     bsonPK.put(columnName.getName(), cellValue);
                 }
                 pk = bsonPK;
@@ -74,14 +83,32 @@ public final class StorageUtils {
         return pk;
     }
 
+    /**
+     * Checks if the column type is supported in primary keys.
+     *
+     * @param columnType
+     *            the column type
+     * @throws MongoValidationException
+     *             if the type is not supported
+     */
     private static void validatePKDataType(ColumnType columnType) throws MongoValidationException {
         validatePKDataType(columnType, null);
 
     }
 
-    private static void validatePKDataType(ColumnType colType, Object cellValue) throws MongoValidationException {
+    /**
+     * Checks if the column type is supported in primary keys.
+     *
+     * @param columnType
+     *            the columnType type
+     * @param cellValue
+     *            the cell value
+     * @throws MongoValidationException
+     *             if the type is not supported
+     */
+    private static void validatePKDataType(ColumnType columnType, Object cellValue) throws MongoValidationException {
 
-        switch (colType) {
+        switch (columnType) {
         case BIGINT:
         case INT:
         case TEXT:
@@ -95,7 +122,7 @@ public final class StorageUtils {
         case MAP:
         case NATIVE:
         default:
-            throw new MongoValidationException("Type not supported as PK: " + colType.toString());
+            throw new MongoValidationException("Type not supported as PK: " + columnType.toString());
 
         }
 

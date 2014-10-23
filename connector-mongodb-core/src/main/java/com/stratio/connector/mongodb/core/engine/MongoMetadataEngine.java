@@ -39,6 +39,7 @@ import com.stratio.crossdata.common.metadata.CatalogMetadata;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
+
 /**
  * The Class MongoMetadataEngine.
  *

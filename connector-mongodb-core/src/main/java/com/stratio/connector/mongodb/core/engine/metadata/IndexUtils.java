@@ -43,6 +43,8 @@ import com.stratio.crossdata.common.statements.structures.selectors.Selector;
 import com.stratio.crossdata.common.statements.structures.selectors.StringSelector;
 
 /**
+ * The Class IndexUtils.
+ *
  * @author david
  */
 public final class IndexUtils {
@@ -51,9 +53,13 @@ public final class IndexUtils {
     }
 
     /**
+     * Retrieves the index options specified and returns them in the Mongo format.
+     *
      * @param indexMetadata
-     * @return
+     *            the index metadata
+     * @return the mongo index options
      * @throws MongoValidationException
+     *             if any option specified is not supported
      */
     public static DBObject getCustomOptions(IndexMetadata indexMetadata) throws MongoValidationException {
         DBObject indexOptionsDBObject = new BasicDBObject();
@@ -80,9 +86,13 @@ public final class IndexUtils {
     }
 
     /**
+     * Creates the Mongo index based on the index metadata options.
+     *
      * @param indexMetadata
-     * @return
+     *            the index metadata
+     * @return the Mongo index
      * @throws UnsupportedException
+     *             the unsupported exception
      */
     public static DBObject getIndexDBObject(IndexMetadata indexMetadata) throws UnsupportedException {
         IndexType indexType = indexMetadata.getType();
@@ -108,10 +118,6 @@ public final class IndexUtils {
         return indexDBObject;
     }
 
-    /**
-     * @return
-     * @throws UnsupportedException
-     */
     private static DBObject getCustomIndexDBObject(IndexMetadata indexMetadata) throws UnsupportedException {
         DBObject indexDBObject = new BasicDBObject();
         Map<String, Selector> options = SelectorOptionsUtils.processOptions(indexMetadata.getOptions());
@@ -159,20 +165,27 @@ public final class IndexUtils {
     }
 
     /**
+     * Utility for the custom index type. Parse the compound fields value.
+     *
      * @param options
-     * @param selectorSharded
-     * @return
+     *            the options
+     * @param indexType
+     *            the index type
+     * @param indexMetadata
+     *            the index metadata
+     * @return the index fields
      * @throws UnsupportedException
+     *             if the fields are malformed
      */
     private static String[] getCustomIndexDBObjectFields(Map<String, Selector> options, String indexType,
                     IndexMetadata indexMetadata) throws UnsupportedException {
-        String[] fields;
+        String[] fields = null;
         Selector selector = options.get(COMPOUND_FIELDS.getOptionName());
         if (COMPOUND.getIndexType().equals(indexType)) {
             if (selector != null) {
                 fields = ((StringSelector) selector).getValue().split(",");
             } else {
-                throw new UnsupportedException("The custom index must have 1 o more fields");
+                throw new UnsupportedException("The compound index must have 1 o more fields");
             }
         } else {
             int i = 0;
@@ -185,10 +198,16 @@ public final class IndexUtils {
     }
 
     /**
+     * Drop index with the mongo default name. The name is created based on the corresponding index type.
+     *
      * @param indexMetadata
+     *            the index metadata
      * @param db
+     *            the db
      * @throws UnsupportedException
+     *             if not supported
      * @throws ExecutionException
+     *             if an error exist when running the db command
      */
     public static void dropIndexWithDefaultName(IndexMetadata indexMetadata, DB db) throws UnsupportedException,
                     ExecutionException {

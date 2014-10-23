@@ -28,8 +28,19 @@ import com.stratio.crossdata.common.logicalplan.Select;
 
 public class ProjectDBObjectBuilder extends DBObjectBuilder {
 
-    private BasicDBObject projectQuery;
+    /** The fields projected in Mongo. */
+    private DBObject projectQuery;
 
+    /**
+     * Instantiates a new project builder.
+     *
+     * @param useAggregation
+     *            whether the project use the aggregation framework or not
+     * @param select
+     *            the select
+     * @throws MongoValidationException
+     *             if the select specified in the logical workflow is not supported
+     */
     public ProjectDBObjectBuilder(boolean useAggregation, Select select) throws MongoValidationException {
         super(useAggregation);
 
@@ -48,6 +59,11 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
 
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.stratio.connector.mongodb.core.engine.query.utils.DBObjectBuilder#build()
+     */
     @Override
     public DBObject build() {
         DBObject projectDBObject;

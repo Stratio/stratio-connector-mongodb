@@ -33,7 +33,8 @@ import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.structures.ColumnMetadata;
 
 /**
- * @author david
+ * The utility class MetaResultUtils.
+ *
  */
 public final class MetaResultUtils {
 
@@ -41,14 +42,16 @@ public final class MetaResultUtils {
     }
 
     /**
-     * This method creates a row from a Mongo result. If there is no result a null value is inserted
+     * Creates a row with alias from a Mongo result. A null value is inserted if any field of the row is missing.
      *
      * @param rowDBObject
      *            a bson containing the result.
+     * @param select
+     *            the select
      * @return the row.
      */
     public static Row createRowWithAlias(DBObject rowDBObject, Select select) {
-        // TODO avoid double for => iterate rows here
+
         Row row = new Row();
         Map<ColumnName, String> aliasMapping = select.getColumnMap();
 
@@ -63,13 +66,24 @@ public final class MetaResultUtils {
 
             row.addCell(field, new Cell(value));
         }
+
         return row;
     }
 
+    /**
+     * Creates the column metadata.
+     *
+     * @param projection
+     *            the projection
+     * @param select
+     *            the select
+     * @return the columns metadata
+     */
     public static List<ColumnMetadata> createMetadata(Project projection, Select select) {
         List<ColumnMetadata> retunColumnMetadata = new ArrayList<>();
         for (ColumnName colName : select.getColumnMap().keySet()) {
 
+            // TODO select.getColumnMap().get(colName)
             ColumnType colType = select.getTypeMap().get(colName.getQualifiedName());
 
             colType = updateColumnType(colType);
@@ -84,6 +98,13 @@ public final class MetaResultUtils {
         return retunColumnMetadata;
     }
 
+    /**
+     * Update column type.
+     *
+     * @param colType
+     *            the col type
+     * @return the column type
+     */
     private static ColumnType updateColumnType(ColumnType colType) {
         String dbType;
         switch (colType) {

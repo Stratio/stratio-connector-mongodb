@@ -44,6 +44,8 @@ import com.stratio.crossdata.common.statements.structures.selectors.Selector;
 import com.stratio.crossdata.common.statements.structures.selectors.StringSelector;
 
 /**
+ * The Class ShardUtils.
+ *
  * @author david
  */
 public final class ShardUtils {
@@ -57,8 +59,11 @@ public final class ShardUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShardUtils.class);
 
     /**
-     * @param tableMetadata
-     * @return true if sharding is required
+     * Checks if the collection is sharded.
+     *
+     * @param options
+     *            the options
+     * @return true if the sharding is required
      */
     public static boolean collectionIsSharded(Map<String, Selector> options) {
 
@@ -77,12 +82,16 @@ public final class ShardUtils {
     }
 
     /**
-     * Shard a collection
+     * Shard a collection.
      *
      * @param mongoClient
+     *            the mongo client
      * @param tableMetadata
+     *            the table metadata
      * @throws ExecutionException
+     *             if an error exist when sharding the collection
      * @throws UnsupportedException
+     *             if the specified operation is not supported
      */
     public static void shardCollection(MongoClient mongoClient, TableMetadata tableMetadata) throws ExecutionException,
                     UnsupportedException {
@@ -91,11 +100,9 @@ public final class ShardUtils {
         enableSharding(mongoClient, catalogName);
 
         DBObject shardKey = new BasicDBObject();
-
         Map<String, Selector> options = SelectorOptionsUtils.processOptions(tableMetadata.getOptions());
 
         ShardKeyType shardKeyType = getShardKeyType(options);
-
         String[] shardKeyFields = getShardKeyFields(options, shardKeyType);
 
         switch (shardKeyType) {
@@ -121,13 +128,23 @@ public final class ShardUtils {
 
     }
 
-    public static void enableSharding(MongoClient mongoClient, String catalogName) throws ExecutionException {
+    /**
+     * Enable sharding in the database.
+     *
+     * @param mongoClient
+     *            the mongo client
+     * @param databaseName
+     *            the database name
+     * @throws ExecutionException
+     *             if an error exist when enabling sharding
+     */
+    public static void enableSharding(MongoClient mongoClient, String databaseName) throws ExecutionException {
 
         DB db;
 
         db = mongoClient.getDB("admin");
 
-        CommandResult result = db.command(new BasicDBObject("enableSharding", catalogName));
+        CommandResult result = db.command(new BasicDBObject("enableSharding", databaseName));
         if (!result.ok() && !result.getErrorMessage().equals("already enabled")) {
             LOGGER.error("Command Error:" + result.getErrorMessage());
             throw new ExecutionException(result.getErrorMessage());
@@ -135,16 +152,17 @@ public final class ShardUtils {
     }
 
     /**
+     * Returns the shard key type.
+     *
      * @param options
-     * @return the key type. Returns a default value if not specified
+     *            the options
+     * @return the shard key type chosen. Returns a default value if not specified
      */
     public static ShardKeyType getShardKeyType(Map<String, Selector> options) {
 
         String shardKeyType = null;
-
         if (options != null) {
             Selector selectorSharded = options.get(SHARD_KEY_TYPE.getOptionName());
-
             if (selectorSharded != null) {
                 shardKeyType = ((StringSelector) selectorSharded).getValue();
             }
@@ -162,10 +180,15 @@ public final class ShardUtils {
     }
 
     /**
+     * Returns the shard key fields.
+     *
      * @param options
+     *            the options
      * @param shardKeyType
-     * @return the fields used to compute the shard key. If the option does not exist the _id is returned
+     *            the shard key type
+     * @return the fields used to compute the shard key. If not specified, the _id is returned
      * @throws MongoValidationException
+     *             if the specified operation is not supported
      */
     public static String[] getShardKeyFields(Map<String, Selector> options, ShardKeyType shardKeyType)
                     throws MongoValidationException {
@@ -174,7 +197,6 @@ public final class ShardUtils {
 
         if (options != null) {
             Selector selectorSharded = options.get(SHARD_KEY_FIELDS.getOptionName());
-
             if (selectorSharded != null) {
                 shardKey = ((StringSelector) selectorSharded).getValue().split(",");
             }

@@ -36,14 +36,45 @@ import com.stratio.crossdata.common.statements.structures.selectors.Selector;
 import com.stratio.crossdata.common.statements.structures.selectors.SelectorType;
 import com.stratio.crossdata.common.statements.structures.selectors.StringSelector;
 
+/**
+ * The Class FilterDBObjectBuilder.
+ */
 public class FilterDBObjectBuilder extends DBObjectBuilder {
 
+    /** The filter query. */
     private DBObject filterQuery = null;
 
-    public FilterDBObjectBuilder(boolean useAggregation) {
+    /**
+     * Instantiates a new filter builder.
+     *
+     * @param useAggregation
+     *            whether the query use the aggregation framework or not
+     * @param filterList
+     *            the filter list
+     * @throws MongoValidationException
+     *             if the query specified in the logical workflow is not supported
+     */
+    public FilterDBObjectBuilder(boolean useAggregation, List<Filter> filterList) throws MongoValidationException {
         super(useAggregation);
+
+        if (filterList.size() > 1) {
+            BasicBSONList filterExpressions = new BasicBSONList();
+            for (Filter filter : filterList) {
+                filterExpressions.add(getFilterQuery(filter));
+            }
+            filterQuery = new BasicDBObject("$and", filterExpressions);
+        } else if (filterList.size() == 1) {
+            filterQuery = getFilterQuery(filterList.get(0));
+        } else {
+            filterQuery = new BasicDBObject();
+        }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.stratio.connector.mongodb.core.engine.query.utils.DBObjectBuilder#build()
+     */
     public DBObject build() {
         DBObject container;
         if (useAggregationPipeline()) {
@@ -58,25 +89,14 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
     }
 
     /**
-     * @param filterList
+     * Gets the filter query.
+     *
+     * @param filter
+     *            the filter
+     * @return the filter query
      * @throws MongoValidationException
+     *             if the filter specified in the logical workflow is not supported
      */
-    public void addAll(List<Filter> filterList) throws MongoValidationException {
-
-        if (filterList.size() > 1) {
-            BasicBSONList filterExpressions = new BasicBSONList();
-            for (Filter filter : filterList) {
-                filterExpressions.add(getFilterQuery(filter));
-            }
-            filterQuery = new BasicDBObject("$and", filterExpressions);
-        } else if (filterList.size() == 1) {
-            filterQuery = getFilterQuery(filterList.get(0));
-        } else {
-            filterQuery = new BasicDBObject();
-        }
-
-    }
-
     private DBObject getFilterQuery(Filter filter) throws MongoValidationException {
 
         Relation relation = filter.getRelation();
@@ -90,23 +110,53 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 
     }
 
+    /**
+     * Gets the field corresponding to the selector.
+     *
+     * @param selector
+     *            the selector
+     * @return the field name
+     */
     private String getFieldName(Selector selector) {
         String field = null;
         if (selector instanceof ColumnSelector) {
             ColumnSelector columnSelector = (ColumnSelector) selector;
             field = columnSelector.getName().getName();
+        } else if (selector instanceof StringSelector) {
+            // TODO It should be removed
+            StringSelector stringSelector = (StringSelector) selector;
+            field = stringSelector.getValue();
         }
         return field;
     }
 
-    private void validateSelector(Operator operator, SelectorType selType) throws MongoValidationException {
-        if (operator == Operator.LIKE && selType != SelectorType.STRING) {
-            throw new MongoValidationException("The selector type: " + selType.toString()
-                    + " is not supported with operator " + operator.toString());
+    /**
+     * Validate selector.
+     *
+     * @param operator
+     *            the operator
+     * @param selType
+     *            the selector type
+     * @throws MongoValidationException
+     *             if the operator is not supported by the specified selector type
+     */
+    private void validateSelector(Operator operator, SelectorType selectorType) throws MongoValidationException {
+        if (operator == Operator.LIKE && selectorType != SelectorType.STRING) {
+            throw new MongoValidationException("The selector type: " + selectorType.toString()
+                            + " is not supported with operator " + operator.toString());
 
         }
     }
 
+    /**
+     * Gets the filter right term.
+     *
+     * @param rightSelector
+     *            the right selector
+     * @return the filter right term
+     * @throws MongoValidationException
+     *             if the selector is not supported
+     */
     private Object getMongoRightTerm(Selector rightSelector) throws MongoValidationException {
 
         Object value;
@@ -136,9 +186,13 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
     }
 
     /**
+     * Gets the mongo operator.
+     *
      * @param operator
-     * @return
+     *            the operator
+     * @return the mongo operator
      * @throws MongoValidationException
+     *             if the operator is not supported
      */
     private String getMongoOperator(Operator operator) throws MongoValidationException {
         String mongoOperator = null;

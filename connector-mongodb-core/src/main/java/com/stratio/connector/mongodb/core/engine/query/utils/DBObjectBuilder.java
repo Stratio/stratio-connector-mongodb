@@ -22,22 +22,33 @@ import com.mongodb.DBObject;
 
 public abstract class DBObjectBuilder {
 
+    /** Whether the object is built for the aggregation framework or not. */
     private final boolean useAggregation;
 
     /**
-     * @param useAggregation whether the query use the aggregation framework or not
+     * Instantiates a new DB object builder.
+     *
+     * @param useAggregation
+     *            whether the query use the aggregation framework or not
      */
     public DBObjectBuilder(boolean useAggregation) {
         this.useAggregation = useAggregation;
     }
 
     /**
-     * @return true if the query use the aggregation framework
+     * Checks if the object use the pipeline.
+     *
+     * @return true if the object use the aggregation framework
      */
     public final boolean useAggregationPipeline() {
         return useAggregation;
     }
 
+    /**
+     * Builds the object.
+     *
+     * @return the DB object
+     */
     public abstract DBObject build();
 
 }

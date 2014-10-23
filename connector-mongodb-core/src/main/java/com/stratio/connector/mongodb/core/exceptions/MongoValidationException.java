@@ -22,12 +22,27 @@ import com.stratio.crossdata.common.exceptions.UnsupportedException;
 
 public class MongoValidationException extends UnsupportedException {
 
+    /** The Constant serialVersionUID. */
     static final long serialVersionUID = -6751513453299437587L;
 
+    /**
+     * Instantiates a new mongo validation exception.
+     *
+     * @param msg
+     *            the msg
+     * @param cause
+     *            the cause
+     */
     public MongoValidationException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
+    /**
+     * Instantiates a new mongo validation exception.
+     *
+     * @param msg
+     *            the msg
+     */
     public MongoValidationException(String msg) {
         super(msg);
     }

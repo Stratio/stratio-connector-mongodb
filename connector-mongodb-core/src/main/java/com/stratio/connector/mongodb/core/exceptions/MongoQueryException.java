@@ -22,12 +22,27 @@ import com.stratio.crossdata.common.exceptions.ExecutionException;
 
 public class MongoQueryException extends ExecutionException {
 
+    /** The Constant serialVersionUID. */
     static final long serialVersionUID = 2782686873531397631L;
 
+    /**
+     * Instantiates a new mongo query exception.
+     *
+     * @param msg
+     *            the msg
+     * @param cause
+     *            the cause
+     */
     public MongoQueryException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
+    /**
+     * Instantiates a new mongo query exception.
+     *
+     * @param msg
+     *            the msg
+     */
     public MongoQueryException(String msg) {
         super(msg);
     }

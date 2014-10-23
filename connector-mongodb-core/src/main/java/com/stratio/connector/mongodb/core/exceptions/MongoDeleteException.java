@@ -22,12 +22,27 @@ import com.stratio.crossdata.common.exceptions.ExecutionException;
 
 public class MongoDeleteException extends ExecutionException {
 
+    /** The Constant serialVersionUID. */
     static final long serialVersionUID = 4437784374390458324L;
 
+    /**
+     * Instantiates a new mongo delete exception.
+     *
+     * @param msg
+     *            the msg
+     * @param cause
+     *            the cause
+     */
     public MongoDeleteException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
+    /**
+     * Instantiates a new mongo delete exception.
+     *
+     * @param msg
+     *            the msg
+     */
     public MongoDeleteException(String msg) {
         super(msg);
     }

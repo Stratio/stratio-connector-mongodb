@@ -27,6 +27,8 @@ import com.stratio.crossdata.common.statements.structures.selectors.Selector;
 import com.stratio.crossdata.common.statements.structures.selectors.StringSelector;
 
 /**
+ * The Class SelectorOptionsUtils.
+ *
  * @author david
  */
 public final class SelectorOptionsUtils {
@@ -35,9 +37,13 @@ public final class SelectorOptionsUtils {
     }
 
     /**
+     * Process the options to return a map with string key.
+     *
      * @param options
-     * @return
+     *            the options. the key has to be a StringSelector
+     * @return the processed options
      * @throws MongoValidationException
+     *             if the options cannot be processed
      */
     public static Map<String, Selector> processOptions(Map<Selector, Selector> options) throws MongoValidationException {
         Map<String, Selector> stringOptions = null;

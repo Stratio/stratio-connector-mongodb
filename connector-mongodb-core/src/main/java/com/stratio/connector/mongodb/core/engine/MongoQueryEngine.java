@@ -31,24 +31,41 @@ import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
 import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.result.QueryResult;
 
+/**
+ * The MongoQueryEngine.
+ */
 public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
 
     /**
+     * Instantiates a new Mongo query engine.
+     *
      * @param connectionHandler
+     *            the connection handler
      */
     public MongoQueryEngine(MongoConnectionHandler connectionHandler) {
         super(connectionHandler);
     }
 
+    /**
+     * Instantiates a new Mongo query engine.
+     *
+     * @param project
+     *            the initial step of the logical workflow
+     * @param connection
+     *            the connection
+     * @return the query result
+     * @throws MongoQueryException
+     *             if an error exist when running the database command
+     * @throws UnsupportedException
+     *             if the specified operation is not supported
+     */
     @Override
-    public QueryResult execute(Project workflow, Connection<MongoClient> connection) throws MongoQueryException,
-            UnsupportedException {
+    public QueryResult execute(Project project, Connection<MongoClient> connection) throws MongoQueryException,
+                    UnsupportedException {
 
-        ResultSet resultSet = null;
+        LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(project);
 
-        LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(workflow);
-
-        resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
+        ResultSet resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
 
         return QueryResult.createQueryResult(resultSet);
 
@@ -62,7 +79,7 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
      */
     @Override
     public void asyncExecute(String queryId, LogicalWorkflow workflow, IResultHandler resultHandler)
-            throws UnsupportedException {
+                    throws UnsupportedException {
         throw new UnsupportedException("Not yet supported");
 
     }
