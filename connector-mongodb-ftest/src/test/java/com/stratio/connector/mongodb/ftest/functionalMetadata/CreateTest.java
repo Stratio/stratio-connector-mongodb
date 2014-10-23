@@ -34,6 +34,7 @@ import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
+import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
@@ -67,10 +68,9 @@ public class CreateTest extends GenericMetadataCreateTest {
     }
 
     @Test
-    public void createShardedTable() throws UnsupportedException, ExecutionException {
+    public void createShardedTable() throws ConnectorException {
         ClusterName clusterName = getClusterName();
-        System.out.println(
-                "*********************************** INIT FUNCTIONAL TEST createCatalogWithTablesAndIndexTest ***********************************");
+        System.out.println("*********************************** INIT FUNCTIONAL TEST createCatalogWithTablesAndIndexTest ***********************************");
 
         TableName tableName = new TableName(CATALOG, TABLE);
         ClusterName clusterRef = getClusterName();
@@ -104,7 +104,7 @@ public class CreateTest extends GenericMetadataCreateTest {
 
         Map<TableName, TableMetadata> tableMap = new HashMap<TableName, TableMetadata>();
         TableMetadata tableMetadata = new TableMetadata(tableName, options, columnsMap, null, clusterRef, partitionKey,
-                clusterKey);
+                        clusterKey);
         tableMap.put(tableName, tableMetadata);
 
         connector.getMetadataEngine().createTable(getClusterName(), tableMetadata);

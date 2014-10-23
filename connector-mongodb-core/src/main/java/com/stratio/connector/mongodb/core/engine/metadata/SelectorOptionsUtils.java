@@ -29,7 +29,7 @@ import com.stratio.crossdata.common.statements.structures.selectors.StringSelect
 /**
  * @author david
  */
-public class SelectorOptionsUtils {
+public final class SelectorOptionsUtils {
 
     private SelectorOptionsUtils() {
     }
@@ -39,8 +39,7 @@ public class SelectorOptionsUtils {
      * @return
      * @throws MongoValidationException
      */
-    public static Map<String, Selector> processOptions(Map<Selector, Selector> options)
-            throws MongoValidationException {
+    public static Map<String, Selector> processOptions(Map<Selector, Selector> options) throws MongoValidationException {
         Map<String, Selector> stringOptions = null;
         if (options != null) {
             stringOptions = new HashMap<String, Selector>();

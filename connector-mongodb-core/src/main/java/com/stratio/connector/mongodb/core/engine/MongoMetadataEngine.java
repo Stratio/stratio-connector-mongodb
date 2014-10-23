@@ -65,11 +65,11 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      * Create a database in MongoDB.
      *
      * @param catalogMetadata
-     *            the catalogMetadata.
+     *            the catalogMetadata
      * @param connection
-     *            the connection which contains the native connector.
+     *            the connection which contains the native connector
      * @throws UnsupportedException
-     *             if the specified operation is not supported.
+     *             if the specified operation is not supported
      */
     @Override
     protected void createCatalog(CatalogMetadata catalogMetadata, Connection<MongoClient> connection)
@@ -81,13 +81,13 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      * Create a collection in MongoDB.
      *
      * @param tableMetadata
-     *            the tableMetadata.
+     *            the tableMetadata
      * @param connection
-     *            the connection which contains the native connector.
+     *            the connection which contains the native connector
      * @throws UnsupportedException
-     *             if the specified operation is not supported.
+     *             if the specified operation is not supported
      * @throws ExecutionException
-     *             if an error exist when running a database command.
+     *             if an error exist when running the database command
      */
     @Override
     protected void createTable(TableMetadata tableMetadata, Connection<MongoClient> connection)
@@ -110,11 +110,11 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      * Drop a database in MongoDB.
      *
      * @param name
-     *            the database name.
+     *            the database name
      * @param connection
-     *            the connection
+     *            the connection which contains the native connector
      * @throws ExecutionException
-     *             the execution exception
+     *             if an error exist when running the database command
      */
     @Override
     protected void dropCatalog(CatalogName name, Connection<MongoClient> connection) throws ExecutionException {
@@ -129,11 +129,11 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      * Drop a collection in MongoDB.
      *
      * @param name
-     *            the database name.
+     *            the collection name
      * @param connection
      *            the connection
      * @throws ExecutionException
-     *             the execution exception
+     *             if an error exist when running the database command
      */
     @Override
     protected void dropTable(TableName name, Connection<MongoClient> connection) throws ExecutionException {
@@ -146,11 +146,17 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.meta.common.connector.IMetadataEngine#createIndex(com.stratio.meta2.common.data.ClusterName,
-     * com.stratio.meta2.common.metadata.IndexMetadata)
+    /**
+     * Create an index.
+     *
+     * @param indexMetadata
+     *            the index metadata
+     * @param connection
+     *            the connection
+     * @throws UnsupportedException
+     *             if the specified index is not supported
+     * @throws ExecutionException
+     *             if an error exist when running the database command
      */
     @Override
     protected void createIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)
@@ -174,11 +180,17 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.meta.common.connector.IMetadataEngine#dropIndex(com.stratio.meta2.common.data.ClusterName,
-     * com.stratio.meta2.common.metadata.IndexMetadata)
+    /**
+     * Drop an index.
+     *
+     * @param indexMetadata
+     *            the index metadata
+     * @param connection
+     *            the connection
+     * @throws ExecutionException
+     *             if an error exist when running the database command
+     * @throws UnsupportedException
+     *             if the specified operation is not supported
      */
     @Override
     protected void dropIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)

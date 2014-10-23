@@ -46,7 +46,7 @@ import com.stratio.crossdata.common.statements.structures.selectors.StringSelect
 /**
  * @author david
  */
-public class ShardUtils {
+public final class ShardUtils {
 
     private ShardUtils() {
     }
@@ -85,7 +85,7 @@ public class ShardUtils {
      * @throws UnsupportedException
      */
     public static void shardCollection(MongoClient mongoClient, TableMetadata tableMetadata) throws ExecutionException,
-            UnsupportedException {
+                    UnsupportedException {
 
         final String catalogName = tableMetadata.getName().getCatalogName().getName();
         enableSharding(mongoClient, catalogName);
@@ -110,8 +110,7 @@ public class ShardUtils {
         }
 
         // shard the collection with the key
-        final DBObject cmd = new BasicDBObject("shardCollection",
-                catalogName + "." + tableMetadata.getName().getName());
+        final DBObject cmd = new BasicDBObject("shardCollection", catalogName + "." + tableMetadata.getName().getName());
         cmd.put("key", shardKey);
 
         CommandResult result = mongoClient.getDB("admin").command(cmd);
@@ -169,7 +168,7 @@ public class ShardUtils {
      * @throws MongoValidationException
      */
     public static String[] getShardKeyFields(Map<String, Selector> options, ShardKeyType shardKeyType)
-            throws MongoValidationException {
+                    throws MongoValidationException {
 
         String[] shardKey = null;
 

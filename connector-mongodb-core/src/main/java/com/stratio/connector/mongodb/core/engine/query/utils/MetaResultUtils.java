@@ -35,7 +35,7 @@ import com.stratio.crossdata.common.metadata.structures.ColumnMetadata;
 /**
  * @author david
  */
-public class MetaResultUtils {
+public final class MetaResultUtils {
 
     private MetaResultUtils() {
     }
@@ -43,7 +43,8 @@ public class MetaResultUtils {
     /**
      * This method creates a row from a Mongo result. If there is no result a null value is inserted
      *
-     * @param rowDBObject a bson containing the result.
+     * @param rowDBObject
+     *            a bson containing the result.
      * @return the row.
      */
     public static Row createRowWithAlias(DBObject rowDBObject, Select select) {
@@ -74,7 +75,7 @@ public class MetaResultUtils {
             colType = updateColumnType(colType);
 
             ColumnMetadata columnMetadata = new ColumnMetadata(projection.getTableName().getQualifiedName(),
-                    colName.getQualifiedName(), colType);
+                            colName.getQualifiedName(), colType);
             columnMetadata.setColumnAlias(select.getColumnMap().get(colName));
 
             retunColumnMetadata.add(columnMetadata);
@@ -103,7 +104,7 @@ public class MetaResultUtils {
             dbType = colType.getODBCType();
             colType.setDBMapping(dbType, Map.class);
             colType.setDBMapType((updateColumnType(colType.getDBInnerType())),
-                    updateColumnType(colType.getDBInnerValueType()));
+                            updateColumnType(colType.getDBInnerValueType()));
             break;
 
         case NATIVE:

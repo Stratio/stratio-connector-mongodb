@@ -31,7 +31,7 @@ import com.stratio.crossdata.common.metadata.TableMetadata;
 /**
  * @author david
  */
-public class StorageUtils {
+public final class StorageUtils {
 
     private StorageUtils() {
     }

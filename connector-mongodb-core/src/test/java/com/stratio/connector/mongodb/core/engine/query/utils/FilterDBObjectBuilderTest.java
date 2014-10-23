@@ -32,9 +32,9 @@ import org.mockito.internal.util.reflection.Whitebox;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.crossdata.common.connector.Operations;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.logicalplan.Filter;
+import com.stratio.crossdata.common.metadata.Operations;
 import com.stratio.crossdata.common.statements.structures.relationships.Operator;
 import com.stratio.crossdata.common.statements.structures.relationships.Relation;
 import com.stratio.crossdata.common.statements.structures.selectors.BooleanSelector;
@@ -83,7 +83,7 @@ public class FilterDBObjectBuilderTest {
 
         Filter filtergte = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.GET, 5);
         Filter filterdi = buildFilter(Operations.FILTER_NON_INDEXED_DISTINCT, CATALOG, TABLE, COLUMN_1,
-                Operator.DISTINCT, "five");
+                        Operator.DISTINCT, "five");
 
         filterDBObjectBuilder.addAll(Arrays.asList(filtergte, filterdi));
 
@@ -160,9 +160,9 @@ public class FilterDBObjectBuilderTest {
     }
 
     private Filter buildFilter(Operations operation, String catalog, String table, String columnName,
-            Operator operator, Object value) {
+                    Operator operator, Object value) {
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)), operator,
-                returnSelector(value));
+                        returnSelector(value));
         return new Filter(operation, relation);
     }
 

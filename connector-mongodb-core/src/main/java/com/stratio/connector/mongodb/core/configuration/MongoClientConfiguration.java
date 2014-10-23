@@ -145,7 +145,7 @@ public class MongoClientConfiguration {
     }
 
     /**
-     * Retrieve the value of a option
+     * Retrieve the option value.
      *
      * @param option
      *            the option
@@ -191,7 +191,7 @@ public class MongoClientConfiguration {
     }
 
     /**
-     * Convert the mongo connector string option to the appropriate read preference
+     * Convert the Mongo connector string option to the appropriate Read Preference.
      *
      * @param readSetting
      *            the read preference string setting
@@ -218,7 +218,7 @@ public class MongoClientConfiguration {
             readPreference = ReadPreference.nearest();
             break;
         default:
-            throw new MongoValidationException("read preference " + readSetting + " is not a legal value");
+            throw new MongoValidationException("Read preference " + readSetting + " is not a legal value");
         }
         return readPreference;
 
@@ -270,7 +270,7 @@ public class MongoClientConfiguration {
             writeConcern = WriteConcern.JOURNALED;
             break;
         default:
-            throw new MongoValidationException("write preference " + writeSetting + " is not a legal value");
+            throw new MongoValidationException("Write preference " + writeSetting + " is not a legal value");
         }
         return writeConcern;
 

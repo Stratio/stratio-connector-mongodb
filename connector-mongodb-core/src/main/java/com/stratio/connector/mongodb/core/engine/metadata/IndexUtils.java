@@ -45,7 +45,7 @@ import com.stratio.crossdata.common.statements.structures.selectors.StringSelect
 /**
  * @author david
  */
-public class IndexUtils {
+public final class IndexUtils {
 
     private IndexUtils() {
     }
@@ -125,7 +125,7 @@ public class IndexUtils {
         }
 
         String indexType = ((StringSelector) selector).getValue().trim();
-        String[] fields = getCustomIndexDBObjectFields(options, indexType, selector, indexMetadata);
+        String[] fields = getCustomIndexDBObjectFields(options, indexType, indexMetadata);
 
         // Create the index specified
         if (COMPOUND.getIndexType().equals(indexType)) {
@@ -133,7 +133,7 @@ public class IndexUtils {
                 String[] fieldInfo = field.split(":");
                 if (fieldInfo.length != 2) {
                     throw new UnsupportedException(
-                            "Format error. The fields in a compound index must be: fieldname:asc|desc [, field2:desc ...] ");
+                                    "Format error. The fields in a compound index must be: fieldname:asc|desc [, field2:desc ...] ");
                 }
                 int order = fieldInfo[1].trim().equals("asc") ? 1 : -1;
                 indexDBObject.put(fieldInfo[0], order);
@@ -165,10 +165,11 @@ public class IndexUtils {
      * @throws UnsupportedException
      */
     private static String[] getCustomIndexDBObjectFields(Map<String, Selector> options, String indexType,
-            Selector selector, IndexMetadata indexMetadata) throws UnsupportedException {
+                    IndexMetadata indexMetadata) throws UnsupportedException {
         String[] fields;
+        Selector selector = options.get(COMPOUND_FIELDS.getOptionName());
         if (COMPOUND.getIndexType().equals(indexType)) {
-            if ((selector = options.get(COMPOUND_FIELDS.getOptionName())) != null) {
+            if (selector != null) {
                 fields = ((StringSelector) selector).getValue().split(",");
             } else {
                 throw new UnsupportedException("The custom index must have 1 o more fields");
@@ -190,7 +191,7 @@ public class IndexUtils {
      * @throws ExecutionException
      */
     public static void dropIndexWithDefaultName(IndexMetadata indexMetadata, DB db) throws UnsupportedException,
-            ExecutionException {
+                    ExecutionException {
         if (indexMetadata.getType() == IndexType.DEFAULT) {
             DBObject indexDBObject = new BasicDBObject();
             for (ColumnMetadata columnMeta : indexMetadata.getColumns().values()) {
@@ -222,7 +223,7 @@ public class IndexUtils {
             }
         } else {
             throw new UnsupportedException("Dropping without the index name is not supported for the index type: "
-                    + indexMetadata.getType().toString());
+                            + indexMetadata.getType().toString());
         }
 
     }
