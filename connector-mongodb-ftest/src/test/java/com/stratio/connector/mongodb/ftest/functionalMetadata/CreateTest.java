@@ -41,9 +41,9 @@ import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.ColumnMetadata;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
-import com.stratio.crossdata.common.statements.structures.selectors.BooleanSelector;
-import com.stratio.crossdata.common.statements.structures.selectors.Selector;
-import com.stratio.crossdata.common.statements.structures.selectors.StringSelector;
+import com.stratio.crossdata.common.statements.structures.BooleanSelector;
+import com.stratio.crossdata.common.statements.structures.Selector;
+import com.stratio.crossdata.common.statements.structures.StringSelector;
 
 public class CreateTest extends GenericMetadataCreateTest {
 

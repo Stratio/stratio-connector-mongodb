@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.crossdata.common.statements.structures.selectors.Selector;
-import com.stratio.crossdata.common.statements.structures.selectors.StringSelector;
+import com.stratio.crossdata.common.statements.structures.Selector;
+import com.stratio.crossdata.common.statements.structures.StringSelector;
 
 /**
  * The Class SelectorOptionsUtils.

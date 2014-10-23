@@ -18,12 +18,11 @@
 
 package com.stratio.connector.mongodb.core.configuration;
 
-import com.stratio.crossdata.common.statements.structures.selectors.SelectorType;
+import com.stratio.crossdata.common.statements.structures.SelectorType;
 
 /**
- * Set of index options
+ * Set of index options.
  *
- * @author darroyo
  */
 
 public enum IndexOptions {

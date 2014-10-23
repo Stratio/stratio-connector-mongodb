@@ -38,13 +38,13 @@ import com.stratio.crossdata.common.logicalplan.Select;
 import com.stratio.crossdata.common.logicalplan.Window;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.Operations;
-import com.stratio.crossdata.common.statements.structures.relationships.Operator;
-import com.stratio.crossdata.common.statements.structures.relationships.Relation;
-import com.stratio.crossdata.common.statements.structures.selectors.BooleanSelector;
-import com.stratio.crossdata.common.statements.structures.selectors.ColumnSelector;
-import com.stratio.crossdata.common.statements.structures.selectors.IntegerSelector;
-import com.stratio.crossdata.common.statements.structures.selectors.Selector;
-import com.stratio.crossdata.common.statements.structures.selectors.StringSelector;
+import com.stratio.crossdata.common.statements.structures.BooleanSelector;
+import com.stratio.crossdata.common.statements.structures.ColumnSelector;
+import com.stratio.crossdata.common.statements.structures.IntegerSelector;
+import com.stratio.crossdata.common.statements.structures.Operator;
+import com.stratio.crossdata.common.statements.structures.Relation;
+import com.stratio.crossdata.common.statements.structures.Selector;
+import com.stratio.crossdata.common.statements.structures.StringSelector;
 import com.stratio.crossdata.common.statements.structures.window.TimeUnit;
 import com.stratio.crossdata.common.statements.structures.window.WindowType;
 
@@ -95,13 +95,16 @@ public class LogicalWorkFlowCreator {
         }
         if (select == null) {
             Map<ColumnName, String> selectColumn = new LinkedHashMap<>();
-            Map<String, ColumnType> typeMap = new LinkedHashMap();
+            Map<String, ColumnType> typeMap = new LinkedHashMap<>();
+            Map<ColumnName, ColumnType> columnTypeMap = new LinkedHashMap<>();
             for (ColumnName columnName : project.getColumnList()) {
                 selectColumn.put(new ColumnName(catalog, table, columnName.getName()), columnName.getName());
                 typeMap.put(columnName.getQualifiedName(), ColumnType.VARCHAR);
+                columnTypeMap.put(columnName, ColumnType.VARCHAR);
             }
 
-            select = new Select(Operations.PROJECT, selectColumn, typeMap); // The select is mandatory. If it doesn't
+            select = new Select(Operations.PROJECT, selectColumn, typeMap, null); // The select is mandatory. If it
+                                                                                  // doesn't
             // exist we
             // create with all project's columns with varchar type.
 
@@ -268,14 +271,16 @@ public class LogicalWorkFlowCreator {
     public LogicalWorkFlowCreator addSelect(LinkedList<ConnectorField> fields) {
         Map<ColumnName, String> mapping = new LinkedHashMap<>();
         Map<String, ColumnType> types = new LinkedHashMap<>();
+        Map<ColumnName, ColumnType> columnTypeMap = new LinkedHashMap<>();
 
         for (ConnectorField connectorField : fields) {
             mapping.put(new ColumnName(catalog, table, connectorField.name), connectorField.alias);
             types.put(QualifiedNames.getColumnQualifiedName(catalog, table, connectorField.name),
                             connectorField.columnType);
+            columnTypeMap.put(new ColumnName(catalog, table, connectorField.name), connectorField.columnType);
         }
 
-        select = new Select(Operations.PROJECT, mapping, types);
+        select = new Select(Operations.PROJECT, mapping, types, columnTypeMap);
 
         return this;
 

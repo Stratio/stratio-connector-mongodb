@@ -36,7 +36,7 @@ import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.IndexType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
-import com.stratio.crossdata.common.statements.structures.selectors.Selector;
+import com.stratio.crossdata.common.statements.structures.Selector;
 
 /**
  * @author darroyo
@@ -96,7 +96,8 @@ public class TableMetadataBuilder {
      *
      * @param type
      * @param indexName
-     * @param fields    the columns which define the index
+     * @param fields
+     *            the columns which define the index
      * @return
      */
     public TableMetadataBuilder addIndex(IndexType indType, String indexName, String... fields) {

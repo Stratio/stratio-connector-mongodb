@@ -26,15 +26,15 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.logicalplan.Filter;
-import com.stratio.crossdata.common.statements.structures.relationships.Operator;
-import com.stratio.crossdata.common.statements.structures.relationships.Relation;
-import com.stratio.crossdata.common.statements.structures.selectors.BooleanSelector;
-import com.stratio.crossdata.common.statements.structures.selectors.ColumnSelector;
-import com.stratio.crossdata.common.statements.structures.selectors.FloatingPointSelector;
-import com.stratio.crossdata.common.statements.structures.selectors.IntegerSelector;
-import com.stratio.crossdata.common.statements.structures.selectors.Selector;
-import com.stratio.crossdata.common.statements.structures.selectors.SelectorType;
-import com.stratio.crossdata.common.statements.structures.selectors.StringSelector;
+import com.stratio.crossdata.common.statements.structures.BooleanSelector;
+import com.stratio.crossdata.common.statements.structures.ColumnSelector;
+import com.stratio.crossdata.common.statements.structures.FloatingPointSelector;
+import com.stratio.crossdata.common.statements.structures.IntegerSelector;
+import com.stratio.crossdata.common.statements.structures.Operator;
+import com.stratio.crossdata.common.statements.structures.Relation;
+import com.stratio.crossdata.common.statements.structures.Selector;
+import com.stratio.crossdata.common.statements.structures.SelectorType;
+import com.stratio.crossdata.common.statements.structures.StringSelector;
 
 /**
  * The Class FilterDBObjectBuilder.

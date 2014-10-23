@@ -28,7 +28,7 @@ import com.stratio.crossdata.common.data.CatalogName;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.metadata.CatalogMetadata;
 import com.stratio.crossdata.common.metadata.TableMetadata;
-import com.stratio.crossdata.common.statements.structures.selectors.Selector;
+import com.stratio.crossdata.common.statements.structures.Selector;
 
 /**
  * @author darroyo

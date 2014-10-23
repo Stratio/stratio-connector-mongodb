@@ -245,7 +245,7 @@ public class MongoClientConfiguration {
     }
 
     /**
-     * Convert the mongo connector string option to the appropriate write concern
+     * Convert the mongo connector string option to the appropriate write concern.
      *
      * @param writeSetting
      *            the write concern string setting

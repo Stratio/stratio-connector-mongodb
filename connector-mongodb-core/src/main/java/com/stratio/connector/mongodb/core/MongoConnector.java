@@ -44,7 +44,7 @@ public class MongoConnector extends CommonsConnector {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * Create a connection to Mongo
+     * Create a connection to Mongo.
      *
      * @param configuration
      *            the connection configuration. It must be not null

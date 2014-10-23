@@ -44,7 +44,7 @@ import com.stratio.crossdata.common.logicalplan.Limit;
 import com.stratio.crossdata.common.logicalplan.LogicalStep;
 import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.logicalplan.Select;
-import com.stratio.crossdata.common.statements.structures.relationships.Operator;
+import com.stratio.crossdata.common.statements.structures.Operator;
 
 /**
  * Prepares and performs MongoDB queries from a logical workflow.

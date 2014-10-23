@@ -18,7 +18,7 @@
 
 package com.stratio.connector.mongodb.core.configuration;
 
-import com.stratio.crossdata.common.statements.structures.selectors.SelectorType;
+import com.stratio.crossdata.common.statements.structures.SelectorType;
 
 /**
  * Set of table options for the mongo connector. A default value is provided.

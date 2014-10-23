@@ -38,7 +38,7 @@ import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
 import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.logicalplan.Select;
 import com.stratio.crossdata.common.metadata.Operations;
-import com.stratio.crossdata.common.statements.structures.relationships.Operator;
+import com.stratio.crossdata.common.statements.structures.Operator;
 
 public class LogicalWorkflowExecutorTest {
 
