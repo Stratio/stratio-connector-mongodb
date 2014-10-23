@@ -80,11 +80,10 @@ public final class MetaResultUtils {
      * @return the columns metadata
      */
     public static List<ColumnMetadata> createMetadata(Project projection, Select select) {
-        List<ColumnMetadata> retunColumnMetadata = new ArrayList<>();
+        List<ColumnMetadata> columnsMetadata = new ArrayList<>();
         for (ColumnName colName : select.getColumnMap().keySet()) {
 
-            // TODO select.getColumnMap().get(colName)
-            ColumnType colType = select.getTypeMap().get(colName.getQualifiedName());
+            ColumnType colType = select.getTypeMapFromColumnName().get(colName);
 
             colType = updateColumnType(colType);
 
@@ -92,10 +91,10 @@ public final class MetaResultUtils {
                             colName.getQualifiedName(), colType);
             columnMetadata.setColumnAlias(select.getColumnMap().get(colName));
 
-            retunColumnMetadata.add(columnMetadata);
+            columnsMetadata.add(columnMetadata);
 
         }
-        return retunColumnMetadata;
+        return columnsMetadata;
     }
 
     /**
