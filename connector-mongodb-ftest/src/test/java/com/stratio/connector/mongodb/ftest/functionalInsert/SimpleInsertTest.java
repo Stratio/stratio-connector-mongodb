@@ -77,13 +77,11 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
         assertEquals("It has only one result", 1, resultIterator.size());
         for (Row recoveredRow : resultIterator) {
 
+            String canonicalName = recoveredRow.getCell(COLUMN_4).getValue().getClass().getCanonicalName();
             boolean typeCorrect = Float.class.getCanonicalName().equals(
-                            recoveredRow.getCell(COLUMN_4).getValue().getClass().getCanonicalName())
-                            || Double.class.getCanonicalName().equals(
-                                            resultIterator.getColumnMetadata().get(3).getType().getDbClass()
-                                                            .getCanonicalName());
+                            canonicalName);
             assertTrue("The type is correct ", typeCorrect);
-            assertEquals("The value is correct ", new Double((float) value4), recoveredRow.getCell(COLUMN_4).getValue());
+            assertEquals("The value is correct ", value4, recoveredRow.getCell(COLUMN_4).getValue());
         }
 
     }

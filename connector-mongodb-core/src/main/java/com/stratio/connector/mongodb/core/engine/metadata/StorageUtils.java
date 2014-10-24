@@ -87,26 +87,13 @@ public final class StorageUtils {
      * Checks if the column type is supported in primary keys.
      *
      * @param columnType
-     *            the column type
-     * @throws MongoValidationException
-     *             if the type is not supported
-     */
-    private static void validatePKDataType(ColumnType columnType) throws MongoValidationException {
-        validatePKDataType(columnType, null);
-
-    }
-
-    /**
-     * Checks if the column type is supported in primary keys.
-     *
-     * @param columnType
      *            the columnType type
      * @param cellValue
      *            the cell value
      * @throws MongoValidationException
      *             if the type is not supported
      */
-    private static void validatePKDataType(ColumnType columnType, Object cellValue) throws MongoValidationException {
+    private static void validatePKDataType(ColumnType columnType) throws MongoValidationException {
 
         switch (columnType) {
         case BIGINT:

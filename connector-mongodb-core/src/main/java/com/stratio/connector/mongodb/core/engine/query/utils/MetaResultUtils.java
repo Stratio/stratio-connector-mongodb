@@ -60,6 +60,7 @@ public final class MetaResultUtils {
             field = colInfo.getKey().getName();
             Object value = rowDBObject.get(field);
 
+            value = castValue(value, select.getTypeMapFromColumnName().get(colInfo.getKey()));
             if (colInfo.getValue() != null) {
                 field = colInfo.getValue();
             }
@@ -68,6 +69,31 @@ public final class MetaResultUtils {
         }
 
         return row;
+    }
+
+    /**
+     * Cast the value according to column type.
+     *
+     * @param value
+     *            the value casted
+     * @param columnType
+     *            the column type
+     */
+    private static Object castValue(Object value, ColumnType columnType) {
+        Object castedValue = value;
+        switch (columnType) {
+        case FLOAT:
+            castedValue = ((Double) value).floatValue();
+            break;
+        case SET:
+        case LIST:
+        case MAP:
+            break;
+        default:
+            break;
+        }
+        return castedValue;
+
     }
 
     /**
@@ -108,32 +134,18 @@ public final class MetaResultUtils {
         String dbType;
         switch (colType) {
         case FLOAT:
-            // TODO check the meaning of DBType
-            dbType = colType.getODBCType();
-            colType.setDBMapping(dbType, Double.class);
             break;
         case SET:
         case LIST:
-            // TODO Set? BasicDBList extends ArrayList<Object>. how to define??
             dbType = colType.getODBCType();
             colType.setDBMapping(dbType, List.class);
             colType.setDBCollectionType(updateColumnType(colType.getDBInnerType()));
             break;
         case MAP:
-            // TODO DBObject?
             dbType = colType.getODBCType();
             colType.setDBMapping(dbType, Map.class);
             colType.setDBMapType((updateColumnType(colType.getDBInnerType())),
                             updateColumnType(colType.getDBInnerValueType()));
-            break;
-
-        case NATIVE:
-            // TODO Case not supported
-            // // TODO check? and setOdbcType??
-            // dbType = colType.getDbType();
-            // // TODO check the row??
-            // if (NativeTypes.DATE.equals(colType.getDbType()))
-            // colType.setDBMapping(dbType, Date.class);
             break;
         case BIGINT:
         case BOOLEAN:

@@ -140,19 +140,6 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     /**
      * Validates the data type.
      *
-     * @param columnType
-     *            the column type
-     * @throws MongoValidationException
-     *             if the type is not supported
-     */
-    private void validateDataType(ColumnType columnType) throws MongoValidationException {
-        validateDataType(columnType, null);
-
-    }
-
-    /**
-     * Validates the data type.
-     *
      * @param colType
      *            the column type
      * @param cellValue
@@ -160,7 +147,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      * @throws MongoValidationException
      *             if the type is not supported
      */
-    private void validateDataType(ColumnType columnType, Object cellValue) throws MongoValidationException {
+    private void validateDataType(ColumnType columnType) throws MongoValidationException {
 
         // TODO review with meta.
         switch (columnType) {
@@ -182,10 +169,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
             break;
         case NATIVE:
             throw new MongoValidationException("Type not supported: " + columnType.toString());
-            // // TODO if (!NativeTypes.DATE.getDbType().equals(colType.getDbType()))
-            // if (!(cellValue instanceof Date))
-            // throw new MongoInsertException("Type not supported: " + colType.toString());
-            // // TODO if(columnMetadata.getParameters())
+
         default:
             throw new MongoValidationException("Type not supported: " + columnType.toString());
         }
