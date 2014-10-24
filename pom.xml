@@ -27,8 +27,14 @@
     
     <modules>
    	 <module>connector-mongodb-core</module>
-  </modules>
+  </modules>	
 
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0t</url>
+		</license>
+	</licenses>
 
 <profiles>
         <profile>

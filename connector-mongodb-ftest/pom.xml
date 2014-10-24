@@ -27,6 +27,15 @@
     <artifactId>connector-mongodb-ftest</artifactId>
     <packaging>jar</packaging>
     <description>The Mongo's functional test</description>
+    
+    <licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0t</url>
+		</license>
+	</licenses>
+	
+	
     <dependencies>
         <dependency>
             <groupId>com.stratio.connector</groupId>
