@@ -59,10 +59,8 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.connector.mongodb.core.engine.query.utils.DBObjectBuilder#build()
+    /**
+     * Builds the object. Insert a $project if the aggregation framework is used.
      */
     @Override
     public DBObject build() {

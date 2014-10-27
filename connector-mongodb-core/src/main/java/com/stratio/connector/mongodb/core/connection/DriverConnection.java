@@ -42,13 +42,25 @@ public class DriverConnection extends Connection<MongoClient> {
     private MongoClient mongoClient = null;
     private boolean isConnected = false;
 
+    /**
+     * Instantiates a new driver connection.
+     *
+     * @param credentials
+     *            the credentials
+     * @param connectorClusterConfig
+     *            the connector cluster configuration
+     * @throws CreateNativeConnectionException
+     *             the create native connection exception
+     * @throws MongoValidationException
+     *             the mongo validation exception
+     */
     public DriverConnection(ICredentials credentials, ConnectorClusterConfig connectorClusterConfig)
-            throws CreateNativeConnectionException, MongoValidationException {
+                    throws CreateNativeConnectionException, MongoValidationException {
         MongoClientConfiguration mongoClientConfiguration = new MongoClientConfiguration(connectorClusterConfig);
 
         if (credentials == null) {
             mongoClient = new MongoClient(mongoClientConfiguration.getSeeds(),
-                    mongoClientConfiguration.getMongoClientOptions());
+                            mongoClientConfiguration.getMongoClientOptions());
             isConnected = true;
             logger.info("New MongoDB connection established");
 

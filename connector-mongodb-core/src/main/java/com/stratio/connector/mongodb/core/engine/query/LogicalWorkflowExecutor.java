@@ -59,7 +59,7 @@ public class LogicalWorkflowExecutor {
 
     /** The list of filters without including full-text filters. */
     private List<Filter> filterList = new ArrayList<Filter>();
-    // private Filter textFilter = null;
+
     /** The limit. */
     private Limit limit = null;
 

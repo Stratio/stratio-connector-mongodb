@@ -70,10 +70,8 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.connector.mongodb.core.engine.query.utils.DBObjectBuilder#build()
+    /**
+     * Builds the object. Insert a $match if the aggregation framework is used.
      */
     public DBObject build() {
         DBObject container;
@@ -174,7 +172,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             value = ((FloatingPointSelector) rightSelector).getValue();
             break;
         case RELATION:
-        case COLUMN: // TODO $where?
+        case COLUMN:
         case ASTERISK:
         case FUNCTION:
         default:

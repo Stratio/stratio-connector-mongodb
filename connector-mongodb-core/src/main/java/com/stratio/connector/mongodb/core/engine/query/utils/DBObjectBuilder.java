@@ -20,6 +20,9 @@ package com.stratio.connector.mongodb.core.engine.query.utils;
 
 import com.mongodb.DBObject;
 
+/**
+ * A generic dbobject builder to use in the queries
+ */
 public abstract class DBObjectBuilder {
 
     /** Whether the object is built for the aggregation framework or not. */

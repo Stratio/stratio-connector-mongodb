@@ -20,6 +20,9 @@ package com.stratio.connector.mongodb.core.exceptions;
 
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 
+/**
+ * The Class MongoQueryException.
+ */
 public class MongoQueryException extends ExecutionException {
 
     /** The Constant serialVersionUID. */

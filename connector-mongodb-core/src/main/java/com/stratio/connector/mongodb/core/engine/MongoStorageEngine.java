@@ -149,7 +149,6 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      */
     private void validateDataType(ColumnType columnType) throws MongoValidationException {
 
-        // TODO review with meta.
         switch (columnType) {
         case BIGINT:
         case BOOLEAN:
@@ -159,11 +158,11 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         case DOUBLE:
         case FLOAT:
             break;
-        case SET: // TODO isSupported?
+        case SET:
         case LIST:
             validateDataType(columnType.getDBInnerType());
             break;
-        case MAP: // TODO isSupported?
+        case MAP:
             validateDataType(columnType.getDBInnerType());
             validateDataType(columnType.getDBInnerValueType());
             break;

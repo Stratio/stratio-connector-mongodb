@@ -41,10 +41,8 @@ public class LimitDBObjectBuilder extends DBObjectBuilder {
         this.limit = limit.getLimit();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.connector.mongodb.core.engine.query.utils.DBObjectBuilder#build()
+    /**
+     * Builds the object. Insert a $limit if the aggregation framework is used.
      */
     @Override
     public DBObject build() {
