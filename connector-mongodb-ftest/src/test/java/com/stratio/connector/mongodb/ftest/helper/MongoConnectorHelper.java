@@ -76,7 +76,14 @@ public class MongoConnectorHelper implements IConnectorHelper {
 
     @Override
     public IConnector getConnector() {
-        return new MongoConnector();
+        try {
+            return new MongoConnector();
+        } catch (InitializationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     @Override

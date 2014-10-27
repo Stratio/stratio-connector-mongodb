@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.stratio.connector.commons.CommonsConnector;
+import com.stratio.connector.commons.util.ManifestUtil;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.MongoMetadataEngine;
 import com.stratio.connector.mongodb.core.engine.MongoQueryEngine;
@@ -31,6 +32,7 @@ import com.stratio.crossdata.common.connector.IMetadataEngine;
 import com.stratio.crossdata.common.connector.IQueryEngine;
 import com.stratio.crossdata.common.connector.IStorageEngine;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.InitializationException;
 import com.stratio.crossdata.connectors.ConnectorApp;
 
 /**
@@ -42,6 +44,25 @@ public class MongoConnector extends CommonsConnector {
      * The Log.
      */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * The connector name.
+     */
+    private String connectorName;
+    /**
+     * The datastore name.
+     */
+    private String[] datastoreName;
+
+    /**
+     * Instantiates a new mongo connector.
+     *
+     * @throws InitializationException
+     *             if any error exists during the initialization
+     */
+    public MongoConnector() throws InitializationException {
+        connectorName = ManifestUtil.getConectorName("MongoConnector.xml");
+        datastoreName = ManifestUtil.getDatastoreName("MongoConnector.xml");
+    }
 
     /**
      * Create a connection to Mongo.
@@ -93,7 +114,7 @@ public class MongoConnector extends CommonsConnector {
      */
     @Override
     public String getConnectorName() {
-        return "MongoConnector";
+        return connectorName;
     }
 
     /**
@@ -103,7 +124,7 @@ public class MongoConnector extends CommonsConnector {
      */
     @Override
     public String[] getDatastoreName() {
-        return new String[] { "Mongo" };
+        return datastoreName;
     }
 
     /**
@@ -111,8 +132,10 @@ public class MongoConnector extends CommonsConnector {
      *
      * @param args
      *            the arguments
+     * @throws InitializationException
+     *             if any error exists during the initialization
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InitializationException {
 
         MongoConnector mongoConnector = new MongoConnector();
         ConnectorApp connectorApp = new ConnectorApp();

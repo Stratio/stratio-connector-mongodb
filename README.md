@@ -30,7 +30,7 @@ To generate the executable execute the following command:
 The user and the group of the service are setted up to root by default. It could be changed in the following file:
 
 ```
-   > target/connector-mongodb-core-0.4.0/bin/connector-mongodb-core-0.4.0
+   > target/connector-mongodb-core-0.1.0/bin/connector-mongodb-core-0.1.0
 ```
 
 
@@ -39,13 +39,13 @@ The user and the group of the service are setted up to root by default. It could
 To run Mongo Connector execute:
 
 ```
-   > target/connector-mongodb-core-0.4.0/bin/connector-mongodb-core-0.4.0 start
+   > target/connector-mongodb-core-0.1.0/bin/connector-mongodb-core-0.1.0 start
 ```
 
 To stop the connector execute:
 
 ```
-   > target/connector-mongodb-core-0.4.0/bin/connector-mongodb-core-0.4.0 stop
+   > target/connector-mongodb-core-0.1.0/bin/connector-mongodb-core-0.1.0 stop
 ```
 
 
@@ -55,19 +55,19 @@ To stop the connector execute:
  2. Start Mongo Connector as it is explained before.
  3. In crossdata-shell:
     
-    Add a datastore with this command:
+    Add a data store with this command.  We need to specified the XML manifest that defines the data store. The XML manifest can be found in the path of the Mongo Connector in target/stratio-connector-mongodb-0.1.0/conf/MongoDataStore.xml
       
       ```
          xdsh:user>  ADD DATASTORE <Absolute path to MongoDB Datastore manifest>;
       ```
 
-    Attach cluster on that datastore. The datastore name must be the same as the defined in the Datastore manifest.
+    Attach cluster on that data store. The data store name must be the same as the defined in the data store manifest.
     
       ```
          xdsh:user>  ATTACH CLUSTER <cluster_name> ON DATASTORE <datastore_name> WITH OPTIONS {'Hosts': '[<IPHost_1,IPHost_2,...,IPHost_n>]', 'Port': '[<PortHost_1,PortHost_2,...,PortHost_n>]'};
       ```
 
-    Add the connector manifest with connector name MongoConnector.
+    Add the connector manifest. The XML with the manifest can be found in the path of the Mongo Connector in target/stratio-connector-mongodb-0.1.0/conf/MongoConnector.xml
 
        ```
          xdsh:user>  ADD CONNECTOR <Path to MongoDB Connector Manifest>
@@ -77,7 +77,7 @@ To stop the connector execute:
     Connector Manifest.
     
         ```
-            xdsh:user>  ATTACH CONNECTOR <connector name> TO <cluster name> WITH OPTIONS {};
+            xdsh:user>  ATTACH CONNECTOR <connector name> TO <cluster name> WITH OPTIONS { 'DB' : 'Mongo'};
         ```
     
     At this point, we can start to send queries.

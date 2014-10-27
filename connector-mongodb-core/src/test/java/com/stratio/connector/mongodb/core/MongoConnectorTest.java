@@ -37,6 +37,7 @@ import com.stratio.connector.mongodb.core.connection.DriverConnection;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.data.ClusterName;
+import com.stratio.crossdata.common.exceptions.InitializationException;
 import com.stratio.crossdata.common.security.ICredentials;
 
 @RunWith(PowerMockRunner.class)
@@ -77,7 +78,7 @@ public class MongoConnectorTest {
     }
 
     @Test
-    public void connectorNameTest() {
+    public void connectorNameTest() throws InitializationException {
         MongoConnector mongoConnector = new MongoConnector();
         if (isEmpty(mongoConnector.getConnectorName())) {
             Assert.fail("Connector name is empty");
@@ -85,7 +86,7 @@ public class MongoConnectorTest {
     }
 
     @Test
-    public void connectorDatastoreNameTest() {
+    public void connectorDatastoreNameTest() throws InitializationException {
         MongoConnector mongoConnector = new MongoConnector();
         if (isEmpty(mongoConnector.getDatastoreName())) {
             Assert.fail("Datastore name is empty");
