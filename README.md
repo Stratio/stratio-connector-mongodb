@@ -55,7 +55,7 @@ To stop the connector execute:
  2. Start Mongo Connector as it is explained before.
  3. In crossdata-shell:
     
-    Add a data store with this command.  We need to specified the XML manifest that defines the data store. The XML manifest can be found in the path of the Mongo Connector in target/connector-mongodb-0.1.0/conf/MongoDataStore.xml
+    Add a data store with this command.  We need to specified the XML manifest that defines the data store. The XML manifest can be found in the path of the Mongo Connector in target/connector-mongodb-core-0.1.0/conf/MongoDataStore.xml
       
       ```
          xdsh:user>  ADD DATASTORE <Absolute path to MongoDB Datastore manifest>;
@@ -67,7 +67,7 @@ To stop the connector execute:
          xdsh:user>  ATTACH CLUSTER <cluster_name> ON DATASTORE <datastore_name> WITH OPTIONS {'Hosts': '[<IPHost_1,IPHost_2,...,IPHost_n>]', 'Port': '[<PortHost_1,PortHost_2,...,PortHost_n>]'};
       ```
 
-    Add the connector manifest. The XML with the manifest can be found in the path of the Mongo Connector in target/connector-mongodb-0.1.0/conf/MongoConnector.xml
+    Add the connector manifest. The XML with the manifest can be found in the path of the Mongo Connector in target/connector-mongodb-core-0.1.0/conf/MongoConnector.xml
 
        ```
          xdsh:user>  ADD CONNECTOR <Path to MongoDB Connector Manifest>
