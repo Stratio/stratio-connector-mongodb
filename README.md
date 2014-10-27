@@ -18,14 +18,6 @@ To automatically build execute the following command:
 ```
 
 
-## Running the Stratio Connector Mongo ##
-
-```
-   > cd connector-mongodb-core
-   > mvn exec:java -Dexec.mainClass="com.stratio.connector.mongodb.core.MongoConnector"
-```
-
-
 ## Build an executable Connector Mongo ##
 
 To generate the executable execute the following command:
@@ -34,6 +26,15 @@ To generate the executable execute the following command:
    > cd connector-mongodb-core
    > mvn crossdata-connector:install
 ```
+
+The user and the group of the service are setted up to root by default. It could be changed in the following file:
+
+```
+   > target/connector-mongodb-core-0.4.0/bin/connector-mongodb-core-0.4.0
+```
+
+
+## Running the Stratio Connector Mongo ##
 
 To run Mongo Connector execute:
 
@@ -51,7 +52,7 @@ To stop the connector execute:
 ## How to use Mongo Connector ##
 
  1. Start [crossdata-server and then crossdata-shell](https://github.com/Stratio/crossdata).  
- 2. Start Mongo Connector as it is explained before
+ 2. Start Mongo Connector as it is explained before.
  3. In crossdata-shell:
     
     Add a datastore with this command:
