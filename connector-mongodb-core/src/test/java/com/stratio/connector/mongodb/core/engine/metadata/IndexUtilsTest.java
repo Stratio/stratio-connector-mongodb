@@ -37,7 +37,6 @@ import com.stratio.crossdata.common.metadata.IndexType;
  */
 public class IndexUtilsTest {
 
-    private final static String CLUSTER_NAME = "clustername";
     private static final String DB_NAME = "catalog_name";
     private static final String TABLE_NAME = "tablename";
     private final String INDEX_NAME = "indexname";
@@ -48,8 +47,7 @@ public class IndexUtilsTest {
 
     @Test
     public void getBasicCustomOptionsTest() throws MongoValidationException {
-        IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                INDEX_DEFAULT);
+        IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME, INDEX_DEFAULT);
         indexMetaBuilder.addColumn(COLUMN_NAME, COLUMN_VARCHAR);
         IndexMetadata indexMetadata = indexMetaBuilder.build();
 
@@ -61,11 +59,10 @@ public class IndexUtilsTest {
 
     @Test
     public void getCustomOptionsTest() throws MongoValidationException {
-        IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                INDEX_DEFAULT);
+        IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME, INDEX_DEFAULT);
         indexMetaBuilder.addColumn(COLUMN_NAME, COLUMN_VARCHAR);
         indexMetaBuilder.addOption(IndexOptions.SPARSE.getOptionName(), true).addOption(
-                IndexOptions.UNIQUE.getOptionName(), false);
+                        IndexOptions.UNIQUE.getOptionName(), false);
         IndexMetadata indexMetadata = indexMetaBuilder.build();
 
         DBObject object = IndexUtils.getCustomOptions(indexMetadata);
@@ -78,8 +75,7 @@ public class IndexUtilsTest {
 
     @Test
     public void getIndexDBObjectDefaultTest() throws UnsupportedException {
-        IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                INDEX_DEFAULT);
+        IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME, INDEX_DEFAULT);
         indexMetaBuilder.addColumn(COLUMN_NAME, COLUMN_VARCHAR);
         indexMetaBuilder.addColumn(COLUMN_NAME2, COLUMN_VARCHAR);
         IndexMetadata indexMetadata = indexMetaBuilder.build();
@@ -94,7 +90,7 @@ public class IndexUtilsTest {
     @Test
     public void getIndexDBObjectFullTextTest() throws UnsupportedException {
         IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                IndexType.FULL_TEXT);
+                        IndexType.FULL_TEXT);
         indexMetaBuilder.addColumn(COLUMN_NAME, COLUMN_VARCHAR);
         IndexMetadata indexMetadata = indexMetaBuilder.build();
 
@@ -107,7 +103,7 @@ public class IndexUtilsTest {
     @Test
     public void getHashedIndexDBObjectTest() throws UnsupportedException {
         IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                IndexType.CUSTOM);
+                        IndexType.CUSTOM);
         indexMetaBuilder.addColumn(COLUMN_NAME, COLUMN_VARCHAR);
         indexMetaBuilder.addOption(IndexOptions.INDEX_TYPE.getOptionName(), CustomMongoIndexType.HASHED.getIndexType());
         IndexMetadata indexMetadata = indexMetaBuilder.build();
@@ -119,10 +115,10 @@ public class IndexUtilsTest {
     @Test
     public void getCustomDescendIndexDBObjectTest() throws UnsupportedException {
         IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                IndexType.CUSTOM);
+                        IndexType.CUSTOM);
         indexMetaBuilder.addColumn(COLUMN_NAME, COLUMN_VARCHAR);
         indexMetaBuilder.addOption(IndexOptions.INDEX_TYPE.getOptionName(),
-                CustomMongoIndexType.COMPOUND.getIndexType());
+                        CustomMongoIndexType.COMPOUND.getIndexType());
         indexMetaBuilder.addOption(IndexOptions.COMPOUND_FIELDS.getOptionName(), COLUMN_NAME + ":desc");
         IndexMetadata indexMetadata = indexMetaBuilder.build();
 
@@ -135,11 +131,11 @@ public class IndexUtilsTest {
     @Test
     public void getCustomCompoundIndexDBObjectTest() throws UnsupportedException {
         IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
-                IndexType.CUSTOM);
+                        IndexType.CUSTOM);
         indexMetaBuilder.addOption(IndexOptions.INDEX_TYPE.getOptionName(),
-                CustomMongoIndexType.COMPOUND.getIndexType());
+                        CustomMongoIndexType.COMPOUND.getIndexType());
         indexMetaBuilder.addOption(IndexOptions.COMPOUND_FIELDS.getOptionName(), COLUMN_NAME + ":desc," + COLUMN_NAME2
-                + ":asc");
+                        + ":asc");
         IndexMetadata indexMetadata = indexMetaBuilder.build();
 
         DBObject object = IndexUtils.getIndexDBObject(indexMetadata);

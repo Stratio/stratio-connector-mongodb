@@ -78,14 +78,14 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
         for (Row recoveredRow : resultIterator) {
 
             String canonicalName = recoveredRow.getCell(COLUMN_4).getValue().getClass().getCanonicalName();
-            boolean typeCorrect = Float.class.getCanonicalName().equals(
-                            canonicalName);
+            boolean typeCorrect = Float.class.getCanonicalName().equals(canonicalName);
             assertTrue("The type is correct ", typeCorrect);
             assertEquals("The value is correct ", value4, recoveredRow.getCell(COLUMN_4).getValue());
         }
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testInsertSet() throws ConnectorException {
         ClusterName clusterName = getClusterName();
@@ -113,6 +113,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testInsertList() throws ConnectorException {
         ClusterName clusterName = getClusterName();
@@ -138,6 +139,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testInsertMap() throws ConnectorException {
         ClusterName clusterName = getClusterName();
@@ -166,6 +168,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
 
     }
 
+    @SuppressWarnings("static-access")
     @Override
     public void testInsertDate() throws ConnectorException {
         ClusterName clusterName = getClusterName();

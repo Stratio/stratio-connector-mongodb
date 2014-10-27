@@ -37,7 +37,6 @@ import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectio
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.core.MongoConnector;
 import com.stratio.connector.mongodb.core.configuration.MongoClientConfiguration;
-import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.connector.IConfiguration;
@@ -53,7 +52,6 @@ import com.stratio.crossdata.common.security.ICredentials;
  */
 public class MongoConnectorHelper implements IConnectorHelper {
 
-    private MongoConnectionHandler connectorHandler;
     protected String SERVER_IP = "10.200.0.62";// "10.200.0.58,10.200.0.59,10.200.0.60";
     protected String SERVER_PORT = "27200";// TODO config test "9300,9300,9300";
     private String readPreference = "primaryPreferred";
@@ -63,7 +61,7 @@ public class MongoConnectorHelper implements IConnectorHelper {
     protected ClusterName clusterName;
 
     public MongoConnectorHelper(ClusterName clusterName) throws ConnectionException, InitializationException,
-            CreateNativeConnectionException {
+                    CreateNativeConnectionException {
         super();
         this.clusterName = clusterName;
         MongoClientConfiguration clientConfig = new MongoClientConfiguration(getConnectorClusterConfig());
@@ -114,9 +112,9 @@ public class MongoConnectorHelper implements IConnectorHelper {
      * 
      * @see com.stratio.connector.commons.ftest.helper.IConnectorHelper#recoveredCatalogSettings(java.lang.String)
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Map recoveredCatalogSettings(String catalog) {
-        // TODO Afecta a ES, no a mongoDB??
         return null;
     }
 
@@ -125,6 +123,7 @@ public class MongoConnectorHelper implements IConnectorHelper {
      * 
      * @see com.stratio.connector.commons.ftest.helper.IConnectorHelper#getAllSupportedColumnType()
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Collection getAllSupportedColumnType() {
         Set<ColumnType> allColumntTypes = new HashSet<>();

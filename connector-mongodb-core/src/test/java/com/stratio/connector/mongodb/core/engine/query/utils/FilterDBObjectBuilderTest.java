@@ -117,6 +117,7 @@ public class FilterDBObjectBuilderTest {
 
     @Test
     public void buildTest() throws Exception {
+        @SuppressWarnings("unchecked")
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false, Collections.EMPTY_LIST);
 
         DBObject dbObject = QueryBuilder.start(COLUMN_1).greaterThanEquals(5).get();
@@ -135,6 +136,7 @@ public class FilterDBObjectBuilderTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void buildAggregationTest() throws Exception {
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(true, Collections.EMPTY_LIST);

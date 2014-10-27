@@ -53,7 +53,9 @@ public class IndexMetadataBuilder {
 
     private IndexName indexName;
     private TableName tableName;
+    @SuppressWarnings("unchecked")
     private Map<Selector, Selector> options = Collections.EMPTY_MAP;
+    @SuppressWarnings("unchecked")
     private Map<ColumnName, ColumnMetadata> columns = Collections.EMPTY_MAP;
     private IndexType indexType;
 

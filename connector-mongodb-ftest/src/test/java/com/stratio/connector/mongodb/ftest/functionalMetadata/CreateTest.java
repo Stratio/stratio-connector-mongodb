@@ -67,9 +67,9 @@ public class CreateTest extends GenericMetadataCreateTest {
         throw new RuntimeException("Not supported in MongoDB");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void createShardedTable() throws ConnectorException {
-        ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST createCatalogWithTablesAndIndexTest ***********************************");
 
         TableName tableName = new TableName(CATALOG, TABLE);

@@ -58,7 +58,6 @@ public class MongoStorageEngineTest {
     private static final String OTHER_ROW_NAME = "OTHER_ROW_NAME";
     private static final String CELL_VALUE = "cell_value";
     private static final Object OTHER_CELL_VALUE = "othercellvalue";
-    private static final Integer INTEGER_CELL_VALUE = new Integer(5);
     private static final ColumnType VARCHAR_COLUMN_TYPE = ColumnType.VARCHAR;
     private static final ColumnType INT_COLUMN_TYPE = ColumnType.INT;
 
@@ -135,7 +134,7 @@ public class MongoStorageEngineTest {
         mongoStorageEngine.insert(clusterName, tableMetadata, row);
 
         verify(collection, times(1)).update(Matchers.any(BasicDBObject.class), Matchers.any(BasicDBObject.class),
-                Matchers.eq(true), Matchers.eq(false));
+                        Matchers.eq(true), Matchers.eq(false));
 
     }
 

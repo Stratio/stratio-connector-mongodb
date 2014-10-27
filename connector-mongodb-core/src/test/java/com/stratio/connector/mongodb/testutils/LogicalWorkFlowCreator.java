@@ -158,12 +158,6 @@ public class LogicalWorkFlowCreator {
 
     }
 
-    private void createFilterEQ(String columnName, Object value, Operations operations) {
-        Selector columnSelector = new ColumnSelector(new ColumnName(catalog, table, columnName));
-
-        filters.add(new Filter(operations, new Relation(columnSelector, Operator.ASSIGN, returnSelector(value))));
-    }
-
     private Selector returnSelector(Object value) {
         Selector valueSelector = null;
 

@@ -61,6 +61,7 @@ public class MongoQueryEngineTest {
     /**
      * Method: execute(Project logicalWorkflow, Connection<Client> connection)
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void executeTest() throws Exception {
         Project project = mock(Project.class);

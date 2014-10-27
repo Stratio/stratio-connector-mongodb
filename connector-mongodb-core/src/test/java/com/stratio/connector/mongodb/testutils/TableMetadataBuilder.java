@@ -48,11 +48,11 @@ public class TableMetadataBuilder {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private TableName tableName;
-    private Map<Selector, Selector> options = Collections.EMPTY_MAP;
-    private Map<ColumnName, ColumnMetadata> columns = Collections.EMPTY_MAP;
-    private Map<IndexName, IndexMetadata> indexes = Collections.EMPTY_MAP;
-    private List<ColumnName> partitionKey = Collections.EMPTY_LIST;
-    private List<ColumnName> clusterKey = Collections.EMPTY_LIST;
+    private Map<Selector, Selector> options = Collections.emptyMap();
+    private Map<ColumnName, ColumnMetadata> columns = Collections.emptyMap();
+    private Map<IndexName, IndexMetadata> indexes = Collections.emptyMap();
+    private List<ColumnName> partitionKey = Collections.emptyList();
+    private List<ColumnName> clusterKey = Collections.emptyList();
     private ClusterName clusterName = null;
 
     public TableMetadataBuilder(String catalogName, String tableName) {
