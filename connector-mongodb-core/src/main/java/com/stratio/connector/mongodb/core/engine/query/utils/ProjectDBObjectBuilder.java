@@ -26,6 +26,9 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.logicalplan.Select;
 
+/**
+ * The Class ProjectDBObjectBuilder.
+ */
 public class ProjectDBObjectBuilder extends DBObjectBuilder {
 
     /** The fields projected in Mongo. */
@@ -61,6 +64,8 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
 
     /**
      * Builds the object. Insert a $project if the aggregation framework is used.
+     *
+     * @return the DB object
      */
     @Override
     public DBObject build() {

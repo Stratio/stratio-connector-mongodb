@@ -21,7 +21,7 @@ package com.stratio.connector.mongodb.core.engine.query.utils;
 import com.mongodb.DBObject;
 
 /**
- * A generic dbobject builder to use in the queries
+ * A generic DBObject builder to use in Mongo queries.
  */
 public abstract class DBObjectBuilder {
 

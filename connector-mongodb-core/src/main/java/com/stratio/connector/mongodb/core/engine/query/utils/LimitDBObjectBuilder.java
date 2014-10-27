@@ -43,6 +43,8 @@ public class LimitDBObjectBuilder extends DBObjectBuilder {
 
     /**
      * Builds the object. Insert a $limit if the aggregation framework is used.
+     *
+     * @return the DB object
      */
     @Override
     public DBObject build() {

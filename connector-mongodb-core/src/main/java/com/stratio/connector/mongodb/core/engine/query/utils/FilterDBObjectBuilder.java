@@ -72,6 +72,8 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 
     /**
      * Builds the object. Insert a $match if the aggregation framework is used.
+     *
+     * @return the DB object
      */
     public DBObject build() {
         DBObject container;
