@@ -23,6 +23,8 @@
     <artifactId>stratio-connector-mongodb</artifactId>
     <version>0.1.0</version>
     <description>Connector for MongoDB</description>
+    <url>http://www.stratio.com</url>
+    <name>MongoDB Connector</name>
     <packaging>pom</packaging>
     
     <modules>
@@ -33,6 +35,7 @@
 		<license>
 			<name>Apache License, Version 2.0</name>
 			<url>http://www.apache.org/licenses/LICENSE-2.0t</url>
+			<distribution>repo</distribution>
 		</license>
 	</licenses>
 
@@ -46,6 +49,24 @@
         </profile>
     </profiles>
 
+    <scm>
+        <connection>scm:git:git@github.com:Stratio/stratio-connector-mongodb.git</connection>
+        <developerConnection>scm:git:git@github.com:Stratio/stratio-connector-mongodb.git</developerConnection>
+        <url>https://github.com/Stratio/stratio-connector-mongodb</url>
+    </scm>
+
+   <developers>
+        <developer>
+            <id>darroyo</id>
+            <name>David Arroyo Cazorla</name>
+            <email>darroyo@stratio.com</email>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <build>
         <plugins>
