@@ -124,7 +124,7 @@ public class MongoConnector extends CommonsConnector {
      */
     @Override
     public String[] getDatastoreName() {
-        return datastoreName;
+        return datastoreName.clone();
     }
 
     /**
