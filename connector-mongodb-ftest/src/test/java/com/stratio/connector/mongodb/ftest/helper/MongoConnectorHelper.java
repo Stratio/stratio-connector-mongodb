@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Assert;
+
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
@@ -80,7 +82,7 @@ public class MongoConnectorHelper implements IConnectorHelper {
             return new MongoConnector();
         } catch (InitializationException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            Assert.fail("Cannot retrieve the connector");
             return null;
         }
 
