@@ -201,7 +201,8 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
         ResultSet resultIterator = createResultSet(clusterName);
         assertEquals("It has only one result", 1, resultIterator.size());
         for (Row recoveredRow : resultIterator) {
-            assertEquals("The value is correct ", value4, recoveredRow.getCell(COLUMN_4).getValue());
+            Cell cell = recoveredRow.getCell(COLUMN_4);
+            assertEquals("The value is correct ", value4, cell.getValue());
         }
     }
 
