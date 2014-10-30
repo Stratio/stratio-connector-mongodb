@@ -29,8 +29,8 @@ import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.logicalplan.Select;
+import com.stratio.crossdata.common.metadata.ColumnMetadata;
 import com.stratio.crossdata.common.metadata.ColumnType;
-import com.stratio.crossdata.common.metadata.structures.ColumnMetadata;
 
 /**
  * The utility class MetaResultUtils.
@@ -110,14 +110,9 @@ public final class MetaResultUtils {
         for (ColumnName colName : select.getColumnMap().keySet()) {
 
             ColumnType colType = select.getTypeMapFromColumnName().get(colName);
-
             colType = updateColumnType(colType);
 
-            ColumnMetadata columnMetadata = new ColumnMetadata(projection.getTableName().getQualifiedName(),
-                            colName.getQualifiedName(), colType);
-            columnMetadata.setColumnAlias(select.getColumnMap().get(colName));
-
-            columnsMetadata.add(columnMetadata);
+            columnsMetadata.add(new ColumnMetadata(colName, null, colType));
 
         }
         return columnsMetadata;
