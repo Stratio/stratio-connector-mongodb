@@ -107,14 +107,16 @@ public final class MetaResultUtils {
      */
     public static List<ColumnMetadata> createMetadata(Project projection, Select select) {
         List<ColumnMetadata> columnsMetadata = new ArrayList<>();
-        for (ColumnName colName : select.getColumnMap().keySet()) {
-
-            ColumnType colType = select.getTypeMapFromColumnName().get(colName);
+        
+        for (Entry<ColumnName, String> columnMap : select.getColumnMap().entrySet()){
+            //TODO check if it is necessary
+            ColumnName colName= columnMap.getKey();
+            colName.setAlias(columnMap.getValue());
+            ColumnType colType = select.getTypeMapFromColumnName().get(columnMap.getKey());
             colType = updateColumnType(colType);
-
             columnsMetadata.add(new ColumnMetadata(colName, null, colType));
-
         }
+        
         return columnsMetadata;
     }
 

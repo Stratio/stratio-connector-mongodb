@@ -241,7 +241,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
         if (withPK) {
             tableMetadataBuilder.withPartitionKey(COLUMN_1);
         }
-        TableMetadata targetTable = tableMetadataBuilder.build();
+        TableMetadata targetTable = tableMetadataBuilder.build(getConnectorHelper());
 
         if (getConnectorHelper().isTableMandatory()) {
             connector.getMetadataEngine().createTable(getClusterName(), targetTable);

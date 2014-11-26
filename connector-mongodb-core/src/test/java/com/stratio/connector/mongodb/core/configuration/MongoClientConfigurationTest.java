@@ -57,7 +57,7 @@ public class MongoClientConfigurationTest {
     @Test
     public void defaultConfigurationTest() throws CreateNativeConnectionException, MongoValidationException {
         Map<String, String> properties = null;
-        ConnectorClusterConfig defaultConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig defaultConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(defaultConfig);
 
         // Review the default options in Mongo
@@ -76,7 +76,7 @@ public class MongoClientConfigurationTest {
 
     @Test
     public void customConfigurationTest() throws CreateNativeConnectionException, NumberFormatException,
-            MongoValidationException {
+                    MongoValidationException {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(HOST.getOptionName(), SERVER_IP);
         properties.put(PORT.getOptionName(), SERVER_PORT);
@@ -84,7 +84,7 @@ public class MongoClientConfigurationTest {
         properties.put(WRITE_CONCERN.getOptionName(), CUSTOM_WRITE_PREFERENCE);
         properties.put(MAX_CONNECTIONS_PER_HOST.getOptionName(), CUSTOM_MAX_CONNECTION);
 
-        ConnectorClusterConfig customConfi = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig customConfi = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(customConfi);
 
         // Review the default options in Mongo
@@ -103,7 +103,7 @@ public class MongoClientConfigurationTest {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(READ_PREFERENCE.getOptionName(), "falseReadPreference");
 
-        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
 
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
         try {
@@ -119,7 +119,7 @@ public class MongoClientConfigurationTest {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(MAX_CONNECTIONS_PER_HOST.getOptionName(), "ten");
 
-        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
         try {
             config.getMongoClientOptions();
@@ -135,7 +135,7 @@ public class MongoClientConfigurationTest {
         properties.put(HOST.getOptionName(), SERVER_IP_LIST);
         properties.put(PORT.getOptionName(), SERVER_PORT_LIST);
 
-        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
 
         assertTrue(config.getSeeds().size() == 2);
@@ -151,7 +151,7 @@ public class MongoClientConfigurationTest {
         properties.put(HOST.getOptionName(), SERVER_IP_LIST);
         properties.put(PORT.getOptionName(), SERVER_PORT);
 
-        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
         try {
             config.getSeeds();

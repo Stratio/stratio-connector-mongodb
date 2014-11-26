@@ -21,16 +21,20 @@ package com.stratio.connector.mongodb.core.engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsMetadataEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
+import com.stratio.connector.mongodb.core.engine.metadata.AlterOptionsUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.IndexUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.SelectorOptionsUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.ShardUtils;
+import com.stratio.crossdata.common.data.AlterOptions;
 import com.stratio.crossdata.common.data.CatalogName;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
@@ -215,5 +219,31 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         }
 
     }
+
+	@Override
+	protected void alterTable(TableName tableName, AlterOptions alterOptions,
+			Connection<MongoClient> connection) throws UnsupportedException,
+			ExecutionException {
+		
+		DB db = connection.getNativeConnection().getDB(
+				tableName.getCatalogName().getName());
+		DBCollection collection = db.getCollection(tableName.getName());
+		
+		
+		switch (alterOptions.getOption()){
+		case ADD_COLUMN:
+			break;
+		case ALTER_COLUMN:
+		    throw new UnsupportedException("Alter options is not supported");
+		case DROP_COLUMN:
+			String name = alterOptions.getColumnMetadata().getName().getName();
+			collection.updateMulti(new BasicDBObject(), AlterOptionsUtils.buildDropColumnDBObject(name));
+			break;
+		case ALTER_OPTIONS: default:
+			throw new UnsupportedException("Alter options is not supported");
+		}
+		
+	}
+	
 
 }

@@ -19,7 +19,7 @@
   -->
 <DataStore>
     <Name>Mongo</Name>
-    <Version>2.6.4</Version>
+    <Version>0.2.0</Version>
     <RequiredProperties>
         <Property>
             <PropertyName>Hosts</PropertyName>
@@ -33,15 +33,15 @@
     <OptionalProperties>
         <Property>
             <PropertyName>mongo.readPreference</PropertyName>
-            <Description>primary, primarypreferred (default), secondary, secondarypreferred or nearest</Description>
+            <Description>primary, primarypreferred(default), secondary, secondarypreferred or nearest</Description>
         </Property>
         <Property>
             <PropertyName>mongo.writeConcern</PropertyName>
-            <Description>acknowledged (default), unacknowledged, replica_acknowledged or journaled</Description>
+            <Description>acknowledged(default), unacknowledged, replica_acknowledged or journaled</Description>
         </Property>
         <Property>
             <PropertyName>mongo.acceptableLatencyDifference</PropertyName>
-            <Description>the acceptable latency difference (ms)</Description>
+            <Description>the acceptable latency difference(ms)</Description>
         </Property>
         <Property>
             <PropertyName>mongo.maxConnectionsPerHost</PropertyName>
@@ -49,11 +49,11 @@
         </Property>
         <Property>
             <PropertyName>mongo.maxConnectionIdleTime</PropertyName>
-            <Description>The maximum idle time of a pooled connection (ms). A zero value indicates no limit</Description>
+            <Description>The maximum idle time of a pooled connection(ms). A zero value indicates no limit</Description>
         </Property>
         <Property>
             <PropertyName>mongo.connectTimeout</PropertyName>
-            <Description>the connection timeout (ms). A zero value indicates no timeout</Description>
+            <Description>the connection timeout(ms). A zero value indicates no timeout</Description>
         </Property>
     </OptionalProperties>
     <Behaviors>

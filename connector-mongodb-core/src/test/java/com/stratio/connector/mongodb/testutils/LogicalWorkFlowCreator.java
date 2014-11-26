@@ -247,7 +247,7 @@ public class LogicalWorkFlowCreator {
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)),
                         Operator.MATCH, returnSelector(textToFind));
 
-        filters.add(new Filter(Operations.FILTER_FULLTEXT, relation));
+        filters.add(new Filter(Operations.FILTER_INDEXED_MATCH, relation));
 
         return this;
     }
@@ -257,7 +257,7 @@ public class LogicalWorkFlowCreator {
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)), Operator.LIKE,
                         returnSelector(textToFind));
 
-        filters.add(new Filter(Operations.FILTER_FULLTEXT, relation));
+        filters.add(new Filter(Operations.FILTER_INDEXED_MATCH, relation));
 
         return this;
     }

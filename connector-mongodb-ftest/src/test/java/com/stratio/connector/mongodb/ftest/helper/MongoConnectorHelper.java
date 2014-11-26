@@ -54,7 +54,7 @@ import com.stratio.crossdata.common.security.ICredentials;
  */
 public class MongoConnectorHelper implements IConnectorHelper {
 
-    protected String SERVER_IP = "10.200.0.62";// "10.200.0.58,10.200.0.59,10.200.0.60";
+    protected String SERVER_IP = "10.200.0.61";// "10.200.0.58,10.200.0.59,10.200.0.60";
     protected String SERVER_PORT = "27200";// TODO config test "9300,9300,9300";
     private String readPreference = "primaryPreferred";
     private String writeConcern = "acknowledged";// TODO test different writeConcern
@@ -102,7 +102,7 @@ public class MongoConnectorHelper implements IConnectorHelper {
         optionsNode.put(READ_PREFERENCE.getOptionName(), readPreference); // primary,primiaryPreferred,secondary,
         // secondaryPreferred, nearest
         optionsNode.put(WRITE_CONCERN.getOptionName(), writeConcern);
-        return new ConnectorClusterConfig(clusterName, optionsNode);
+        return new ConnectorClusterConfig(clusterName, null, optionsNode);
     }
 
     @Override
@@ -186,19 +186,21 @@ public class MongoConnectorHelper implements IConnectorHelper {
      */
     @Override
     public boolean isCatalogMandatory() {
-        // TODO
         return false;
     }
 
     @Override
     public boolean isTableMandatory() {
-        // TODO
         return false;
     }
 
     @Override
     public boolean isIndexMandatory() {
+        return false;
+    }
 
+    @Override
+    public boolean isPKMandatory() {
         return false;
     }
 

@@ -22,15 +22,50 @@
     <DataStores>
         <DataStoreName>Mongo</DataStoreName>
     </DataStores>
-    <Version>0.4.0</Version>
+    <Version>0.2.0</Version>
     <SupportedOperations>
         <operation>DROP_CATALOG</operation>
         <operation>CREATE_TABLE</operation>
-        <operation>DROP_TABLE</operation>
+        <operation>ALTER_TABLE</operation>
+        <operation>DROP_TABLE</operation> 
+        <operation>UPDATE_PK_EQ</operation>
+        <operation>UPDATE_PK_GT</operation>
+        <operation>UPDATE_PK_LT</operation>
+        <operation>UPDATE_PK_GET</operation>
+        <operation>UPDATE_PK_LET</operation>
+        <operation>UPDATE_NON_INDEXED_EQ</operation>
+        <operation>UPDATE_NON_INDEXED_GT</operation>
+        <operation>UPDATE_NON_INDEXED_LT</operation>
+        <operation>UPDATE_NON_INDEXED_GET</operation>
+        <operation>UPDATE_NON_INDEXED_LET</operation>
+        <operation>UPDATE_INDEXED_EQ</operation>
+        <operation>UPDATE_INDEXED_GT</operation>
+        <operation>UPDATE_INDEXED_LT</operation>
+        <operation>UPDATE_INDEXED_GET</operation>
+        <operation>UPDATE_INDEXED_LET</operation>
+        <operation>TRUNCATE_TABLE</operation>
         <operation>INSERT</operation>
+        <operation>DELETE_PK_EQ</operation>
+        <operation>DELETE_PK_GT</operation>
+        <operation>DELETE_PK_LT</operation>
+        <operation>DELETE_PK_GET</operation>
+        <operation>DELETE_PK_LET</operation>
+        <operation>DELETE_NON_INDEXED_EQ</operation>
+        <operation>DELETE_NON_INDEXED_GT</operation>
+        <operation>DELETE_NON_INDEXED_LT</operation>
+        <operation>DELETE_NON_INDEXED_GET</operation>
+        <operation>DELETE_NON_INDEXED_LET</operation>
+        <operation>DELETE_INDEXED_EQ</operation>
+        <operation>DELETE_INDEXED_GT</operation>
+        <operation>DELETE_INDEXED_LT</operation>
+        <operation>DELETE_INDEXED_GET</operation>
+        <operation>DELETE_INDEXED_LET</operation>
+        <operation>CREATE_INDEX</operation>
+        <operation>DROP_INDEX</operation>
         <operation>PROJECT</operation>
         <operation>SELECT_OPERATOR</operation>
         <operation>SELECT_LIMIT</operation>
+        <operation>SELECT_GROUP_BY</operation>
         <operation>FILTER_PK_EQ</operation>
         <operation>FILTER_PK_GT</operation>
         <operation>FILTER_PK_LT</operation>

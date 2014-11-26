@@ -18,24 +18,39 @@
 
 package com.stratio.connector.mongodb.core.engine;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+
+import org.bson.BSONObject;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
+import com.mongodb.WriteResult;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsStorageEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.StorageUtils;
+import com.stratio.connector.mongodb.core.engine.metadata.UpdateDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.query.utils.FilterDBObjectBuilder;
+import com.stratio.connector.mongodb.core.exceptions.MongoDeleteException;
 import com.stratio.connector.mongodb.core.exceptions.MongoInsertException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.Cell;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.Row;
+import com.stratio.crossdata.common.data.TableName;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
+import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
+import com.stratio.crossdata.common.statements.structures.Relation;
 
 /**
  * This class performs insert and delete operations in Mongo.
@@ -185,5 +200,60 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     private boolean isEmpty(String value) {
         return value == null || value.trim().isEmpty();
     }
+
+	@Override
+	protected void truncate(TableName tableName,
+			Connection<MongoClient> connection) throws UnsupportedException,
+			ExecutionException {
+	    delete(tableName, null,connection);
+
+	}
+
+	@Override
+	protected void delete(TableName tableName, Collection<Filter> whereClauses,
+			Connection<MongoClient> connection) throws UnsupportedException,
+			ExecutionException {
+		
+		DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
+		if (db.collectionExists(tableName.getName())) {
+			DBCollection coll = db.getCollection(tableName.getName());
+	
+			coll.remove(buildFilter(whereClauses));
+		}
+		
+	}
+
+	@Override
+	protected void update(TableName tableName,
+			Collection<Relation> assignments, Collection<Filter> whereClauses,
+			Connection<MongoClient> connection) throws UnsupportedException,
+			ExecutionException {
+		
+		DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
+		DBCollection coll = db.getCollection(tableName.getName());
+		
+		UpdateDBObjectBuilder updateBuilder = new UpdateDBObjectBuilder();
+		for(Relation rel: assignments){
+		    updateBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(), rel.getRightTerm());
+		}
+		coll.update(buildFilter(whereClauses), updateBuilder.build(), false, true);
+		
+	}
+	
+	private DBObject buildFilter(Collection<Filter> whereClauses) throws MongoValidationException{
+		List<Filter> filters;
+		if(whereClauses == null){
+		    return new BasicDBObject();
+		}else{
+    		if(whereClauses instanceof List){
+    			filters = (List<Filter>) whereClauses;
+    		}else{
+    			filters = new ArrayList<Filter>(whereClauses);
+    		}
+    		FilterDBObjectBuilder filterBuilder = new FilterDBObjectBuilder(
+    				false,filters);
+    		return filterBuilder.build();
+	    }
+	}
 
 }
