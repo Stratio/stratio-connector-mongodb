@@ -14,11 +14,10 @@
 	xmlns="http://maven.apache.org/POM/4.0.0"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>com.stratio.connector</groupId>
 		<artifactId>stratio-connector-mongodb</artifactId>
-		<version>0.2.0-RC1</version>
+		<version>0.2.0-RC2</version>
 	</parent>
 
 	<artifactId>connector-mongodb-core</artifactId>
@@ -37,28 +36,28 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
-			<version>2.12.4</version>
+			<version>${mongo.driver.version}</version>
 		</dependency>
 		<dependency>
 			<artifactId>crossdata-common</artifactId>
 			<groupId>com.stratio.crossdata</groupId>
-			<version>0.1.1-RC2</version>
+			<version>${crossdata.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.stratio.connector</groupId>
 			<artifactId>connector-commons-core</artifactId>
-			<version>0.2.0-RC1</version>
+			<version>${commons.connector.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.stratio.crossdata</groupId>
+			<artifactId>crossdata-connector</artifactId>
+			<version>${crossdata.version}</version>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.stratio.crossdata</groupId>
-			<artifactId>crossdata-connector</artifactId>
-			<version>0.1.1-RC2</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -85,7 +84,7 @@
 			<plugin>
 				<artifactId>crossdata-connector-maven-plugin</artifactId>
 				<groupId>com.stratio.crossdata</groupId>
-				<version>0.1.1-RC2</version>
+				<version>${crossdata.version}</version>
 				<configuration>
 					<mainClass>com.stratio.connector.mongodb.core.MongoConnector</mainClass>
 					<jmxPort>7191</jmxPort>
