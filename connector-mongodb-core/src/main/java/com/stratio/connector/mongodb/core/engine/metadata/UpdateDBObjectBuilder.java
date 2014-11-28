@@ -29,19 +29,26 @@ import com.stratio.crossdata.common.statements.structures.RelationSelector;
 import com.stratio.crossdata.common.statements.structures.Selector;
 import com.stratio.crossdata.common.statements.structures.SelectorType;
 
+/**
+ * The Class UpdateDBObjectBuilder. Allows build a DBObject update query.
+ */
 public class UpdateDBObjectBuilder {
-    public static final String INCREMENT_COMMAND = "$inc";
-    public static final String MUTLTIPLICATION_COMMAND = "$mul";
-    public static final String SET_COMMAND = "$set";
-    BasicDBObject relations;
 
+    private static final String INCREMENT_COMMAND = "$inc";
+    private static final String MUTLTIPLICATION_COMMAND = "$mul";
+    private static final String SET_COMMAND = "$set";
+    private BasicDBObject relations;
+
+    /**
+     * Instantiates a new update DBObject builder.
+     */
     public UpdateDBObjectBuilder() {
         relations = new BasicDBObject();
 
     }
 
     /**
-     * Adds the update relation.
+     * Adds an update relation.
      *
      * @param left
      *            the left selector
@@ -64,28 +71,17 @@ public class UpdateDBObjectBuilder {
 
         case EQ:
         case ASSIGN:
-
-            if (right.getType() == SelectorType.RELATION) {
-                String column = (String) SelectorHelper.getRestrictedValue(left, SelectorType.COLUMN);
-                RelationSelector rightSelector = (RelationSelector) right;
-                String innerRelationColumn = (String) SelectorHelper.getRestrictedValue(rightSelector.getRelation()
-                                .getLeftTerm(), SelectorType.COLUMN);
-                if (column.equals(innerRelationColumn)) {
-                    return rightSelector.getRelation();
-                } else {
-                    throw new UnsupportedException("Update relations only can envolve a single field, but found:"
-                                    + column + " and " + innerRelationColumn);
-                }
-
-            }
-
-            if (relations.containsField(SET_COMMAND)) {
-                basicDBObject = (BasicDBObject) relations.get(SET_COMMAND);
-                basicDBObject.putAll(getBasicRelation(left, right));
+            if (containsAnInnerRelation(left, right)) {
+                return ((RelationSelector) right).getRelation();
             } else {
-                basicDBObject = new BasicDBObject();
-                basicDBObject.putAll(getBasicRelation(left, right));
-                relations.put(SET_COMMAND, basicDBObject);
+                if (relations.containsField(SET_COMMAND)) {
+                    basicDBObject = (BasicDBObject) relations.get(SET_COMMAND);
+                    basicDBObject.putAll(getBasicRelation(left, right));
+                } else {
+                    basicDBObject = new BasicDBObject();
+                    basicDBObject.putAll(getBasicRelation(left, right));
+                    relations.put(SET_COMMAND, basicDBObject);
+                }
             }
             break;
 
@@ -122,16 +118,6 @@ public class UpdateDBObjectBuilder {
             }
             break;
 
-        case DIVISION:
-        case DISTINCT:
-        case BETWEEN:
-        case MATCH:
-        case GET:
-        case GT:
-        case IN:
-        case LET:
-        case LIKE:
-        case LT:
         default:
             throw new UnsupportedException("Operator: " + operator + " is not supported");
         }
@@ -139,6 +125,30 @@ public class UpdateDBObjectBuilder {
         return relation;
     }
 
+    private boolean containsAnInnerRelation(Selector left, Selector right) throws UnsupportedException,
+                    ExecutionException {
+
+        if (right.getType() == SelectorType.RELATION) {
+            String column = (String) SelectorHelper.getRestrictedValue(left, SelectorType.COLUMN);
+            RelationSelector rightSelector = (RelationSelector) right;
+            String innerRelationColumn = (String) SelectorHelper.getRestrictedValue(rightSelector.getRelation()
+                            .getLeftTerm(), SelectorType.COLUMN);
+            if (column.equals(innerRelationColumn)) {
+                return true;
+            } else {
+                throw new UnsupportedException("Update relations only can envolve a single field, but found:" + column
+                                + " and " + innerRelationColumn);
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * Builds the update DBObject.
+     *
+     * @return the DB object
+     */
     public DBObject build() {
         return relations;
     }
@@ -179,19 +189,13 @@ public class UpdateDBObjectBuilder {
         Number number = null;
         switch (selector.getType()) {
         case FLOATING_POINT:
-            Double dValue = (Double) SelectorHelper.getRestrictedValue(selector, SelectorType.FLOATING_POINT);
+            double dValue = (double) SelectorHelper.getRestrictedValue(selector, SelectorType.FLOATING_POINT);
             number = (isDecrement) ? -dValue : dValue;
+            break;
         case INTEGER:
-            Long iValue = (Long) SelectorHelper.getRestrictedValue(selector, SelectorType.INTEGER);
+            long iValue = (long) SelectorHelper.getRestrictedValue(selector, SelectorType.INTEGER);
             number = (isDecrement) ? -iValue : iValue;
             break;
-        // TODO covert from strings
-        case STRING:
-        case ASTERISK:
-        case BOOLEAN:
-        case COLUMN:
-        case FUNCTION:
-        case RELATION:
         default:
             throw new MongoValidationException("The requested operation does not support the type: "
                             + selector.getType().toString());

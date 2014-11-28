@@ -29,7 +29,6 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.GroupCommand;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.stratio.connector.mongodb.core.engine.query.utils.FilterDBObjectBuilder;
@@ -72,7 +71,7 @@ public class LogicalWorkflowExecutor {
 
     /** The group by. */
     private GroupBy groupBy = null;
-    
+
     /** Whether the aggregation framework is compulsory for logicalworkflow or not. */
     private boolean aggregationRequired;
 
@@ -86,7 +85,7 @@ public class LogicalWorkflowExecutor {
      *            the initial project
      * @throws UnsupportedException
      *             if the query specified in the logical workflow is not supported
-     * @throws ExecutionException 
+     * @throws ExecutionException
      */
     public LogicalWorkflowExecutor(LogicalStep initialProject) throws UnsupportedException, ExecutionException {
 
@@ -100,8 +99,8 @@ public class LogicalWorkflowExecutor {
      * Computes if the aggregation is required.
      */
     private void aggregationRequired() {
-        //Aggregation features will be included in the next release 	
-    	//TODO if complex or sharded environment=>map-reduce or aggregation framework
+        // Aggregation features will be included in the next release
+        // TODO if complex or sharded environment=>map-reduce or aggregation framework
         aggregationRequired = (groupBy != null);
 
     }
@@ -142,11 +141,11 @@ public class LogicalWorkflowExecutor {
                     throw new MongoValidationException(" # Limit > 1");
                 }
             } else if (logicalStep instanceof GroupBy) {
-            	if (groupBy == null){
-            		groupBy = (GroupBy) logicalStep;
-            	}else{
-            		throw new MongoValidationException(" # GroupBy > 1");
-            	}
+                if (groupBy == null) {
+                    groupBy = (GroupBy) logicalStep;
+                } else {
+                    throw new MongoValidationException(" # GroupBy > 1");
+                }
             } else if (logicalStep instanceof Select) {
                 select = (Select) logicalStep;
             } else {
@@ -177,7 +176,7 @@ public class LogicalWorkflowExecutor {
      *
      * @throws MongoValidationException
      *             if the query specified in the logical workflow is not supported
-     * @throws ExecutionException 
+     * @throws ExecutionException
      */
     private void buildQuery() throws MongoValidationException, ExecutionException {
         query = new ArrayList<DBObject>();
@@ -187,11 +186,11 @@ public class LogicalWorkflowExecutor {
             if (!filterList.isEmpty()) {
                 query.add(buildFilter());
             }
-            if(groupBy != null){
-            	query.add(buildGroupBy());
+            if (groupBy != null) {
+                query.add(buildGroupBy());
             }
-            if(limit != null){
-            	query.add(buildLimit());
+            if (limit != null) {
+                query.add(buildLimit());
             }
         } else {
             query.add(buildFilter());
@@ -201,11 +200,11 @@ public class LogicalWorkflowExecutor {
 
     private DBObject buildGroupBy() throws ExecutionException {
 
-		GroupByDBObjectBuilder groupDBObject = new GroupByDBObjectBuilder(groupBy,select.getColumnMap().keySet());
-		return groupDBObject.build();
-	}
+        GroupByDBObjectBuilder groupDBObject = new GroupByDBObjectBuilder(groupBy, select.getColumnMap().keySet());
+        return groupDBObject.build();
+    }
 
-	/**
+    /**
      * Builds the limit.
      *
      * @return the DB object
@@ -284,8 +283,8 @@ public class LogicalWorkflowExecutor {
      *             if the query specified in the logical workflow is not supported
      */
     private ResultSet executeBasicQuery(DBCollection collection) throws MongoQueryException, MongoValidationException {
-        
-    	ResultSet resultSet = new ResultSet();
+
+        ResultSet resultSet = new ResultSet();
         DBCursor cursor = collection.find(query.get(0), buildProject());
         if (limit != null) {
             cursor = cursor.limit(limit.getLimit());

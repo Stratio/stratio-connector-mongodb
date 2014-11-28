@@ -43,7 +43,6 @@ import com.stratio.crossdata.common.metadata.CatalogMetadata;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
-
 /**
  * The Class MongoMetadataEngine.
  *
@@ -220,30 +219,27 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 
     }
 
-	@Override
-	protected void alterTable(TableName tableName, AlterOptions alterOptions,
-			Connection<MongoClient> connection) throws UnsupportedException,
-			ExecutionException {
-		
-		DB db = connection.getNativeConnection().getDB(
-				tableName.getCatalogName().getName());
-		DBCollection collection = db.getCollection(tableName.getName());
-		
-		
-		switch (alterOptions.getOption()){
-		case ADD_COLUMN:
-			break;
-		case ALTER_COLUMN:
-		    throw new UnsupportedException("Alter options is not supported");
-		case DROP_COLUMN:
-			String name = alterOptions.getColumnMetadata().getName().getName();
-			collection.updateMulti(new BasicDBObject(), AlterOptionsUtils.buildDropColumnDBObject(name));
-			break;
-		case ALTER_OPTIONS: default:
-			throw new UnsupportedException("Alter options is not supported");
-		}
-		
-	}
-	
+    @Override
+    protected void alterTable(TableName tableName, AlterOptions alterOptions, Connection<MongoClient> connection)
+                    throws UnsupportedException, ExecutionException {
+
+        DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
+        DBCollection collection = db.getCollection(tableName.getName());
+
+        switch (alterOptions.getOption()) {
+        case ADD_COLUMN:
+            break;
+        case ALTER_COLUMN:
+            throw new UnsupportedException("Alter options is not supported");
+        case DROP_COLUMN:
+            String name = alterOptions.getColumnMetadata().getName().getName();
+            collection.updateMulti(new BasicDBObject(), AlterOptionsUtils.buildDropColumnDBObject(name));
+            break;
+        case ALTER_OPTIONS:
+        default:
+            throw new UnsupportedException("Alter options is not supported");
+        }
+
+    }
 
 }

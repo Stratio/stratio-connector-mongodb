@@ -35,39 +35,54 @@ import com.stratio.crossdata.common.logicalplan.GroupBy;
 import com.stratio.crossdata.common.statements.structures.Selector;
 import com.stratio.crossdata.common.statements.structures.SelectorType;
 
-
+/**
+ * The Class GroupByDBObjectBuilder. Allows build a "group by" MongoDB query used in the aggregation framework.
+ */
 public class GroupByDBObjectBuilder extends DBObjectBuilder {
 
+    /** The groupBy query. */
     private BasicDBObject groupQuery;
 
-    public GroupByDBObjectBuilder(GroupBy group, Set<ColumnName> set) throws ExecutionException {
+    /**
+     * Instantiates a new group by from the logical plan groupBy and the fields selected.
+     *
+     * @param groupBy
+     *            the groupBy conditions
+     * @param selectColumns
+     *            the columns expected in the result
+     * @throws ExecutionException
+     *             the execution exception
+     */
+    public GroupByDBObjectBuilder(GroupBy groupBy, Set<ColumnName> selectColumns) throws ExecutionException {
         super(true);
         groupQuery = new BasicDBObject();
-        
+
         String identifier;
-        List<Selector> ids = group.getIds();
-        
+        List<Selector> ids = groupBy.getIds();
 
         if (ids.size() == 1) {
-            identifier = (String) SelectorHelper.getRestrictedValue(ids.get(0),SelectorType.COLUMN);
+            identifier = (String) SelectorHelper.getRestrictedValue(ids.get(0), SelectorType.COLUMN);
             groupQuery.put("_id", "$" + identifier);
-            //TODO check $identifier or if it is necessary a custom one.
-        } else if(ids.size() > 1) {
+        } else if (ids.size() > 1) {
             BasicDBObject groupFields = new BasicDBObject();
-            for (Selector selector: ids) {
-                identifier = (String) SelectorHelper.getRestrictedValue(selector,SelectorType.COLUMN);
-                groupFields .put(identifier, "$" + identifier);
+            for (Selector selector : ids) {
+                identifier = (String) SelectorHelper.getRestrictedValue(selector, SelectorType.COLUMN);
+                groupFields.put(identifier, "$" + identifier);
             }
-            groupQuery.put("_id", groupFields);// si hay uno => solo incluir un campo
+            groupQuery.put("_id", groupFields);
         }
-        for(ColumnName colName: set){
-            groupQuery.put(colName.getName(), new BasicDBObject("$first","$"+colName.getName()));
+        for (ColumnName colName : selectColumns) {
+            groupQuery.put(colName.getName(), new BasicDBObject("$first", "$" + colName.getName()));
         }
-        
 
     }
 
-    public DBObject build() { 
+    /**
+     * Builds the DBObject. Insert a $group if the aggregation framework is used.
+     *
+     * @return the DB object
+     */
+    public DBObject build() {
         return new BasicDBObject("$group", groupQuery);
     }
 }

@@ -20,19 +20,41 @@ package com.stratio.connector.mongodb.core.engine.metadata;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-public class AlterOptionsUtils {
-	
-	public static final String RENAME_COMMAND = "$rename";
-	public static final String DROP_COMMAND = "$unset";
-	
-	private AlterOptionsUtils() {
+/**
+ * Contains a set of utilities to run Alter Table commands.
+ */
+public final class AlterOptionsUtils {
+
+    /** The Constant RENAME_COMMAND. */
+    public static final String RENAME_COMMAND = "$rename";
+
+    /** The Constant DROP_COMMAND. */
+    public static final String DROP_COMMAND = "$unset";
+
+    private AlterOptionsUtils() {
     }
-	
-	public static DBObject buildRenameColumnDBObject(String oldName, String newName){
-		return new BasicDBObject(RENAME_COMMAND, new BasicDBObject(oldName, newName));	
-	}
-	
-	public static DBObject buildDropColumnDBObject(String name){
-		return new BasicDBObject(DROP_COMMAND, new BasicDBObject(name, ""));	
-	}
+
+    /**
+     * Builds a rename column DBOject.
+     *
+     * @param oldName
+     *            the old name
+     * @param newName
+     *            the new name
+     * @return the DBObject
+     */
+    public static DBObject buildRenameColumnDBObject(String oldName, String newName) {
+        return new BasicDBObject(RENAME_COMMAND, new BasicDBObject(oldName, newName));
+    }
+
+    /**
+     * Builds a DBObject to drop a column.
+     *
+     * @param name
+     *            the column name
+     * @return the DBObject
+     */
+    public static DBObject buildDropColumnDBObject(String name) {
+        return new BasicDBObject(DROP_COMMAND, new BasicDBObject(name, ""));
+    }
 }
