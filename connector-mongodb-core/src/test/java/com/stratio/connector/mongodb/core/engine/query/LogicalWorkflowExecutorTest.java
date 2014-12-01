@@ -66,7 +66,7 @@ public class LogicalWorkflowExecutorTest {
 
         boolean aggregationRequired = (Boolean) Whitebox.getInternalState(lwExecutor, "aggregationRequired");
 
-        assertFalse(aggregationRequired);
+        assertFalse("The aggregation should not be required without groupBy statements", aggregationRequired);
     }
 
     /**
@@ -93,11 +93,12 @@ public class LogicalWorkflowExecutorTest {
         Limit limit = (Limit) Whitebox.getInternalState(lwExecutor, "limit");
         Select select = (Select) Whitebox.getInternalState(lwExecutor, "select");
 
-        assertEquals(CATALOG, project.getCatalogName());
-        assertEquals(1, filterList.size());
-        assertEquals(Operator.EQ, ((Filter) filterList.get(0)).getRelation().getOperator());
-        assertEquals(5, limit.getLimit());
-        assertEquals(2, select.getColumnMap().size());
+        assertEquals("The project should contain the catalog" + CATALOG, CATALOG, project.getCatalogName());
+        assertEquals("The number of filters should be 1", 1, filterList.size());
+        assertEquals("The filter should have a equal relation", Operator.EQ, ((Filter) filterList.get(0)).getRelation()
+                        .getOperator());
+        assertEquals("The limit value should be 5", 5, limit.getLimit());
+        assertEquals("The select should have 2 columns", 2, select.getColumnMap().size());
 
     }
 
@@ -165,7 +166,7 @@ public class LogicalWorkflowExecutorTest {
 
         List<DBObject> query = (List<DBObject>) Whitebox.getInternalState(lwExecutor, "query");
 
-        assertEquals(1, query.size());
+        assertEquals("There should be only 1 query", 1, query.size());
 
     }
 }

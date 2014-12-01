@@ -52,7 +52,7 @@ public class MongoConnectorTest {
         ICredentials iCredentials = mock(ICredentials.class);
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
         Map<String, String> options = new HashMap<>();
-        ConnectorClusterConfig config = new ConnectorClusterConfig(clusterName, options);
+        ConnectorClusterConfig config = new ConnectorClusterConfig(clusterName, null, options);
         MongoConnectionHandler connectionHandler = mock(MongoConnectionHandler.class);
         Whitebox.setInternalState(mongoConnector, "connectionHandler", connectionHandler);
         mongoConnector.connect(iCredentials, config);
@@ -66,8 +66,8 @@ public class MongoConnectorTest {
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
         ClusterName clusterNameOther = new ClusterName(CLUSTER_NAME_OTHER);
         Map<String, String> options = new HashMap<>();
-        ConnectorClusterConfig configCluster1 = new ConnectorClusterConfig(clusterName, options);
-        ConnectorClusterConfig configCluster2 = new ConnectorClusterConfig(clusterNameOther, options);
+        ConnectorClusterConfig configCluster1 = new ConnectorClusterConfig(clusterName, null, options);
+        ConnectorClusterConfig configCluster2 = new ConnectorClusterConfig(clusterNameOther, null, options);
         MongoConnectionHandler connectionHandler = mock(MongoConnectionHandler.class);
         Whitebox.setInternalState(mongoConnector, "connectionHandler", connectionHandler);
         mongoConnector.connect(iCredentials, configCluster1);

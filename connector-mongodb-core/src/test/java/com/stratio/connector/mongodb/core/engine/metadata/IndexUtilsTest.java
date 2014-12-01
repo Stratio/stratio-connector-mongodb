@@ -53,7 +53,7 @@ public class IndexUtilsTest {
 
         DBObject object = IndexUtils.getCustomOptions(indexMetadata);
 
-        assertEquals(object.get("name"), INDEX_NAME);
+        assertEquals("The index name is not the expected", object.get("name"), INDEX_NAME);
 
     }
 
@@ -67,9 +67,9 @@ public class IndexUtilsTest {
 
         DBObject object = IndexUtils.getCustomOptions(indexMetadata);
 
-        assertEquals(object.get("name"), INDEX_NAME);
-        assertEquals(object.get("sparse"), true);
-        assertEquals(object.get("unique"), false);
+        assertEquals("The index name is not the expected", object.get("name"), INDEX_NAME);
+        assertEquals("The 'sparse' property should be true", object.get("sparse"), true);
+        assertEquals("The 'unique' property should be false", object.get("unique"), false);
 
     }
 
@@ -82,8 +82,8 @@ public class IndexUtilsTest {
 
         DBObject object = IndexUtils.getIndexDBObject(indexMetadata);
 
-        assertEquals(1, object.get(COLUMN_NAME));
-        assertEquals(1, object.get(COLUMN_NAME2));
+        assertEquals("The value of the default index column should be 1", 1, object.get(COLUMN_NAME));
+        assertEquals("The value of the default index column should be 1", 1, object.get(COLUMN_NAME2));
 
     }
 
@@ -96,7 +96,7 @@ public class IndexUtilsTest {
 
         DBObject object = IndexUtils.getIndexDBObject(indexMetadata);
 
-        assertEquals("text", object.get(COLUMN_NAME));
+        assertEquals("The value of the full-text index column should be 'text'", "text", object.get(COLUMN_NAME));
 
     }
 
@@ -109,7 +109,7 @@ public class IndexUtilsTest {
         IndexMetadata indexMetadata = indexMetaBuilder.build();
 
         DBObject object = IndexUtils.getIndexDBObject(indexMetadata);
-        assertEquals("hashed", object.get(COLUMN_NAME));
+        assertEquals("The value of the hashed index column should be 'hashed'", "hashed", object.get(COLUMN_NAME));
     }
 
     @Test
@@ -124,7 +124,7 @@ public class IndexUtilsTest {
 
         DBObject object = IndexUtils.getIndexDBObject(indexMetadata);
 
-        assertEquals(-1, object.get(COLUMN_NAME));
+        assertEquals("The value of the descending index column should be '-1'", -1, object.get(COLUMN_NAME));
 
     }
 
@@ -140,8 +140,9 @@ public class IndexUtilsTest {
 
         DBObject object = IndexUtils.getIndexDBObject(indexMetadata);
 
-        assertEquals(-1, object.get(COLUMN_NAME));
-        assertEquals(1, object.get(COLUMN_NAME2));
+        assertEquals("The value of the descending index " + COLUMN_NAME + " should be '-1'", -1,
+                        object.get(COLUMN_NAME));
+        assertEquals("The value of the ascending index " + COLUMN_NAME2 + " should be '1'", 1, object.get(COLUMN_NAME2));
 
     }
 }

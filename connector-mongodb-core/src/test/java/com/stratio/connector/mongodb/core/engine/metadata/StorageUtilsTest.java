@@ -61,7 +61,7 @@ public class StorageUtilsTest {
 
         Object pk = StorageUtils.buildPK(tableMetadata, row);
 
-        assertEquals(CELL_VALUE, (String) pk);
+        assertEquals("The value is not the expected", CELL_VALUE, (String) pk);
 
     }
 
@@ -79,10 +79,10 @@ public class StorageUtilsTest {
 
         DBObject pk = (DBObject) StorageUtils.buildPK(tableMetadata, row);
 
-        assertTrue(pk.containsField(ROW_NAME));
-        assertTrue(pk.containsField(OTHER_ROW_NAME));
-        assertEquals(CELL_VALUE, pk.get(ROW_NAME));
-        assertEquals(INTEGER_CELL_VALUE, pk.get(OTHER_ROW_NAME));
+        assertTrue("The primary key must contain " + ROW_NAME, pk.containsField(ROW_NAME));
+        assertTrue("The primary key must contain " + OTHER_ROW_NAME, pk.containsField(OTHER_ROW_NAME));
+        assertEquals("The string value is not the expected", CELL_VALUE, pk.get(ROW_NAME));
+        assertEquals("The integer value is not the expected", INTEGER_CELL_VALUE, pk.get(OTHER_ROW_NAME));
 
     }
 

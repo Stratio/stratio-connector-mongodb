@@ -67,9 +67,9 @@ public class DriverConnectionTest {
 
     @Test
     public void initialStateTest() throws Exception {
-        assertNotNull("The connection is not null", Whitebox.getInternalState(driverConnection, "mongoClient"));
-        assertTrue("The connection is  connected",
-                (Boolean) Whitebox.getInternalState(driverConnection, "isConnected"));
+        assertNotNull("The connection is null", Whitebox.getInternalState(driverConnection, "mongoClient"));
+        assertTrue("The connection is not connected",
+                        (Boolean) Whitebox.getInternalState(driverConnection, "isConnected"));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class DriverConnectionTest {
         ConnectorClusterConfig configuration = new ConnectorClusterConfig(new ClusterName("CLUSTER_NAME"), options);
         try {
             driverConnection = new DriverConnection(credentials, configuration);
-            fail("credentials should not be accepted");
+            fail("Credentials should not be accepted");
         } catch (CreateNativeConnectionException exception) {
 
         }
@@ -94,9 +94,9 @@ public class DriverConnectionTest {
         driverConnection.close();
 
         verify(client, times(1)).close();
-        assertNull("The connection is null", Whitebox.getInternalState(driverConnection, "mongoClient"));
-        assertFalse("The connection is not connected",
-                (Boolean) Whitebox.getInternalState(driverConnection, "isConnected"));
+        assertNull("The connection is not null", Whitebox.getInternalState(driverConnection, "mongoClient"));
+        assertFalse("The connection has not been closed",
+                        (Boolean) Whitebox.getInternalState(driverConnection, "isConnected"));
     }
 
 }
