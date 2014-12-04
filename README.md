@@ -51,7 +51,7 @@ To stop the connector execute:
 
 ## How to use Mongo Connector ##
 
-A complete tutorial is available [here](_doc/FirstSteps.md)
+A complete tutorial is available [here](_doc/FirstSteps.md). The basic commands are described below.
 
  1. Start [crossdata-server and then crossdata-shell](https://github.com/Stratio/crossdata).  
  2. Start Mongo Connector as it is explained before.
