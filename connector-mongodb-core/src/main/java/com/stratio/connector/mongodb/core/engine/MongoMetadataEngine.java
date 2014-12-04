@@ -78,7 +78,9 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     @Override
     protected void createCatalog(CatalogMetadata catalogMetadata, Connection<MongoClient> connection)
                     throws UnsupportedException {
-        throw new UnsupportedException("Create catalog is not supported");
+        String msg = "Create catalog is not supported";
+        logger.error(msg);
+        throw new UnsupportedException(msg);
     }
 
     /**
@@ -105,7 +107,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
             throw new UnsupportedException("the table name is required");
         }
 
-        if (ShardUtils.collectionIsSharded(SelectorOptionsUtils.processOptions(tableMetadata.getOptions()))) {
+        if (ShardUtils.isCollectionSharded(SelectorOptionsUtils.processOptions(tableMetadata.getOptions()))) {
             ShardUtils.shardCollection((MongoClient) connection.getNativeConnection(), tableMetadata);
         }
     }
@@ -125,6 +127,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         try {
             connection.getNativeConnection().dropDatabase(name.getName());
         } catch (MongoException e) {
+            logger.error("Error dropping the catalog: " + e.getMessage());
             throw new ExecutionException(e.getMessage(), e);
         }
     }
@@ -146,6 +149,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         try {
             db.getCollection(name.getName()).drop();
         } catch (MongoException e) {
+            logger.error("Error dropping the collection: " + e.getMessage());
             throw new ExecutionException(e.getMessage(), e);
         }
     }
@@ -176,11 +180,12 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
             db.getCollection(indexMetadata.getName().getTableName().getName()).createIndex(indexDBObject,
                             indexOptionsDBObject);
         } catch (MongoException e) {
+            logger.error("Error creating the index: " + e.getMessage());
             throw new ExecutionException(e.getMessage(), e);
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Index created " + indexDBObject.toString() + indexOptionsDBObject);
+            logger.debug("Index created: " + indexDBObject.toString() + " with options: " + indexOptionsDBObject);
         }
     }
 
@@ -211,6 +216,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
             try {
                 db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(indexName);
             } catch (MongoException e) {
+                logger.error("Error dropping the index: " + e.getMessage());
                 throw new ExecutionException(e.getMessage(), e);
             }
         } else {

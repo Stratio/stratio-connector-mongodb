@@ -236,10 +236,6 @@ public class LogicalWorkflowExecutor {
     private DBObject buildFilter() throws MongoValidationException {
 
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(aggregationRequired, filterList);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Filter:" + filterDBObjectBuilder.build());
-        }
         return filterDBObjectBuilder.build();
     }
 
@@ -285,7 +281,11 @@ public class LogicalWorkflowExecutor {
     private ResultSet executeBasicQuery(DBCollection collection) throws MongoQueryException, MongoValidationException {
 
         ResultSet resultSet = new ResultSet();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Executing MongoQuery: " + query.get(0) + ", with fields: " + buildProject());
+        }
         DBCursor cursor = collection.find(query.get(0), buildProject());
+
         if (limit != null) {
             cursor = cursor.limit(limit.getLimit());
         }
@@ -294,12 +294,15 @@ public class LogicalWorkflowExecutor {
             while (cursor.hasNext()) {
 
                 rowDBObject = cursor.next();
+
                 if (logger.isDebugEnabled()) {
-                    logger.debug("SResult: " + rowDBObject);
+                    logger.debug("BResult: " + rowDBObject);
                 }
                 resultSet.add(MetaResultUtils.createRowWithAlias(rowDBObject, select));
             }
         } catch (MongoException e) {
+            logger.error("Error executing a basic query :" + query.get(0) + ", with fields: " + buildProject()
+                            + "\n Error:" + e.getMessage());
             throw new MongoQueryException(e.getMessage(), e);
         } finally {
             cursor.close();
@@ -325,9 +328,8 @@ public class LogicalWorkflowExecutor {
         try {
             int stage = 1;
             for (DBObject aggregationStage : query) {
-                logger.debug("Aggregate framework stage (" + (stage++) + ") : " + aggregationStage.toString());
+                logger.debug("Aggregate framework stage (" + (stage++) + ") : " + aggregationStage);
             }
-
             AggregationOutput aggOutput = collection.aggregate(query);
             for (DBObject result : aggOutput.results()) {
                 if (logger.isDebugEnabled()) {
@@ -336,6 +338,7 @@ public class LogicalWorkflowExecutor {
                 resultSet.add(MetaResultUtils.createRowWithAlias(result, select));
             }
         } catch (MongoException mongoException) {
+            logger.error("Error executing an aggregation query:" + mongoException.getMessage());
             throw new MongoQueryException(mongoException.getMessage(), mongoException);
         }
         return resultSet;

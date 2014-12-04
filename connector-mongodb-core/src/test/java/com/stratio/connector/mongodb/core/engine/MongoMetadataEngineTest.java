@@ -35,6 +35,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -43,21 +44,26 @@ import com.mongodb.MongoException;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
+import com.stratio.connector.mongodb.core.engine.metadata.AlterOptionsUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.IndexUtils;
 import com.stratio.connector.mongodb.testutils.IndexMetadataBuilder;
+import com.stratio.crossdata.common.data.AlterOperation;
+import com.stratio.crossdata.common.data.AlterOptions;
 import com.stratio.crossdata.common.data.CatalogName;
 import com.stratio.crossdata.common.data.ClusterName;
+import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.CatalogMetadata;
+import com.stratio.crossdata.common.metadata.ColumnMetadata;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.IndexType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(value = { MongoClient.class, Connection.class, IndexUtils.class })
+@PrepareForTest(value = { MongoClient.class, Connection.class, IndexUtils.class, AlterOptionsUtils.class })
 public class MongoMetadataEngineTest {
 
     private final static String CLUSTER_NAME = "clustername";
@@ -229,6 +235,58 @@ public class MongoMetadataEngineTest {
 
         verify(client, times(1)).getDB(DB_NAME);
         verify(collection, times(1)).dropIndex(INDEX_NAME);
+
+    }
+
+    @Test(expected = UnsupportedException.class)
+    public void alterTableAlterOptionsTest() throws UnsupportedException, ExecutionException {
+
+        TableName tableName = new TableName(DB_NAME, TABLE_NAME);
+        AlterOptions alterOptions = new AlterOptions(AlterOperation.ALTER_COLUMN, null, mock(ColumnMetadata.class));
+        DBCollection collection = mock(DBCollection.class);
+
+        when(client.getDB(DB_NAME)).thenReturn(database);
+        when(database.getCollection(TABLE_NAME)).thenReturn(collection);
+
+        mongoMetadataEngine.alterTable(tableName, alterOptions, connection);
+
+    }
+
+    @Test(expected = UnsupportedException.class)
+    public void alterTableAlterColumnTest() throws UnsupportedException, ExecutionException {
+
+        TableName tableName = new TableName(DB_NAME, TABLE_NAME);
+        AlterOptions alterOptions = new AlterOptions(AlterOperation.ALTER_OPTIONS, null, mock(ColumnMetadata.class));
+        DBCollection collection = mock(DBCollection.class);
+
+        when(client.getDB(DB_NAME)).thenReturn(database);
+        when(database.getCollection(TABLE_NAME)).thenReturn(collection);
+
+        mongoMetadataEngine.alterTable(tableName, alterOptions, connection);
+
+    }
+
+    @Test
+    public void alterTableDropColumnTest() throws UnsupportedException, ExecutionException {
+
+        TableName tableName = new TableName(DB_NAME, TABLE_NAME);
+        ColumnMetadata columnMetadata = new ColumnMetadata(new ColumnName(DB_NAME, TABLE_NAME, COLUMN_NAME),
+                        new Object[0], ColumnType.INT);
+
+        AlterOptions alterOptions = new AlterOptions(AlterOperation.DROP_COLUMN, null, columnMetadata);
+        DBCollection collection = mock(DBCollection.class);
+
+        when(client.getDB(DB_NAME)).thenReturn(database);
+        when(database.getCollection(TABLE_NAME)).thenReturn(collection);
+
+        DBObject dropColumn = new BasicDBObject(COLUMN_NAME, new BasicDBObject("$unset", new BasicDBObject()));
+
+        PowerMockito.mockStatic(AlterOptionsUtils.class);
+        Mockito.when(AlterOptionsUtils.buildDropColumnDBObject(COLUMN_NAME)).thenReturn(dropColumn);
+
+        mongoMetadataEngine.alterTable(tableName, alterOptions, connection);
+
+        verify(collection, times(1)).updateMulti(any(BasicDBObject.class), Matchers.eq(dropColumn));
 
     }
 

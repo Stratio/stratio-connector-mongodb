@@ -20,18 +20,24 @@ package com.stratio.connector.mongodb.core.engine.query;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.Whitebox;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.connector.mongodb.testutils.LogicalWorkFlowCreator;
 import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.logicalplan.Filter;
+import com.stratio.crossdata.common.logicalplan.GroupBy;
 import com.stratio.crossdata.common.logicalplan.Limit;
 import com.stratio.crossdata.common.logicalplan.LogicalStep;
 import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
@@ -40,6 +46,8 @@ import com.stratio.crossdata.common.logicalplan.Select;
 import com.stratio.crossdata.common.metadata.Operations;
 import com.stratio.crossdata.common.statements.structures.Operator;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(value = { LogicalWorkflowExecutor.class, DBCollection.class })
 public class LogicalWorkflowExecutorTest {
 
     public static final String COLUMN_1 = "column1";
@@ -67,6 +75,14 @@ public class LogicalWorkflowExecutorTest {
         boolean aggregationRequired = (Boolean) Whitebox.getInternalState(lwExecutor, "aggregationRequired");
 
         assertFalse("The aggregation should not be required without groupBy statements", aggregationRequired);
+
+        logWorkFlowCreator.addGroupBy(COLUMN_1);
+        logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
+        lwExecutor = new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
+        aggregationRequired = (Boolean) Whitebox.getInternalState(lwExecutor, "aggregationRequired");
+
+        assertTrue("The aggregation should be required with groupBy statements", aggregationRequired);
+
     }
 
     /**
@@ -82,6 +98,7 @@ public class LogicalWorkflowExecutorTest {
         logWorkFlowCreator.addEqualFilter(COLUMN_1, 5, false, false);
         logWorkFlowCreator.addColumnName(COLUMN_1);
         logWorkFlowCreator.addColumnName(COLUMN_2);
+        logWorkFlowCreator.addGroupBy(COLUMN_MONEY, COLUMN_3);
         logWorkFlowCreator.addLimit(5);
 
         LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
@@ -92,13 +109,14 @@ public class LogicalWorkflowExecutorTest {
         List<Filter> filterList = (List<Filter>) Whitebox.getInternalState(lwExecutor, "filterList");
         Limit limit = (Limit) Whitebox.getInternalState(lwExecutor, "limit");
         Select select = (Select) Whitebox.getInternalState(lwExecutor, "select");
-
+        GroupBy groupBy = (GroupBy) Whitebox.getInternalState(lwExecutor, "groupBy");
         assertEquals("The project should contain the catalog" + CATALOG, CATALOG, project.getCatalogName());
         assertEquals("The number of filters should be 1", 1, filterList.size());
         assertEquals("The filter should have a equal relation", Operator.EQ, ((Filter) filterList.get(0)).getRelation()
                         .getOperator());
         assertEquals("The limit value should be 5", 5, limit.getLimit());
         assertEquals("The select should have 2 columns", 2, select.getColumnMap().size());
+        assertEquals("The groupBy should have 2 ids", 2, groupBy.getIds().size());
 
     }
 
@@ -154,6 +172,7 @@ public class LogicalWorkflowExecutorTest {
     @Test
     public void logicalWorkflowExecutorPrepareQueryTest() throws Exception {
 
+        // Verify a ordinary query
         LogicalWorkFlowCreator logWorkFlowCreator = new LogicalWorkFlowCreator(CATALOG, TABLE, CLUSTER_NAME);
         logWorkFlowCreator.addEqualFilter(COLUMN_1, 5, false, false);
         logWorkFlowCreator.addGreaterFilter(COLUMN_2, 1, false);
@@ -168,5 +187,39 @@ public class LogicalWorkflowExecutorTest {
 
         assertEquals("There should be only 1 query", 1, query.size());
 
+        // Verify an aggregation query
+        logWorkFlowCreator.addLimit(5);
+        logWorkFlowCreator.addGroupBy(COLUMN_AGE);
+
+        logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
+
+        lwExecutor = new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
+
+        query = (List<DBObject>) Whitebox.getInternalState(lwExecutor, "query");
+
+        assertEquals("The aggregation framework should include 3 stages", 3, query.size());
+
     }
+
+    // @Test
+    // public void executeBasicQueryTest() throws NoSuchMethodException, SecurityException, UnsupportedException,
+    // ExecutionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    //
+    // LogicalWorkFlowCreator logWorkFlowCreator = new LogicalWorkFlowCreator(CATALOG, TABLE, CLUSTER_NAME);
+    // logWorkFlowCreator.addEqualFilter(COLUMN_1, 5, false, false);
+    // logWorkFlowCreator.addGreaterFilter(COLUMN_2, 1, false);
+    // logWorkFlowCreator.addColumnName(COLUMN_1);
+    // logWorkFlowCreator.addColumnName(COLUMN_2);
+    //
+    // LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
+    //
+    // LogicalWorkflowExecutor lwExecutor = new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
+    //
+    // DBCollection collection = Mockito.mock(DBCollection.class);
+    // Method method = lwExecutor.getClass().getDeclaredMethod("executeBasicQuery", DBCollection.class);
+    // method.setAccessible(true);
+    //
+    // ResultSet resultSet = (ResultSet) method.invoke(lwExecutor, (Collection<Filter>) null);
+    //
+    // }
 }

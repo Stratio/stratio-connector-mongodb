@@ -63,7 +63,6 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
                     ExecutionException {
 
         LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(project);
-
         ResultSet resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
 
         return QueryResult.createQueryResult(resultSet);

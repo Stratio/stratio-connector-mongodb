@@ -17,6 +17,9 @@
  */
 package com.stratio.connector.mongodb.core.engine.metadata;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.stratio.connector.commons.util.SelectorHelper;
@@ -34,9 +37,16 @@ import com.stratio.crossdata.common.statements.structures.SelectorType;
  */
 public class UpdateDBObjectBuilder {
 
+    /** The logger. */
+    private final static Logger logger = LoggerFactory.getLogger(UpdateDBObjectBuilder.class);
+
+    /** The Constant INCREMENT_COMMAND. */
     private static final String INCREMENT_COMMAND = "$inc";
+    /** The Constant MUTLTIPLICATION_COMMAND. */
     private static final String MUTLTIPLICATION_COMMAND = "$mul";
+    /** The Constant SET_COMMAND. */
     private static final String SET_COMMAND = "$set";
+    /** The relations. */
     private BasicDBObject relations;
 
     /**
@@ -44,7 +54,6 @@ public class UpdateDBObjectBuilder {
      */
     public UpdateDBObjectBuilder() {
         relations = new BasicDBObject();
-
     }
 
     /**
@@ -119,7 +128,9 @@ public class UpdateDBObjectBuilder {
             break;
 
         default:
-            throw new UnsupportedException("Operator: " + operator + " is not supported");
+            String msg = "Operator: " + operator + " is not supported in update queries";
+            logger.error(msg);
+            throw new UnsupportedException(msg);
         }
 
         return relation;
@@ -136,8 +147,10 @@ public class UpdateDBObjectBuilder {
             if (column.equals(innerRelationColumn)) {
                 return true;
             } else {
-                throw new UnsupportedException("Update relations only can envolve a single field, but found:" + column
-                                + " and " + innerRelationColumn);
+                String msg = "Update relations only can envolve a single field, but found:" + column + " and "
+                                + innerRelationColumn;
+                logger.error(msg);
+                throw new UnsupportedException(msg);
             }
 
         }
@@ -197,8 +210,9 @@ public class UpdateDBObjectBuilder {
             number = (isDecrement) ? -iValue : iValue;
             break;
         default:
-            throw new MongoValidationException("The requested operation does not support the type: "
-                            + selector.getType().toString());
+            String msg = "The requested operation does not support the type: " + selector.getType().toString();
+            logger.error(msg);
+            throw new MongoValidationException(msg);
 
         }
         return number;

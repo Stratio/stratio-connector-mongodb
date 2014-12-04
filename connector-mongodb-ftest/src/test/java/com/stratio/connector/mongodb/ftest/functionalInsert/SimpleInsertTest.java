@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
@@ -170,6 +171,8 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
 
     @SuppressWarnings("static-access")
     @Override
+    @Test
+    @Ignore
     public void testInsertDate() throws ConnectorException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
