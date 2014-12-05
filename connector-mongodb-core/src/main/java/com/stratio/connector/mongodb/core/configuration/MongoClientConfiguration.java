@@ -98,7 +98,7 @@ public class MongoClientConfiguration {
 
         ArrayList<ServerAddress> seeds = new ArrayList<ServerAddress>();
 
-        Map<String, String> config = configuration.getOptions();
+        Map<String, String> config = configuration.getClusterOptions();
         String[] hosts;
         String[] ports;
         if (config != null) {
@@ -154,7 +154,7 @@ public class MongoClientConfiguration {
      *             if the value can't be parsed to int
      */
     private int getIntegerSetting(ConfigurationOptions option) throws MongoValidationException {
-        Map<String, String> config = configuration.getOptions();
+        Map<String, String> config = configuration.getClusterOptions();
         int value;
         if (config != null && config.containsKey(option.getOptionName())) {
             try {
@@ -178,7 +178,7 @@ public class MongoClientConfiguration {
      *             if the value cannot be parsed to ReadPreference
      */
     private ReadPreference getReadPreference() throws MongoValidationException {
-        Map<String, String> config = configuration.getOptions();
+        Map<String, String> config = configuration.getClusterOptions();
         ReadPreference readPreference;
 
         if (config != null && config.containsKey(READ_PREFERENCE.getOptionName())) {
@@ -232,7 +232,7 @@ public class MongoClientConfiguration {
      *             if the value cannot be parsed to WriteConcern
      */
     private WriteConcern getWriteConcern() throws MongoValidationException {
-        Map<String, String> config = configuration.getOptions();
+        Map<String, String> config = configuration.getClusterOptions();
         WriteConcern writeConcern;
 
         if (config != null && config.containsKey(WRITE_CONCERN.getOptionName())) {

@@ -105,8 +105,14 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
 
         String fieldName = getFieldName(relation.getLeftTerm());
         validateSelector(operator, rightSelector.getType());
-        DBObject fieldQuery = new BasicDBObject(getMongoOperator(operator), getMongoRightTerm(rightSelector));
-        return new BasicDBObject(fieldName, fieldQuery);
+        String mongoOperator = getMongoOperator(operator);
+
+        if (mongoOperator.equals("$eq") && !useAggregationPipeline()) {
+            return new BasicDBObject(fieldName, getMongoRightTerm(rightSelector));
+        } else {
+            DBObject fieldQuery = new BasicDBObject(mongoOperator, getMongoRightTerm(rightSelector));
+            return new BasicDBObject(fieldName, fieldQuery);
+        }
 
     }
 

@@ -57,6 +57,7 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
             for (ColumnName columnName : columnMetadataList) {
                 projectQuery.put(columnName.getName(), 1);
             }
+            projectQuery.put("_id", 0);
 
         }
 

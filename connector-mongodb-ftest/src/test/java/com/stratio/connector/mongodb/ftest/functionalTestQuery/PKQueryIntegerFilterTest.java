@@ -17,20 +17,18 @@
  */
 package com.stratio.connector.mongodb.ftest.functionalTestQuery;
 
-import org.junit.Test;
-
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
-import com.stratio.connector.commons.ftest.functionalTestQuery.GenericNotIndexedQueryStringFilterTest;
+import com.stratio.connector.commons.ftest.functionalTestQuery.GenericPKQueryIntegerFilterTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
 /**
- * Created by jmgomez on 17/07/14.
+ * @author david
+ *
  */
-public class NotIndexedQueryStringFilterTest extends GenericNotIndexedQueryStringFilterTest {
-
+public class PKQueryIntegerFilterTest extends GenericPKQueryIntegerFilterTest {
     @Override
     protected IConnectorHelper getConnectorHelper() {
         MongoConnectorHelper mongoConnectorHelper = null;
@@ -45,8 +43,4 @@ public class NotIndexedQueryStringFilterTest extends GenericNotIndexedQueryStrin
         }
         return mongoConnectorHelper;
     }
-
-    @Test
-    public void selectNotIndexedFilterMatch() {
-    };
 }

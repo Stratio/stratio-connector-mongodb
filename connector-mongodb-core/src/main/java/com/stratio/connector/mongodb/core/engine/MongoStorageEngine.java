@@ -18,29 +18,47 @@
 
 package com.stratio.connector.mongodb.core.engine;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsStorageEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.StorageUtils;
+import com.stratio.connector.mongodb.core.engine.metadata.UpdateDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.query.utils.FilterDBObjectBuilder;
+import com.stratio.connector.mongodb.core.exceptions.MongoDeleteException;
 import com.stratio.connector.mongodb.core.exceptions.MongoInsertException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.Cell;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.Row;
+import com.stratio.crossdata.common.data.TableName;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
+import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
+import com.stratio.crossdata.common.statements.structures.Relation;
 
 /**
  * This class performs insert and delete operations in Mongo.
  */
 public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
+
+    /** The logger. */
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Instantiates a new mongo storage engine.
@@ -76,7 +94,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         String tableName = targetTable.getName().getName();
 
         if (isEmpty(catalog) || isEmpty(tableName) || row == null) {
-            throw new MongoInsertException("The catalog name, the table name and a row must be specified");
+            throw new MongoValidationException("The catalog name, the table name and the row must be specified");
         }
 
         DB db = mongoClient.getDB(catalog);
@@ -106,7 +124,11 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         } else {
             try {
                 db.getCollection(tableName).insert(doc);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Row inserted with fields: " + doc.keySet());
+                }
             } catch (MongoException e) {
+                logger.error("Error inserting data: " + e.getMessage());
                 throw new MongoInsertException(e.getMessage(), e);
             }
         }
@@ -184,6 +206,72 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      */
     private boolean isEmpty(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    @Override
+    protected void truncate(TableName tableName, Connection<MongoClient> connection) throws UnsupportedException,
+                    ExecutionException {
+        delete(tableName, null, connection);
+
+    }
+
+    @Override
+    protected void delete(TableName tableName, Collection<Filter> whereClauses, Connection<MongoClient> connection)
+                    throws UnsupportedException, ExecutionException {
+
+        DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
+        if (db.collectionExists(tableName.getName())) {
+            DBCollection coll = db.getCollection(tableName.getName());
+
+            try {
+                coll.remove(buildFilter(whereClauses));
+            } catch (MongoException e) {
+                logger.error("Error deleting the data: " + e.getMessage());
+                throw new MongoDeleteException(e.getMessage(), e);
+            }
+
+        }
+
+    }
+
+    @Override
+    protected void update(TableName tableName, Collection<Relation> assignments, Collection<Filter> whereClauses,
+                    Connection<MongoClient> connection) throws UnsupportedException, ExecutionException {
+
+        DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
+        DBCollection coll = db.getCollection(tableName.getName());
+
+        UpdateDBObjectBuilder updateBuilder = new UpdateDBObjectBuilder();
+        for (Relation rel : assignments) {
+            Relation innerRelation = updateBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(),
+                            rel.getRightTerm());
+            while (innerRelation != null) {
+                innerRelation = updateBuilder.addUpdateRelation(innerRelation.getLeftTerm(),
+                                innerRelation.getOperator(), innerRelation.getRightTerm());
+            }
+        }
+        try {
+            coll.update(buildFilter(whereClauses), updateBuilder.build(), false, true);
+        } catch (MongoException e) {
+            logger.error("Error updating the data: " + e.getMessage());
+            throw new MongoInsertException(e.getMessage(), e);
+        }
+
+    }
+
+    private DBObject buildFilter(Collection<Filter> whereClauses) throws MongoValidationException {
+        List<Filter> filters;
+        if (whereClauses == null) {
+            return new BasicDBObject();
+        } else {
+            if (whereClauses instanceof List) {
+                filters = (List<Filter>) whereClauses;
+            } else {
+                filters = new ArrayList<Filter>(whereClauses);
+            }
+            FilterDBObjectBuilder filterBuilder = new FilterDBObjectBuilder(false, filters);
+            return filterBuilder.build();
+        }
     }
 
 }

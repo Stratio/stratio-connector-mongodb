@@ -29,8 +29,8 @@ import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.logicalplan.Select;
+import com.stratio.crossdata.common.metadata.ColumnMetadata;
 import com.stratio.crossdata.common.metadata.ColumnType;
-import com.stratio.crossdata.common.metadata.structures.ColumnMetadata;
 
 /**
  * The utility class MetaResultUtils.
@@ -107,19 +107,16 @@ public final class MetaResultUtils {
      */
     public static List<ColumnMetadata> createMetadata(Project projection, Select select) {
         List<ColumnMetadata> columnsMetadata = new ArrayList<>();
-        for (ColumnName colName : select.getColumnMap().keySet()) {
-
-            ColumnType colType = select.getTypeMapFromColumnName().get(colName);
-
+        
+        for (Entry<ColumnName, String> columnMap : select.getColumnMap().entrySet()){
+            //TODO check if it is necessary
+            ColumnName colName= columnMap.getKey();
+            colName.setAlias(columnMap.getValue());
+            ColumnType colType = select.getTypeMapFromColumnName().get(columnMap.getKey());
             colType = updateColumnType(colType);
-
-            ColumnMetadata columnMetadata = new ColumnMetadata(projection.getTableName().getQualifiedName(),
-                            colName.getQualifiedName(), colType);
-            columnMetadata.setColumnAlias(select.getColumnMap().get(colName));
-
-            columnsMetadata.add(columnMetadata);
-
+            columnsMetadata.add(new ColumnMetadata(colName, null, colType));
         }
+        
         return columnsMetadata;
     }
 

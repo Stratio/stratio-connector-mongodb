@@ -57,16 +57,22 @@ public class MongoClientConfigurationTest {
     @Test
     public void defaultConfigurationTest() throws CreateNativeConnectionException, MongoValidationException {
         Map<String, String> properties = null;
-        ConnectorClusterConfig defaultConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig defaultConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(defaultConfig);
 
         // Review the default options in Mongo
-        assertEquals(config.getMongoClientOptions().getAcceptableLatencyDifference(), 15);
-        assertEquals(config.getMongoClientOptions().getConnectionsPerHost(), 10000);
-        assertEquals(config.getMongoClientOptions().getMaxConnectionIdleTime(), 0);
-        assertEquals(config.getMongoClientOptions().getConnectTimeout(), 10000);
-        assertEquals(config.getMongoClientOptions().getReadPreference(), ReadPreference.primaryPreferred());
-        assertEquals(config.getMongoClientOptions().getWriteConcern(), WriteConcern.ACKNOWLEDGED);
+        assertEquals("The lattency default value is not the expected", config.getMongoClientOptions()
+                        .getAcceptableLatencyDifference(), 15);
+        assertEquals("The connections per host default value is not the expected", config.getMongoClientOptions()
+                        .getConnectionsPerHost(), 10000);
+        assertEquals("The max idle time default value is not the expected", config.getMongoClientOptions()
+                        .getMaxConnectionIdleTime(), 0);
+        assertEquals("The connection timeout default value is not the expected", config.getMongoClientOptions()
+                        .getConnectTimeout(), 10000);
+        assertEquals("The read preference default value is not the expected", config.getMongoClientOptions()
+                        .getReadPreference(), ReadPreference.primaryPreferred());
+        assertEquals("The write concern default value is not the expected", config.getMongoClientOptions()
+                        .getWriteConcern(), WriteConcern.ACKNOWLEDGED);
 
         // Connector properties
         assertTrue(config.getSeeds().size() == 1);
@@ -76,7 +82,7 @@ public class MongoClientConfigurationTest {
 
     @Test
     public void customConfigurationTest() throws CreateNativeConnectionException, NumberFormatException,
-            MongoValidationException {
+                    MongoValidationException {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(HOST.getOptionName(), SERVER_IP);
         properties.put(PORT.getOptionName(), SERVER_PORT);
@@ -84,17 +90,20 @@ public class MongoClientConfigurationTest {
         properties.put(WRITE_CONCERN.getOptionName(), CUSTOM_WRITE_PREFERENCE);
         properties.put(MAX_CONNECTIONS_PER_HOST.getOptionName(), CUSTOM_MAX_CONNECTION);
 
-        ConnectorClusterConfig customConfi = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig customConfi = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(customConfi);
 
         // Review the default options in Mongo
-        assertEquals(config.getMongoClientOptions().getConnectionsPerHost(), Integer.parseInt(CUSTOM_MAX_CONNECTION));
-        assertEquals(config.getMongoClientOptions().getReadPreference(), ReadPreference.secondaryPreferred());
-        assertEquals(config.getMongoClientOptions().getWriteConcern(), WriteConcern.UNACKNOWLEDGED);
+        assertEquals("The connections per host value is not the expected", config.getMongoClientOptions()
+                        .getConnectionsPerHost(), Integer.parseInt(CUSTOM_MAX_CONNECTION));
+        assertEquals("The read preference is not the expected", config.getMongoClientOptions().getReadPreference(),
+                        ReadPreference.secondaryPreferred());
+        assertEquals("The write concern is not the expected", config.getMongoClientOptions().getWriteConcern(),
+                        WriteConcern.UNACKNOWLEDGED);
 
         // Connector properties
-        assertTrue(config.getSeeds().size() == 1);
-        assertEquals(config.getSeeds().get(0).getPort(), Integer.parseInt(SERVER_PORT));
+        assertTrue("There must be 1 seed", config.getSeeds().size() == 1);
+        assertEquals("The port is not the expected", config.getSeeds().get(0).getPort(), Integer.parseInt(SERVER_PORT));
 
     }
 
@@ -103,7 +112,7 @@ public class MongoClientConfigurationTest {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(READ_PREFERENCE.getOptionName(), "falseReadPreference");
 
-        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
 
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
         try {
@@ -119,7 +128,7 @@ public class MongoClientConfigurationTest {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(MAX_CONNECTIONS_PER_HOST.getOptionName(), "ten");
 
-        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
         try {
             config.getMongoClientOptions();
@@ -135,13 +144,13 @@ public class MongoClientConfigurationTest {
         properties.put(HOST.getOptionName(), SERVER_IP_LIST);
         properties.put(PORT.getOptionName(), SERVER_PORT_LIST);
 
-        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
 
-        assertTrue(config.getSeeds().size() == 2);
+        assertTrue("There must be 2 seeds", config.getSeeds().size() == 2);
 
-        assertEquals(2700, config.getSeeds().get(0).getPort());
-        assertEquals(2701, config.getSeeds().get(1).getPort());
+        assertEquals("The port is not the expected", 2700, config.getSeeds().get(0).getPort());
+        assertEquals("The port is not the expected", 2701, config.getSeeds().get(1).getPort());
 
     }
 
@@ -151,7 +160,7 @@ public class MongoClientConfigurationTest {
         properties.put(HOST.getOptionName(), SERVER_IP_LIST);
         properties.put(PORT.getOptionName(), SERVER_PORT);
 
-        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, properties);
+        ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
         try {
             config.getSeeds();

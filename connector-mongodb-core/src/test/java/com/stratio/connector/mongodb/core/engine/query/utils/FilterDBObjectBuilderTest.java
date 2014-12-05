@@ -63,15 +63,54 @@ public class FilterDBObjectBuilderTest {
         Filter filter = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.GET, 5);
 
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false, Arrays.asList(filter));
-        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
+        assertFalse("useAggregations should be false",
+                        (Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
 
         DBObject filterQuery = (DBObject) Whitebox.getInternalState(filterDBObjectBuilder, "filterQuery");
-        assertNotNull(filterQuery);
-        assertEquals(1, filterQuery.keySet().size());
-        assertTrue(filterQuery.containsField(COLUMN_1));
+        assertNotNull("The filter query is null", filterQuery);
+        assertEquals("There should be a query only over 1 field", 1, filterQuery.keySet().size());
+        assertTrue("The query should contain a clause about" + COLUMN_1, filterQuery.containsField(COLUMN_1));
         DBObject condition = (DBObject) filterQuery.get(COLUMN_1);
-        assertTrue(condition.containsField("$gte"));
-        assertEquals(5l, condition.get("$gte"));
+        assertTrue("The query does not contain '$gte'", condition.containsField("$gte"));
+        assertEquals("The value of '$gte' key should be 5", 5l, condition.get("$gte"));
+
+    }
+
+    @Test
+    public void addEqualFilterWithoutAggregationTest() throws Exception {
+
+        Filter filter = buildFilter(Operations.FILTER_NON_INDEXED_EQ, CATALOG, TABLE, COLUMN_1, Operator.EQ, 5);
+
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false, Arrays.asList(filter));
+        assertFalse("useAggregations should be false",
+                        (Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
+
+        DBObject filterQuery = (DBObject) Whitebox.getInternalState(filterDBObjectBuilder, "filterQuery");
+        assertNotNull("The filter query is null", filterQuery);
+        assertEquals("There should be a query only over 1 field", 1, filterQuery.keySet().size());
+        assertTrue("The query should contain a clause about" + COLUMN_1, filterQuery.containsField(COLUMN_1));
+
+        assertEquals("The value of the key " + COLUMN_1 + " without the aggregation framework should be " + 5l, 5l,
+                        filterQuery.get(COLUMN_1));
+
+    }
+
+    @Test
+    public void addEqualFilterWithAggregationTest() throws Exception {
+
+        Filter filter = buildFilter(Operations.FILTER_NON_INDEXED_EQ, CATALOG, TABLE, COLUMN_1, Operator.EQ, 5);
+        FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(true, Arrays.asList(filter));
+
+        assertTrue("useAggregations should be true",
+                        (Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
+
+        DBObject filterQuery = (DBObject) Whitebox.getInternalState(filterDBObjectBuilder, "filterQuery");
+        assertNotNull("The filter query is null", filterQuery);
+        assertEquals("There should be a query only over 1 field", 1, filterQuery.keySet().size());
+        assertTrue("The query should contain a clause about" + COLUMN_1, filterQuery.containsField(COLUMN_1));
+        DBObject condition = (DBObject) filterQuery.get(COLUMN_1);
+        assertTrue("The query does not contain '$eq'", condition.containsField("$eq"));
+        assertEquals("The value of '$eq' key should be 5", 5l, condition.get("$eq"));
 
     }
 
@@ -83,23 +122,25 @@ public class FilterDBObjectBuilderTest {
                         Operator.DISTINCT, "five");
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false, Arrays.asList(filtergte,
                         filterdi));
-        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
+        assertFalse("useAggregations should be false",
+                        (Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
 
         DBObject filterQuery = (DBObject) Whitebox.getInternalState(filterDBObjectBuilder, "filterQuery");
-        assertNotNull(filterQuery);
-        assertEquals(1, filterQuery.keySet().size());
-        assertTrue(filterQuery.containsField("$and"));
+        assertNotNull("The filter query is null", filterQuery);
+        assertEquals("There should be a query only over 1 field", 1, filterQuery.keySet().size());
+        assertTrue("The query should contain the operator $and", filterQuery.containsField("$and"));
+
         BasicBSONList filters = (BasicBSONList) filterQuery.get("$and");
 
         DBObject dbFilters = (DBObject) filters.get(0);
         DBObject condition = (DBObject) dbFilters.get(COLUMN_1);
-        assertTrue(condition.containsField("$gte"));
-        assertEquals(5l, condition.get("$gte"));
+        assertTrue("The query does not contain '$gte'", condition.containsField("$gte"));
+        assertEquals("The value of '$gte' key should be 5", 5l, condition.get("$gte"));
 
         DBObject dbFilters2 = (DBObject) filters.get(1);
         DBObject condition2 = (DBObject) dbFilters2.get(COLUMN_1);
-        assertTrue(condition2.containsField("$ne"));
-        assertEquals("five", condition2.get("$ne"));
+        assertTrue("The query does not contain '$ne'", condition2.containsField("$ne"));
+        assertEquals("The value of '$ne' key should be five", "five", condition2.get("$ne"));
 
     }
 
@@ -109,7 +150,6 @@ public class FilterDBObjectBuilderTest {
         Filter filter = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.MATCH, 5);
 
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false, Arrays.asList(filter));
-        assertFalse((Boolean) Whitebox.getInternalState(filterDBObjectBuilder, "useAggregation"));
 
     }
 
@@ -127,12 +167,12 @@ public class FilterDBObjectBuilderTest {
 
         DBObject filterQuery = filterDBObjectBuilder.build();
 
-        assertNotNull(filterQuery);
-        assertEquals(1, filterQuery.keySet().size());
-        assertTrue(filterQuery.containsField(COLUMN_1));
+        assertNotNull("The filter query is null", filterQuery);
+        assertEquals("There should be a query only over 1 field", 1, filterQuery.keySet().size());
+        assertTrue("The query should contain a clause about" + COLUMN_1, filterQuery.containsField(COLUMN_1));
         DBObject condition = (DBObject) filterQuery.get(COLUMN_1);
-        assertTrue(condition.containsField("$gte"));
-        assertEquals(5, condition.get("$gte"));
+        assertTrue("The query does not contain '$gte'", condition.containsField("$gte"));
+        assertEquals("The value of '$gte' key should be 5", 5, condition.get("$gte"));
 
     }
 
@@ -148,12 +188,12 @@ public class FilterDBObjectBuilderTest {
 
         DBObject filterQuery = filterDBObjectBuilder.build();
 
-        assertNotNull(filterQuery);
-        assertEquals(1, filterQuery.keySet().size());
-        assertTrue(filterQuery.containsField("$match"));
+        assertNotNull("The filter query is null", filterQuery);
+        assertEquals("There should be a query only over 1 field", 1, filterQuery.keySet().size());
+        assertTrue("The query should contain '$match'", filterQuery.containsField("$match"));
         DBObject condition = (DBObject) ((DBObject) filterQuery.get("$match")).get(COLUMN_1);
-        assertTrue(condition.containsField("$gte"));
-        assertEquals(5, condition.get("$gte"));
+        assertTrue("The query does not contain '$gte'", condition.containsField("$gte"));
+        assertEquals("The value of '$gte' key should be 5", 5, condition.get("$gte"));
 
     }
 

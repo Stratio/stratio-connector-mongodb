@@ -34,12 +34,12 @@ import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.stratio.connector.commons.util.SelectorHelper;
 import com.stratio.connector.mongodb.core.configuration.ShardKeyType;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.TableMetadata;
-import com.stratio.crossdata.common.statements.structures.BooleanSelector;
 import com.stratio.crossdata.common.statements.structures.Selector;
 import com.stratio.crossdata.common.statements.structures.StringSelector;
 
@@ -64,8 +64,9 @@ public final class ShardUtils {
      * @param options
      *            the options
      * @return true if the sharding is required
+     * @throws ExecutionException
      */
-    public static boolean collectionIsSharded(Map<String, Selector> options) {
+    public static boolean isCollectionSharded(Map<String, Selector> options) throws ExecutionException {
 
         boolean isSharded = false;
 
@@ -73,7 +74,7 @@ public final class ShardUtils {
             Selector selectorSharded = options.get(SHARDING_ENABLED.getOptionName());
 
             if (selectorSharded != null) {
-                isSharded = ((BooleanSelector) selectorSharded).getValue();
+                isSharded = SelectorHelper.getValue(Boolean.class, selectorSharded);
             }
         }
 
@@ -122,7 +123,7 @@ public final class ShardUtils {
 
         CommandResult result = mongoClient.getDB("admin").command(cmd);
         if (!result.ok()) {
-            LOGGER.error("Command Error:" + result.getErrorMessage());
+            LOGGER.error("Error executing" + cmd + " :" + result.getErrorMessage());
             throw new ExecutionException(result.getErrorMessage());
         }
 
@@ -138,15 +139,15 @@ public final class ShardUtils {
      * @throws ExecutionException
      *             if an error exist when enabling sharding
      */
-    public static void enableSharding(MongoClient mongoClient, String databaseName) throws ExecutionException {
+    private static void enableSharding(MongoClient mongoClient, String databaseName) throws ExecutionException {
 
         DB db;
 
         db = mongoClient.getDB("admin");
-
-        CommandResult result = db.command(new BasicDBObject("enableSharding", databaseName));
+        DBObject enableShardingCommand = new BasicDBObject("enableSharding", databaseName);
+        CommandResult result = db.command(enableShardingCommand);
         if (!result.ok() && !result.getErrorMessage().equals("already enabled")) {
-            LOGGER.error("Command Error:" + result.getErrorMessage());
+            LOGGER.error("Error executing" + enableShardingCommand + " :" + result.getErrorMessage());
             throw new ExecutionException(result.getErrorMessage());
         }
     }
@@ -158,7 +159,7 @@ public final class ShardUtils {
      *            the options
      * @return the shard key type chosen. Returns a default value if not specified
      */
-    public static ShardKeyType getShardKeyType(Map<String, Selector> options) {
+    private static ShardKeyType getShardKeyType(Map<String, Selector> options) {
 
         String shardKeyType = null;
         if (options != null) {
@@ -173,7 +174,7 @@ public final class ShardUtils {
         } else if (ASC.getKeyType().equals(shardKeyType)) {
             return ASC;
         } else {
-            LOGGER.info("Using the asc key as the default type");
+            LOGGER.warn("Using the asc key as the default type");
             return (ShardKeyType) SHARD_KEY_TYPE.getDefaultValue();
         }
 
@@ -190,7 +191,7 @@ public final class ShardUtils {
      * @throws MongoValidationException
      *             if the specified operation is not supported
      */
-    public static String[] getShardKeyFields(Map<String, Selector> options, ShardKeyType shardKeyType)
+    private static String[] getShardKeyFields(Map<String, Selector> options, ShardKeyType shardKeyType)
                     throws MongoValidationException {
 
         String[] shardKey = null;
@@ -203,8 +204,8 @@ public final class ShardUtils {
         }
 
         if (shardKey == null || shardKey.length == 0) {
-            LOGGER.info("Using the _id as the default shard key");
             shardKey = ((String[]) SHARD_KEY_FIELDS.getDefaultValue());
+            LOGGER.warn("Using the _id as the default shard key");
         } else if (shardKeyType == ShardKeyType.HASHED && shardKey.length > 1) {
             throw new MongoValidationException("The hashed key must have a single field");
         }

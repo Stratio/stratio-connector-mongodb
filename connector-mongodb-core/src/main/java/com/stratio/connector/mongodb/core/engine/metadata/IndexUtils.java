@@ -28,6 +28,9 @@ import static com.stratio.connector.mongodb.core.configuration.IndexOptions.UNIQ
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
@@ -48,6 +51,9 @@ import com.stratio.crossdata.common.statements.structures.StringSelector;
  * @author david
  */
 public final class IndexUtils {
+
+    /** The logger. */
+    private final static Logger logger = LoggerFactory.getLogger(IndexUtils.class);
 
     private IndexUtils() {
     }
@@ -112,7 +118,9 @@ public final class IndexUtils {
         } else if (indexMetadata.getType() == IndexType.CUSTOM) {
             indexDBObject = getCustomIndexDBObject(indexMetadata);
         } else {
-            throw new UnsupportedException("index type " + indexMetadata.getType().toString() + " is not supported");
+            String msg = "Index type " + indexMetadata.getType().toString() + " is not supported";
+            logger.error(msg);
+            throw new UnsupportedException(msg);
         }
 
         return indexDBObject;
@@ -123,11 +131,15 @@ public final class IndexUtils {
         Map<String, Selector> options = SelectorOptionsUtils.processOptions(indexMetadata.getOptions());
 
         if (options == null) {
-            throw new UnsupportedException("The custom index must have an index type and fields");
+            String msg = "The custom index must have an index type and fields";
+            logger.debug(msg);
+            throw new UnsupportedException(msg);
         }
         Selector selector = options.get(INDEX_TYPE.getOptionName());
         if (selector == null) {
-            throw new UnsupportedException("The custom index must have an index type");
+            String msg = "The custom index must have an index type";
+            logger.debug(msg);
+            throw new UnsupportedException(msg);
         }
 
         String indexType = ((StringSelector) selector).getValue().trim();
@@ -138,15 +150,18 @@ public final class IndexUtils {
             for (String field : fields) {
                 String[] fieldInfo = field.split(":");
                 if (fieldInfo.length != 2) {
-                    throw new UnsupportedException(
-                                    "Format error. The fields in a compound index must be: fieldname:asc|desc [, field2:desc ...] ");
+                    String msg = "Format error. The fields in a compound index must be: fieldname:asc|desc [, field2:desc ...] ";
+                    logger.debug(msg);
+                    throw new UnsupportedException(msg);
                 }
                 int order = fieldInfo[1].trim().equals("asc") ? 1 : -1;
                 indexDBObject.put(fieldInfo[0], order);
             }
         } else {
             if (fields.length != 1) {
-                throw new UnsupportedException("The " + indexType + " index must have a single field");
+                String msg = "The " + indexType + " index must have a single field";
+                logger.debug(msg);
+                throw new UnsupportedException(msg);
             }
             String mongoIndexType;
             if (CustomMongoIndexType.HASHED.getIndexType().equals(indexType)) {
@@ -219,6 +234,7 @@ public final class IndexUtils {
             try {
                 db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(indexDBObject);
             } catch (Exception e) {
+                logger.error("Error dropping the index with " + indexDBObject + " :" + e.getMessage());
                 throw new ExecutionException(e.getMessage(), e);
             }
         } else if (indexMetadata.getType() == IndexType.FULL_TEXT) {
@@ -238,6 +254,7 @@ public final class IndexUtils {
             try {
                 db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(defaultTextIndexName);
             } catch (Exception e) {
+                logger.error("Error dropping the index " + defaultTextIndexName + " :" + e.getMessage());
                 throw new ExecutionException(e.getMessage(), e);
             }
         } else {

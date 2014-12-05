@@ -83,7 +83,7 @@ public class MongoQueryEngineTest {
         PowerMockito.verifyStatic(times(1));
         QueryResult.createQueryResult(resultSet);
 
-        assertEquals("The query result is correct", queryResult, returnQueryResult);
+        assertEquals("The query result is wrong", queryResult, returnQueryResult);
     }
 
     /**

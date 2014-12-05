@@ -60,16 +60,17 @@ public class DriverConnectionTest {
         Map<String, String> options = new HashMap<>();
         options.put(HOST.getOptionName(), "10.200.0.58,10.200.0.59,10.200.0.60");
         options.put(PORT.getOptionName(), "2800,2802,2809");
-        ConnectorClusterConfig configuration = new ConnectorClusterConfig(new ClusterName("CLUSTER_NAME"), options);
+        ConnectorClusterConfig configuration = new ConnectorClusterConfig(new ClusterName("CLUSTER_NAME"), null,
+                        options);
         driverConnection = new DriverConnection(credentials, configuration);
 
     }
 
     @Test
     public void initialStateTest() throws Exception {
-        assertNotNull("The connection is not null", Whitebox.getInternalState(driverConnection, "mongoClient"));
-        assertTrue("The connection is  connected",
-                (Boolean) Whitebox.getInternalState(driverConnection, "isConnected"));
+        assertNotNull("The connection is null", Whitebox.getInternalState(driverConnection, "mongoClient"));
+        assertTrue("The connection is not connected",
+                        (Boolean) Whitebox.getInternalState(driverConnection, "isConnected"));
     }
 
     @Test
@@ -78,10 +79,11 @@ public class DriverConnectionTest {
         ICredentials credentials = mock(ICredentials.class);
 
         Map<String, String> options = new HashMap<>();
-        ConnectorClusterConfig configuration = new ConnectorClusterConfig(new ClusterName("CLUSTER_NAME"), options);
+        ConnectorClusterConfig configuration = new ConnectorClusterConfig(new ClusterName("CLUSTER_NAME"), null,
+                        options);
         try {
             driverConnection = new DriverConnection(credentials, configuration);
-            fail("credentials should not be accepted");
+            fail("Credentials should not be accepted");
         } catch (CreateNativeConnectionException exception) {
 
         }
@@ -94,9 +96,9 @@ public class DriverConnectionTest {
         driverConnection.close();
 
         verify(client, times(1)).close();
-        assertNull("The connection is null", Whitebox.getInternalState(driverConnection, "mongoClient"));
-        assertFalse("The connection is not connected",
-                (Boolean) Whitebox.getInternalState(driverConnection, "isConnected"));
+        assertNull("The connection should be null", Whitebox.getInternalState(driverConnection, "mongoClient"));
+        assertFalse("The connection has not been closed",
+                        (Boolean) Whitebox.getInternalState(driverConnection, "isConnected"));
     }
 
 }

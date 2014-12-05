@@ -1,19 +1,19 @@
 /*
  * Licensed to STRATIO (C) under one or more contributor license agreements.
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership.  The STRATIO (C) licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ *  See the NOTICE file distributed with this work for additional information
+ *  regarding copyright ownership. The STRATIO (C) licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License. You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied. See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
  */
 
 package com.stratio.connector.mongodb.testutils;
@@ -26,10 +26,10 @@ import java.util.Map;
 
 import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.data.ColumnName;
-import com.stratio.crossdata.common.data.QualifiedNames;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Filter;
+import com.stratio.crossdata.common.logicalplan.GroupBy;
 import com.stratio.crossdata.common.logicalplan.Limit;
 import com.stratio.crossdata.common.logicalplan.LogicalStep;
 import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
@@ -66,6 +66,7 @@ public class LogicalWorkFlowCreator {
     List<Filter> filters = new ArrayList<>();
     private Limit limit;
     private Window window;
+    private GroupBy groupBy;
 
     public LogicalWorkFlowCreator(String catalog, String table, ClusterName clusterName) {
         this.catalog = catalog;
@@ -93,18 +94,27 @@ public class LogicalWorkFlowCreator {
             lastStep.setNextStep(window);
             lastStep = window;
         }
+
+        if (groupBy != null) {
+            lastStep.setNextStep(groupBy);
+            lastStep = groupBy;
+        }
+
         if (select == null) {
             Map<ColumnName, String> selectColumn = new LinkedHashMap<>();
-            Map<String, ColumnType> typeMap = new LinkedHashMap<>();
-            Map<ColumnName, ColumnType> columnTypeMap = new LinkedHashMap<>();
+            Map<String, ColumnType> typeMap = new LinkedHashMap();
+            Map<ColumnName, ColumnType> typeMapColumnName = new LinkedHashMap<>();
             for (ColumnName columnName : project.getColumnList()) {
-                selectColumn.put(new ColumnName(catalog, table, columnName.getName()), columnName.getName());
-                typeMap.put(columnName.getQualifiedName(), ColumnType.VARCHAR);
-                columnTypeMap.put(columnName, ColumnType.VARCHAR);
+                ColumnName columnNameTemp = new ColumnName(catalog, table, columnName.getName());
+                selectColumn.put(columnNameTemp, columnName.getName());
+                typeMap.put(columnName.getAlias(), ColumnType.VARCHAR);
+                typeMapColumnName.put(columnNameTemp, ColumnType.VARCHAR);
             }
 
-            select = new Select(Operations.PROJECT, selectColumn, typeMap, null); // The select is mandatory. If it
-                                                                                  // doesn't
+            select = new Select(Operations.SELECT_OPERATOR, selectColumn, typeMap, typeMapColumnName); // The select is
+            // mandatory
+            // . If it
+            // doesn't
             // exist we
             // create with all project's columns with varchar type.
 
@@ -114,7 +124,9 @@ public class LogicalWorkFlowCreator {
 
         logiclaSteps.add(project);
 
-        return new LogicalWorkflow(logiclaSteps);
+        LogicalWorkflow logWorkflow = new LogicalWorkflow(logiclaSteps);
+        logWorkflow.setLastStep(select);
+        return logWorkflow;
 
     }
 
@@ -156,6 +168,12 @@ public class LogicalWorkFlowCreator {
         filters.add(new Filter(operation, new Relation(columnSelector, Operator.EQ, returnSelector(value))));
         return this;
 
+    }
+
+    private void createFilterEQ(String columnName, Object value, Operations operations) {
+        Selector columnSelector = new ColumnSelector(new ColumnName(catalog, table, columnName));
+
+        filters.add(new Filter(operations, new Relation(columnSelector, Operator.ASSIGN, returnSelector(value))));
     }
 
     private Selector returnSelector(Object value) {
@@ -230,10 +248,12 @@ public class LogicalWorkFlowCreator {
         return this;
     }
 
-    public LogicalWorkFlowCreator addDistinctFilter(String columnName, Object term, Boolean indexed) {
+    public LogicalWorkFlowCreator addDistinctFilter(String columnName, Object term, Boolean indexed, Boolean PK) {
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)),
                         Operator.DISTINCT, returnSelector(term));
-        if (indexed) {
+        if (PK) {
+            filters.add(new Filter(Operations.FILTER_PK_DISTINCT, relation));
+        } else if (indexed) {
             filters.add(new Filter(Operations.FILTER_INDEXED_DISTINCT, relation));
         } else {
             filters.add(new Filter(Operations.FILTER_NON_INDEXED_DISTINCT, relation));
@@ -247,7 +267,7 @@ public class LogicalWorkFlowCreator {
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)),
                         Operator.MATCH, returnSelector(textToFind));
 
-        filters.add(new Filter(Operations.FILTER_FULLTEXT, relation));
+        filters.add(new Filter(Operations.FILTER_INDEXED_MATCH, relation));
 
         return this;
     }
@@ -257,7 +277,7 @@ public class LogicalWorkFlowCreator {
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)), Operator.LIKE,
                         returnSelector(textToFind));
 
-        filters.add(new Filter(Operations.FILTER_FULLTEXT, relation));
+        filters.add(new Filter(Operations.FILTER_INDEXED_MATCH, relation));
 
         return this;
     }
@@ -265,16 +285,15 @@ public class LogicalWorkFlowCreator {
     public LogicalWorkFlowCreator addSelect(LinkedList<ConnectorField> fields) {
         Map<ColumnName, String> mapping = new LinkedHashMap<>();
         Map<String, ColumnType> types = new LinkedHashMap<>();
-        Map<ColumnName, ColumnType> columnTypeMap = new LinkedHashMap<>();
-
+        Map<ColumnName, ColumnType> typeMapFormColumnName = new LinkedHashMap<>();
         for (ConnectorField connectorField : fields) {
-            mapping.put(new ColumnName(catalog, table, connectorField.name), connectorField.alias);
-            types.put(QualifiedNames.getColumnQualifiedName(catalog, table, connectorField.name),
-                            connectorField.columnType);
-            columnTypeMap.put(new ColumnName(catalog, table, connectorField.name), connectorField.columnType);
+            ColumnName columName = new ColumnName(catalog, table, connectorField.name);
+            mapping.put(columName, connectorField.alias);
+            types.put(connectorField.alias, connectorField.columnType);
+            typeMapFormColumnName.put(columName, connectorField.columnType);
         }
 
-        select = new Select(Operations.PROJECT, mapping, types, columnTypeMap);
+        select = new Select(Operations.PROJECT, mapping, types, typeMapFormColumnName);
 
         return this;
 
@@ -304,6 +323,15 @@ public class LogicalWorkFlowCreator {
 
     public LogicalWorkFlowCreator addLimit(int limit) {
         this.limit = new Limit(Operations.SELECT_LIMIT, limit);
+        return this;
+    }
+
+    public LogicalWorkFlowCreator addGroupBy(String... fields) {
+        List<Selector> ids = new ArrayList<Selector>();
+        for (String field : fields) {
+            ids.add(new ColumnSelector(new ColumnName(catalog, table, field)));
+        }
+        this.groupBy = new GroupBy(Operations.SELECT_GROUP_BY, ids);
         return this;
     }
 

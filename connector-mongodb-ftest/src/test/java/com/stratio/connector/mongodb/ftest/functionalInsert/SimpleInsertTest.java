@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
@@ -170,6 +171,8 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
 
     @SuppressWarnings("static-access")
     @Override
+    @Test
+    @Ignore
     public void testInsertDate() throws ConnectorException {
         ClusterName clusterName = getClusterName();
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
@@ -201,7 +204,8 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
         ResultSet resultIterator = createResultSet(clusterName);
         assertEquals("It has only one result", 1, resultIterator.size());
         for (Row recoveredRow : resultIterator) {
-            assertEquals("The value is correct ", value4, recoveredRow.getCell(COLUMN_4).getValue());
+            Cell cell = recoveredRow.getCell(COLUMN_4);
+            assertEquals("The value is correct ", value4, cell.getValue());
         }
     }
 
@@ -240,7 +244,7 @@ public class SimpleInsertTest extends GenericSimpleInsertTest {
         if (withPK) {
             tableMetadataBuilder.withPartitionKey(COLUMN_1);
         }
-        TableMetadata targetTable = tableMetadataBuilder.build();
+        TableMetadata targetTable = tableMetadataBuilder.build(getConnectorHelper());
 
         if (getConnectorHelper().isTableMandatory()) {
             connector.getMetadataEngine().createTable(getClusterName(), targetTable);

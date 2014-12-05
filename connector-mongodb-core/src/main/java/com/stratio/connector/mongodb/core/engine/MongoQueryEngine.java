@@ -23,9 +23,9 @@ import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.UniqueProjectQueryEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutor;
-import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
 import com.stratio.crossdata.common.connector.IResultHandler;
 import com.stratio.crossdata.common.data.ResultSet;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
 import com.stratio.crossdata.common.logicalplan.Project;
@@ -54,17 +54,15 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
      * @param connection
      *            the connection
      * @return the query result
-     * @throws MongoQueryException
-     *             if an error exist when running the database command
      * @throws UnsupportedException
      *             if the specified operation is not supported
+     * @throws ExecutionException
      */
     @Override
-    public QueryResult execute(Project project, Connection<MongoClient> connection) throws MongoQueryException,
-                    UnsupportedException {
+    public QueryResult execute(Project project, Connection<MongoClient> connection) throws UnsupportedException,
+                    ExecutionException {
 
         LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(project);
-
         ResultSet resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
 
         return QueryResult.createQueryResult(resultSet);

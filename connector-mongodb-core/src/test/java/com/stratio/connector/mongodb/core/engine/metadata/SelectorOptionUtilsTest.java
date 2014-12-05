@@ -50,10 +50,12 @@ public class SelectorOptionUtilsTest {
 
         Map<String, Selector> processedOptions = SelectorOptionsUtils.processOptions(options);
 
-        assertTrue(processedOptions.containsKey(OPTION_NAME));
-        assertTrue(processedOptions.containsKey(OPTION_NAME2));
-        assertEquals(INT_VALUE.longValue(), ((IntegerSelector) processedOptions.get(OPTION_NAME)).getValue());
-        assertEquals(BOOLEAN_VALUE, ((BooleanSelector) processedOptions.get(OPTION_NAME2)).getValue());
+        assertTrue("The options must contain " + OPTION_NAME, processedOptions.containsKey(OPTION_NAME));
+        assertTrue("The options must contain " + OPTION_NAME2, processedOptions.containsKey(OPTION_NAME2));
+        assertEquals("The retrieved integer option is not the expected", INT_VALUE.longValue(),
+                        ((IntegerSelector) processedOptions.get(OPTION_NAME)).getValue());
+        assertEquals("The retrieved boolean option is not the expected", BOOLEAN_VALUE,
+                        ((BooleanSelector) processedOptions.get(OPTION_NAME2)).getValue());
 
     }
 

@@ -30,7 +30,7 @@ To generate the executable execute the following command:
 The user and the group of the service are setted up to root by default. It could be changed in the following file:
 
 ```
-   > target/connector-mongodb-core-0.1.0/bin/connector-mongodb-core-0.1.0
+   > target/connector-mongodb-core-0.2.0/bin/connector-mongodb-core-0.2.0
 ```
 
 
@@ -39,17 +39,19 @@ The user and the group of the service are setted up to root by default. It could
 To run Mongo Connector execute:
 
 ```
-   > target/connector-mongodb-core-0.1.0/bin/connector-mongodb-core-0.1.0 start
+   > target/connector-mongodb-core-0.2.0/bin/connector-mongodb-core-0.2.0 start
 ```
 
 To stop the connector execute:
 
 ```
-   > target/connector-mongodb-core-0.1.0/bin/connector-mongodb-core-0.1.0 stop
+   > target/connector-mongodb-core-0.2.0/bin/connector-mongodb-core-0.2.0 stop
 ```
 
 
 ## How to use Mongo Connector ##
+
+A complete tutorial is available [here](_doc/FirstSteps.md). The basic commands are described below.
 
  1. Start [crossdata-server and then crossdata-shell](https://github.com/Stratio/crossdata).  
  2. Start Mongo Connector as it is explained before.
@@ -77,7 +79,7 @@ To stop the connector execute:
     Connector Manifest.
     
         ```
-            xdsh:user>  ATTACH CONNECTOR <connector name> TO <cluster name> WITH OPTIONS { 'DB' : 'Mongo'};
+            xdsh:user>  ATTACH CONNECTOR <connector name> TO <cluster name> WITH OPTIONS {};
         ```
     
     At this point, we can start to send queries.

@@ -67,7 +67,7 @@ public class ConnectionHandlerTest {
 
         ICredentials credentials = mock(ICredentials.class);
         Map<String, String> options = new HashMap<>();
-        ConnectorClusterConfig config = new ConnectorClusterConfig(new ClusterName(CLUSTER_NAME), options);
+        ConnectorClusterConfig config = new ConnectorClusterConfig(new ClusterName(CLUSTER_NAME), null, options);
 
         DriverConnection connection = mock(DriverConnection.class);
         whenNew(DriverConnection.class).withArguments(credentials, config).thenReturn(connection);
@@ -75,12 +75,12 @@ public class ConnectionHandlerTest {
         connectionHandler.createConnection(credentials, config);
 
         Map<String, Connection> mapConnection = (Map<String, Connection>) Whitebox.getInternalState(connectionHandler,
-                "connections");
+                        "connections");
 
         DriverConnection recoveredConnection = (DriverConnection) mapConnection.get(CLUSTER_NAME);
 
-        assertNotNull(recoveredConnection);
-        assertEquals("The recoveredConnection is correct", connection, recoveredConnection);
+        assertNotNull("The connection does not exist", recoveredConnection);
+        assertEquals("The recovered connection is not the expected", connection, recoveredConnection);
 
     }
 
@@ -89,13 +89,14 @@ public class ConnectionHandlerTest {
     public void closeConnectionTest() throws Exception {
 
         Map<String, DriverConnection> mapConnection = (Map<String, DriverConnection>) Whitebox.getInternalState(
-                connectionHandler, "connections");
+                        connectionHandler, "connections");
         DriverConnection connection = mock(DriverConnection.class);
         mapConnection.put(CLUSTER_NAME, connection);
 
         connectionHandler.closeConnection(CLUSTER_NAME);
 
-        assertFalse(mapConnection.containsKey(CLUSTER_NAME));
+        assertFalse("The connection " + CLUSTER_NAME + " should have been closed",
+                        mapConnection.containsKey(CLUSTER_NAME));
         verify(connection, times(1)).close();
 
     }
@@ -104,14 +105,14 @@ public class ConnectionHandlerTest {
     @Test
     public void getConnectionTest() throws HandlerConnectionException {
         Map<String, DriverConnection> mapConnection = (Map<String, DriverConnection>) Whitebox.getInternalState(
-                connectionHandler, "connections");
+                        connectionHandler, "connections");
         DriverConnection connection = mock(DriverConnection.class);
         mapConnection.put(CLUSTER_NAME, connection);
 
         Connection<MongoClient> recoveredConnection = connectionHandler.getConnection(CLUSTER_NAME);
 
-        assertNotNull("The connection is not null", recoveredConnection);
-        assertSame("The connection is correct", connection, recoveredConnection);
+        assertNotNull("The connection does not exist", recoveredConnection);
+        assertSame("The connection recovered is not the expected", connection, recoveredConnection);
 
     }
 

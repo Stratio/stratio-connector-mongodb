@@ -32,14 +32,17 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.stratio.connector.mongodb.core.engine.query.utils.FilterDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.query.utils.GroupByDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.query.utils.LimitDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.query.utils.MetaResultUtils;
 import com.stratio.connector.mongodb.core.engine.query.utils.ProjectDBObjectBuilder;
 import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ResultSet;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Filter;
+import com.stratio.crossdata.common.logicalplan.GroupBy;
 import com.stratio.crossdata.common.logicalplan.Limit;
 import com.stratio.crossdata.common.logicalplan.LogicalStep;
 import com.stratio.crossdata.common.logicalplan.Project;
@@ -66,6 +69,9 @@ public class LogicalWorkflowExecutor {
     /** The select. */
     private Select select = null;
 
+    /** The group by. */
+    private GroupBy groupBy = null;
+
     /** Whether the aggregation framework is compulsory for logicalworkflow or not. */
     private boolean aggregationRequired;
 
@@ -79,8 +85,9 @@ public class LogicalWorkflowExecutor {
      *            the initial project
      * @throws UnsupportedException
      *             if the query specified in the logical workflow is not supported
+     * @throws ExecutionException
      */
-    public LogicalWorkflowExecutor(LogicalStep initialProject) throws UnsupportedException {
+    public LogicalWorkflowExecutor(LogicalStep initialProject) throws UnsupportedException, ExecutionException {
 
         readLogicalWorkflow(initialProject);
         aggregationRequired();
@@ -93,7 +100,8 @@ public class LogicalWorkflowExecutor {
      */
     private void aggregationRequired() {
         // Aggregation features will be included in the next release
-        aggregationRequired = false;
+        // TODO if complex or sharded environment=>map-reduce or aggregation framework
+        aggregationRequired = (groupBy != null);
 
     }
 
@@ -132,6 +140,12 @@ public class LogicalWorkflowExecutor {
                 } else {
                     throw new MongoValidationException(" # Limit > 1");
                 }
+            } else if (logicalStep instanceof GroupBy) {
+                if (groupBy == null) {
+                    groupBy = (GroupBy) logicalStep;
+                } else {
+                    throw new MongoValidationException(" # GroupBy > 1");
+                }
             } else if (logicalStep instanceof Select) {
                 select = (Select) logicalStep;
             } else {
@@ -162,8 +176,9 @@ public class LogicalWorkflowExecutor {
      *
      * @throws MongoValidationException
      *             if the query specified in the logical workflow is not supported
+     * @throws ExecutionException
      */
-    private void buildQuery() throws MongoValidationException {
+    private void buildQuery() throws MongoValidationException, ExecutionException {
         query = new ArrayList<DBObject>();
 
         if (isAggregationRequired()) {
@@ -171,11 +186,22 @@ public class LogicalWorkflowExecutor {
             if (!filterList.isEmpty()) {
                 query.add(buildFilter());
             }
-            query.add(buildLimit());
+            if (groupBy != null) {
+                query.add(buildGroupBy());
+            }
+            if (limit != null) {
+                query.add(buildLimit());
+            }
         } else {
             query.add(buildFilter());
         }
 
+    }
+
+    private DBObject buildGroupBy() throws ExecutionException {
+
+        GroupByDBObjectBuilder groupDBObject = new GroupByDBObjectBuilder(groupBy, select.getColumnMap().keySet());
+        return groupDBObject.build();
     }
 
     /**
@@ -210,10 +236,6 @@ public class LogicalWorkflowExecutor {
     private DBObject buildFilter() throws MongoValidationException {
 
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(aggregationRequired, filterList);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Filter:" + filterDBObjectBuilder.build());
-        }
         return filterDBObjectBuilder.build();
     }
 
@@ -257,8 +279,13 @@ public class LogicalWorkflowExecutor {
      *             if the query specified in the logical workflow is not supported
      */
     private ResultSet executeBasicQuery(DBCollection collection) throws MongoQueryException, MongoValidationException {
+
         ResultSet resultSet = new ResultSet();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Executing MongoQuery: " + query.get(0) + ", with fields: " + buildProject());
+        }
         DBCursor cursor = collection.find(query.get(0), buildProject());
+
         if (limit != null) {
             cursor = cursor.limit(limit.getLimit());
         }
@@ -267,12 +294,15 @@ public class LogicalWorkflowExecutor {
             while (cursor.hasNext()) {
 
                 rowDBObject = cursor.next();
+
                 if (logger.isDebugEnabled()) {
-                    logger.debug("SResult: " + rowDBObject);
+                    logger.debug("BResult: " + rowDBObject);
                 }
                 resultSet.add(MetaResultUtils.createRowWithAlias(rowDBObject, select));
             }
         } catch (MongoException e) {
+            logger.error("Error executing a basic query :" + query.get(0) + ", with fields: " + buildProject()
+                            + "\n Error:" + e.getMessage());
             throw new MongoQueryException(e.getMessage(), e);
         } finally {
             cursor.close();
@@ -298,9 +328,8 @@ public class LogicalWorkflowExecutor {
         try {
             int stage = 1;
             for (DBObject aggregationStage : query) {
-                logger.debug("Aggregate framework stage (" + (stage++) + ") : " + aggregationStage.toString());
+                logger.debug("Aggregate framework stage (" + (stage++) + ") : " + aggregationStage);
             }
-
             AggregationOutput aggOutput = collection.aggregate(query);
             for (DBObject result : aggOutput.results()) {
                 if (logger.isDebugEnabled()) {
@@ -309,6 +338,7 @@ public class LogicalWorkflowExecutor {
                 resultSet.add(MetaResultUtils.createRowWithAlias(result, select));
             }
         } catch (MongoException mongoException) {
+            logger.error("Error executing an aggregation query:" + mongoException.getMessage());
             throw new MongoQueryException(mongoException.getMessage(), mongoException);
         }
         return resultSet;
