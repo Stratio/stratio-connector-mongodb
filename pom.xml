@@ -16,16 +16,16 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.stratio.connector</groupId>
 	<artifactId>stratio-connector-mongodb</artifactId>
-	<version>0.2.0-RC2</version>
+	<version>0.2.0</version>
 	<description>Connector for MongoDB</description>
 	<url>http://www.stratio.com</url>
 	<name>MongoDB Connector</name>
 	<packaging>pom</packaging>
 
 	<properties>
-		<mongo.connector.version>0.2.0-RC2</mongo.connector.version>
-		<crossdata.version>0.1.1-RC2</crossdata.version>
-		<commons.connector.version>0.2.0-RC2</commons.connector.version>
+		<mongo.connector.version>0.2.0</mongo.connector.version>
+		<crossdata.version>0.1.1</crossdata.version>
+		<commons.connector.version>0.2.0</commons.connector.version>
 		<mongo.driver.version>2.12.4</mongo.driver.version>
 	</properties>
 
