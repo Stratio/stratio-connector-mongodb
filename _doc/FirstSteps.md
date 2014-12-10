@@ -1,6 +1,6 @@
 # First Steps #
 
-Mongo Crossdata connector allows the integration between Crossdata and MongoDB. Crossdata provides a easy and common language as well as the integration with several other databases. More information about Crossdata can be found at [Crossdata](https://github.com/Stratio/crossdata)
+Mongo Crossdata connector allows the integration between Crossdata and MongoDB. Crossdata provides an easy and common language as well as the integration with several other databases. More information about Crossdata can be found at [Crossdata](https://github.com/Stratio/crossdata)
 
 Table of Contents
 =================
