@@ -39,6 +39,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.BulkUpdateRequestBuilder;
+import com.mongodb.BulkWriteOperation;
+import com.mongodb.BulkWriteRequestBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -122,16 +125,46 @@ public class MongoStorageEngineTest {
         row.addCell(COLUMN_NAME, new Cell(CELL_VALUE));
         row.addCell(OTHER_COLUMN_NAME, new Cell(OTHER_CELL_VALUE));
 
-        BasicDBObject doc = mock(BasicDBObject.class);
         PowerMockito.mockStatic(StorageUtils.class);
         when(StorageUtils.buildPK(tableMetadata, row)).thenReturn(null);
-        PowerMockito.whenNew(BasicDBObject.class).withNoArguments().thenReturn(doc);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
 
         mongoStorageEngine.insert(clusterName, tableMetadata, row);
 
-        verify(doc, times(2)).put(Matchers.anyString(), Matchers.anyObject());
-        verify(collection, times(1)).insert(Matchers.any(BasicDBObject.class));
+        BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
+        doc.put(OTHER_COLUMN_NAME, OTHER_CELL_VALUE);
+        verify(collection, times(1)).insert(doc);
+
+    }
+
+    /**
+     * Method: insert(ClusterName targetCluster, TableMetadata targetTable, Row row)
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testBatchInsertWithoutPK() throws Exception {
+
+        ClusterName clusterName = new ClusterName(CLUSTER_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
+        TableMetadata tableMetadata = tableMetaBuilder.build();
+        Row row = new Row();
+        row.addCell(COLUMN_NAME, new Cell(CELL_VALUE));
+        row.addCell(OTHER_COLUMN_NAME, new Cell(OTHER_CELL_VALUE));
+
+        PowerMockito.mockStatic(StorageUtils.class);
+        when(StorageUtils.buildPK(tableMetadata, row)).thenReturn(null);
+        when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
+        BulkWriteOperation bulkWriteOp = mock(BulkWriteOperation.class);
+        when(collection.initializeUnorderedBulkOperation()).thenReturn(bulkWriteOp);
+
+        mongoStorageEngine.insert(clusterName, tableMetadata, Arrays.asList(row, row));
+
+        BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
+        doc.put(OTHER_COLUMN_NAME, OTHER_CELL_VALUE);
+
+        verify(bulkWriteOp, times(2)).insert(doc);
 
     }
 
@@ -147,16 +180,53 @@ public class MongoStorageEngineTest {
         row.addCell(COLUMN_NAME, new Cell(CELL_VALUE));
         row.addCell(OTHER_COLUMN_NAME, new Cell(OTHER_CELL_VALUE));
 
-        BasicDBObject doc = mock(BasicDBObject.class);
         PowerMockito.mockStatic(StorageUtils.class);
         when(StorageUtils.buildPK(tableMetadata, row)).thenReturn(CELL_VALUE);
-        PowerMockito.whenNew(BasicDBObject.class).withNoArguments().thenReturn(doc);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
 
         mongoStorageEngine.insert(clusterName, tableMetadata, row);
 
-        verify(collection, times(1)).update(Matchers.any(BasicDBObject.class), Matchers.any(BasicDBObject.class),
-                        Matchers.eq(true), Matchers.eq(false));
+        DBObject pKeyDBObject = new BasicDBObject("_id", CELL_VALUE);
+        BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
+        doc.put(OTHER_COLUMN_NAME, OTHER_CELL_VALUE);
+
+        verify(collection, times(1)).update(pKeyDBObject, new BasicDBObject("$set", doc), true, false);
+
+    }
+
+    @Test
+    public void testBatchInsertWithPK() throws Exception {
+
+        ClusterName clusterName = new ClusterName(CLUSTER_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
+        tableMetaBuilder.withPartitionKey(COLUMN_NAME);
+        TableMetadata tableMetadata = tableMetaBuilder.build();
+        Row row = new Row();
+        row.addCell(COLUMN_NAME, new Cell(CELL_VALUE));
+        row.addCell(OTHER_COLUMN_NAME, new Cell(OTHER_CELL_VALUE));
+
+        PowerMockito.mockStatic(StorageUtils.class);
+        when(StorageUtils.buildPK(tableMetadata, row)).thenReturn(CELL_VALUE);
+        when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
+        BulkWriteOperation bulkWriteOp = mock(BulkWriteOperation.class);
+        when(collection.initializeUnorderedBulkOperation()).thenReturn(bulkWriteOp);
+        BulkWriteRequestBuilder bulkWriteRB = mock(BulkWriteRequestBuilder.class);
+        when(bulkWriteOp.find(Matchers.any(DBObject.class))).thenReturn(bulkWriteRB);
+        BulkUpdateRequestBuilder bulkWriteUpB = mock(BulkUpdateRequestBuilder.class);
+        when(bulkWriteRB.upsert()).thenReturn(bulkWriteUpB);
+
+        mongoStorageEngine.insert(clusterName, tableMetadata, Arrays.asList(row, row));
+
+        DBObject pKeyDBObject = new BasicDBObject("_id", CELL_VALUE);
+        BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
+        doc.put(OTHER_COLUMN_NAME, OTHER_CELL_VALUE);
+
+        verify(collection, times(1)).initializeUnorderedBulkOperation();
+        verify(bulkWriteOp, times(2)).find(pKeyDBObject);
+        verify(bulkWriteRB, times(2)).upsert();
+        verify(bulkWriteUpB, times(2)).update(new BasicDBObject("$set", doc));
+        verify(bulkWriteOp, times(1)).execute();
 
     }
 
@@ -179,10 +249,6 @@ public class MongoStorageEngineTest {
 
         UpdateDBObjectBuilder updateDBObjectBuilder = mock(UpdateDBObjectBuilder.class);
         PowerMockito.whenNew(UpdateDBObjectBuilder.class).withNoArguments().thenReturn(updateDBObjectBuilder);
-
-        when(
-                        updateDBObjectBuilder.addUpdateRelation(Matchers.any(Selector.class),
-                                        Matchers.any(Operator.class), Matchers.any(Selector.class))).thenReturn(null);
 
         mongoStorageEngine.update(tableName, assignments, whereClauses, connection);
 
@@ -229,20 +295,14 @@ public class MongoStorageEngineTest {
         when(mockRelation.getRightTerm()).thenReturn(b);
         when(mockRelation.getOperator()).thenReturn(op);
 
-        when(
-                        updateDBObjectBuilder.addUpdateRelation(Matchers.any(Selector.class),
-                                        Matchers.any(Operator.class), Matchers.any(Selector.class))).thenReturn(
-                        mockRelation, (Relation) null);
-
         mongoStorageEngine.update(tableName, assignments, whereClauses, connection);
 
-        verify(updateDBObjectBuilder, times(3)).addUpdateRelation(Matchers.any(Selector.class),
+        verify(updateDBObjectBuilder, times(2)).addUpdateRelation(Matchers.any(Selector.class),
                         Matchers.any(Operator.class), Matchers.any(Selector.class));
         verify(updateDBObjectBuilder, times(1)).addUpdateRelation(rel1.getLeftTerm(), rel1.getOperator(),
                         rel1.getRightTerm());
         verify(updateDBObjectBuilder, times(1)).addUpdateRelation(rel2.getLeftTerm(), rel2.getOperator(),
                         rel2.getRightTerm());
-        verify(updateDBObjectBuilder, times(1)).addUpdateRelation(a, op, b);
 
         verify(collection, times(1)).update(Matchers.any(BasicDBObject.class), Matchers.any(BasicDBObject.class),
                         Matchers.eq(false), Matchers.eq(true));

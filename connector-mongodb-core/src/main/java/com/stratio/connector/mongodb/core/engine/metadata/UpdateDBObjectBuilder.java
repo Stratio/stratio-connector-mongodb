@@ -65,23 +65,23 @@ public class UpdateDBObjectBuilder {
      *            the operator
      * @param right
      *            the right selector
-     * @return a new relation which is needed to manage. Otherwise, a null value is returned
      * @throws UnsupportedException
      *             the unsupported exception
      * @throws ExecutionException
      *             the execution exception
      */
-    public Relation addUpdateRelation(Selector left, Operator operator, Selector right) throws UnsupportedException,
+    public void addUpdateRelation(Selector left, Operator operator, Selector right) throws UnsupportedException,
                     ExecutionException {
         BasicDBObject basicDBObject;
-        Relation relation = null;
 
         switch (operator) {
 
         case EQ:
         case ASSIGN:
             if (containsAnInnerRelation(left, right)) {
-                return ((RelationSelector) right).getRelation();
+                Relation innerRelation = ((RelationSelector) right).getRelation();
+                addUpdateRelation(innerRelation.getLeftTerm(), innerRelation.getOperator(),
+                                innerRelation.getRightTerm());
             } else {
                 if (relations.containsField(SET_COMMAND)) {
                     basicDBObject = (BasicDBObject) relations.get(SET_COMMAND);
@@ -133,7 +133,6 @@ public class UpdateDBObjectBuilder {
             throw new UnsupportedException(msg);
         }
 
-        return relation;
     }
 
     private boolean containsAnInnerRelation(Selector left, Selector right) throws UnsupportedException,

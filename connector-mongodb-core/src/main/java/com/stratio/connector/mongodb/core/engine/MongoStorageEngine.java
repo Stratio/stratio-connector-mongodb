@@ -21,7 +21,6 @@ package com.stratio.connector.mongodb.core.engine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,17 +37,15 @@ import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.StorageUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.UpdateDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.query.utils.FilterDBObjectBuilder;
+import com.stratio.connector.mongodb.core.engine.storage.MongoInsertHandler;
 import com.stratio.connector.mongodb.core.exceptions.MongoDeleteException;
 import com.stratio.connector.mongodb.core.exceptions.MongoInsertException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.crossdata.common.data.Cell;
-import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Filter;
-import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 import com.stratio.crossdata.common.statements.structures.Relation;
 
@@ -89,48 +86,18 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
                     throws MongoInsertException, MongoValidationException {
 
         MongoClient mongoClient = connection.getNativeConnection();
+        DBCollection collection = mongoClient.getDB(targetTable.getName().getCatalogName().getName()).getCollection(
+                        targetTable.getName().getName());
 
-        String catalog = targetTable.getName().getCatalogName().getName();
-        String tableName = targetTable.getName().getName();
+        MongoInsertHandler insertHandler = new MongoInsertHandler(collection);
+        validateInsert(targetTable, row);
 
-        if (isEmpty(catalog) || isEmpty(tableName) || row == null) {
-            throw new MongoValidationException("The catalog name, the table name and the row must be specified");
-        }
-
-        DB db = mongoClient.getDB(catalog);
         Object pk = StorageUtils.buildPK(targetTable, row);
 
-        // Building the fields to insert in Mongo
-        BasicDBObject doc = new BasicDBObject();
-        String cellName;
-        Object cellValue;
-        for (Map.Entry<String, Cell> entry : row.getCells().entrySet()) {
-            cellName = entry.getKey();
-            cellValue = entry.getValue().getValue();
-            ColumnName cName = new ColumnName(catalog, tableName, cellName);
-            validateDataType(targetTable.getColumns().get(cName).getColumnType());
-            doc.put(entry.getKey(), cellValue);
-        }
-
         if (pk != null) {
-            // Upsert searching for _id
-            BasicDBObject find = new BasicDBObject();
-            find.put("_id", pk);
-            try {
-                db.getCollection(tableName).update(find, new BasicDBObject("$set", doc), true, false);
-            } catch (MongoException e) {
-                throw new MongoInsertException(e.getMessage(), e);
-            }
+            insertHandler.upsert(targetTable, row, pk);
         } else {
-            try {
-                db.getCollection(tableName).insert(doc);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Row inserted with fields: " + doc.keySet());
-                }
-            } catch (MongoException e) {
-                logger.error("Error inserting data: " + e.getMessage());
-                throw new MongoInsertException(e.getMessage(), e);
-            }
+            insertHandler.insertWithoutPK(targetTable, row);
         }
 
     }
@@ -153,59 +120,24 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     protected void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
                     throws MongoInsertException, MongoValidationException {
 
+        MongoClient mongoClient = connection.getNativeConnection();
+        DBCollection collection = mongoClient.getDB(targetTable.getName().getCatalogName().getName()).getCollection(
+                        targetTable.getName().getName());
+
+        MongoInsertHandler insertHandler = new MongoInsertHandler(collection);
+        insertHandler.startBatch();
+
         for (Row row : rows) {
-            insert(targetTable, row, connection);
+            validateInsert(targetTable, row);
+            Object pk = StorageUtils.buildPK(targetTable, row);
+            if (pk != null) {
+                insertHandler.upsert(targetTable, row, pk);
+            } else {
+                insertHandler.insertWithoutPK(targetTable, row);
+            }
         }
+        insertHandler.executeBatch();
 
-    }
-
-    /**
-     * Validates the data type.
-     *
-     * @param colType
-     *            the column type
-     * @param cellValue
-     *            the cell value
-     * @throws MongoValidationException
-     *             if the type is not supported
-     */
-    private void validateDataType(ColumnType columnType) throws MongoValidationException {
-
-        switch (columnType) {
-        case BIGINT:
-        case BOOLEAN:
-        case INT:
-        case TEXT:
-        case VARCHAR:
-        case DOUBLE:
-        case FLOAT:
-            break;
-        case SET:
-        case LIST:
-            validateDataType(columnType.getDBInnerType());
-            break;
-        case MAP:
-            validateDataType(columnType.getDBInnerType());
-            validateDataType(columnType.getDBInnerValueType());
-            break;
-        case NATIVE:
-            throw new MongoValidationException("Type not supported: " + columnType.toString());
-
-        default:
-            throw new MongoValidationException("Type not supported: " + columnType.toString());
-        }
-
-    }
-
-    /**
-     * Checks if is empty.
-     *
-     * @param value
-     *            the value
-     * @return true, if is empty
-     */
-    private boolean isEmpty(String value) {
-        return value == null || value.trim().isEmpty();
     }
 
     @Override
@@ -243,12 +175,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
         UpdateDBObjectBuilder updateBuilder = new UpdateDBObjectBuilder();
         for (Relation rel : assignments) {
-            Relation innerRelation = updateBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(),
-                            rel.getRightTerm());
-            while (innerRelation != null) {
-                innerRelation = updateBuilder.addUpdateRelation(innerRelation.getLeftTerm(),
-                                innerRelation.getOperator(), innerRelation.getRightTerm());
-            }
+            updateBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(), rel.getRightTerm());
         }
         try {
             coll.update(buildFilter(whereClauses), updateBuilder.build(), false, true);
@@ -272,6 +199,24 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
             FilterDBObjectBuilder filterBuilder = new FilterDBObjectBuilder(false, filters);
             return filterBuilder.build();
         }
+    }
+
+    private void validateInsert(TableMetadata targetTable, Row row) throws MongoValidationException {
+        if (isEmpty(targetTable.getName().getCatalogName().getName()) || isEmpty(targetTable.getName().getName())
+                        || row == null) {
+            throw new MongoValidationException("The catalog name, the table name and the row must be specified");
+        }
+    }
+
+    /**
+     * Checks if is empty.
+     *
+     * @param value
+     *            the value
+     * @return true, if is empty
+     */
+    private boolean isEmpty(String value) {
+        return value == null || value.trim().isEmpty();
     }
 
 }

@@ -50,30 +50,27 @@ public class UpdateDBObjectBuilderTest {
         Assert.assertEquals("The update query should be empty", new BasicDBObject(), updateDBObjectBuilder.build());
 
         Relation rel = getBasicRelation(COLUMN_NAME, Operator.ASSIGN, STRING_VALUE);
-        Relation returned = updateDBObjectBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(),
-                        rel.getRightTerm());
-        Assert.assertNull("The relation returned should be null", returned);
+        updateDBObjectBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(), rel.getRightTerm());
+
         BasicDBObject updatedExpected = new BasicDBObject();
         updatedExpected.append("$set", new BasicDBObject(COLUMN_NAME, STRING_VALUE));
         Assert.assertEquals("The update query is not the expected", updatedExpected, updateDBObjectBuilder.build());
 
         // The following operation should not modify the query
-        returned = updateDBObjectBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(), rel.getRightTerm());
+        updateDBObjectBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(), rel.getRightTerm());
         Assert.assertEquals("The update query is not the expected", updatedExpected, updateDBObjectBuilder.build());
-        Assert.assertNull("The relation returned should be null", returned);
 
         // The following operation should modify the set
-        returned = updateDBObjectBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(), new StringSelector(
+        updateDBObjectBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(), new StringSelector(
                         STRING_VALUE_OTHER));
         updatedExpected.append("$set", new BasicDBObject(COLUMN_NAME, STRING_VALUE_OTHER));
         Assert.assertEquals("The update query is not the expected", updatedExpected, updateDBObjectBuilder.build());
-        Assert.assertNull("The relation returned should be null", returned);
 
         Relation rel2 = getBasicRelation(OTHER_COLUMN_NAME, Operator.SUBTRACT, 20l);
-        returned = updateDBObjectBuilder.addUpdateRelation(rel2.getLeftTerm(), rel2.getOperator(), rel2.getRightTerm());
+        updateDBObjectBuilder.addUpdateRelation(rel2.getLeftTerm(), rel2.getOperator(), rel2.getRightTerm());
         updatedExpected.append("$inc", new BasicDBObject(OTHER_COLUMN_NAME, -20l));
         Assert.assertEquals("The update query is not the expected", updatedExpected, updateDBObjectBuilder.build());
-        Assert.assertNull("The relation returned should be null", returned);
+
     }
 
     /**
@@ -92,11 +89,10 @@ public class UpdateDBObjectBuilderTest {
         Relation rel = getBasicRelation(OTHER_COLUMN_NAME, Operator.ASSIGN,
                         getBasicRelation(OTHER_COLUMN_NAME, Operator.SUBTRACT, 20l));
 
-        Relation returned = updateDBObjectBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(),
-                        rel.getRightTerm());
-
-        Assert.assertEquals("The inner relations returned is not the expected",
-                        getBasicRelation(OTHER_COLUMN_NAME, Operator.SUBTRACT, 20l).toString(), returned.toString());
+        updateDBObjectBuilder.addUpdateRelation(rel.getLeftTerm(), rel.getOperator(), rel.getRightTerm());
+        BasicDBObject updatedExpected = new BasicDBObject("$inc", new BasicDBObject(OTHER_COLUMN_NAME, -20l));
+        Assert.assertEquals("The inner relation processing is not the expected", updatedExpected,
+                        updateDBObjectBuilder.build());
 
     }
 
