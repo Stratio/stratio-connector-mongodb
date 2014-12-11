@@ -56,7 +56,7 @@ public class MongoConnectorHelper implements IConnectorHelper {
 
     protected String SERVER_IP = "10.200.0.58";// "10.200.0.58,10.200.0.59,10.200.0.60";
     protected String SERVER_PORT = "27100";// TODO config test "9300,9300,9300";
-    private String readPreference = "primaryPreferred";
+    private String readPreference = "primary";
     private String writeConcern = "acknowledged";// TODO test different writeConcern
 
     private MongoClient mongoClient;
@@ -66,6 +66,16 @@ public class MongoConnectorHelper implements IConnectorHelper {
                     CreateNativeConnectionException {
         super();
         this.clusterName = clusterName;
+
+        String serverIP = System.getProperty("SERVER_IP");
+        if (serverIP != null) {
+            SERVER_IP = serverIP;
+        }
+        String serverPort = System.getProperty("SERVER_PORT");
+        if (serverPort != null) {
+            SERVER_PORT = serverPort;
+        }
+
         MongoClientConfiguration clientConfig = new MongoClientConfiguration(getConnectorClusterConfig());
 
         try {
