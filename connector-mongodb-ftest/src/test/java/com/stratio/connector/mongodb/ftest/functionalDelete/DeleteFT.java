@@ -28,7 +28,7 @@ import com.stratio.crossdata.common.exceptions.InitializationException;
 /**
  * The Class DeleteTest.
  */
-public class DeleteTest extends GenericDeleteTest {
+public class DeleteFT extends GenericDeleteTest {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {

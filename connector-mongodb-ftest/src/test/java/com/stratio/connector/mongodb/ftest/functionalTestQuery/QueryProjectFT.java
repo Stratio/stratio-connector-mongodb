@@ -28,7 +28,7 @@ import com.stratio.crossdata.common.exceptions.InitializationException;
 /**
  * Created by jmgomez on 17/07/14.
  */
-public class QueryProjectTest extends GenericQueryProjectTest {
+public class QueryProjectFT extends GenericQueryProjectTest {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {

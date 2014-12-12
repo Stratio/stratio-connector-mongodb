@@ -24,7 +24,7 @@ import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
-public class DropTest extends GenericMetadataDropTest {
+public class DropFT extends GenericMetadataDropTest {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {

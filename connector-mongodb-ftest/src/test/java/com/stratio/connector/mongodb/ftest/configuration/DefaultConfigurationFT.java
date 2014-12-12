@@ -15,25 +15,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.stratio.connector.mongodb.ftest.functionalTestQuery;
+
+package com.stratio.connector.mongodb.ftest.configuration;
+
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
-import com.stratio.connector.commons.ftest.functionalTestQuery.GenericPKQueryIntegerFilterTest;
+import com.stratio.connector.commons.ftest.GenericConnectorTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
-import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
+import com.stratio.connector.mongodb.core.MongoConnector;
+import com.stratio.connector.mongodb.ftest.helper.DefaultConfigurationMongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
-/**
- * @author david
- *
- */
-public class PKQueryIntegerFilterTest extends GenericPKQueryIntegerFilterTest {
+public class DefaultConfigurationFT extends GenericConnectorTest<MongoConnector> {
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.stratio.connector.commons.ftest.GenericConnectorTest#getConnectorHelper()
+     */
     @Override
     protected IConnectorHelper getConnectorHelper() {
-        MongoConnectorHelper mongoConnectorHelper = null;
+
+        DefaultConfigurationMongoConnectorHelper mongoConnectorHelper = null;
         try {
-            mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
+            mongoConnectorHelper = new DefaultConfigurationMongoConnectorHelper(getClusterName());
         } catch (ConnectionException e) {
             e.printStackTrace();
         } catch (InitializationException e) {
@@ -42,5 +51,11 @@ public class PKQueryIntegerFilterTest extends GenericPKQueryIntegerFilterTest {
             e.printStackTrace();
         }
         return mongoConnectorHelper;
+    }
+
+    @Test
+    public void defaultConfig() {
+
+        assertTrue("It is possible connect without optional properties", getConnector() != null);
     }
 }

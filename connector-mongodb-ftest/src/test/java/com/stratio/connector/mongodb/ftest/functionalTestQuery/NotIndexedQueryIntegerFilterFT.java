@@ -15,19 +15,20 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package com.stratio.connector.mongodb.ftest.workflow;
+package com.stratio.connector.mongodb.ftest.functionalTestQuery;
 
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
+import com.stratio.connector.commons.ftest.functionalTestQuery.GenericNotIndexedQueryIntegerFilterTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
-import com.stratio.connector.commons.ftest.workFlow.ExampleWorkflowsTest;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
 /**
- * @author darroyo
+ * Created by jmgomez on 17/07/14.
  */
-public class WorkflowTest extends ExampleWorkflowsTest {
+public class NotIndexedQueryIntegerFilterFT extends GenericNotIndexedQueryIntegerFilterTest {
+
     @Override
     protected IConnectorHelper getConnectorHelper() {
         MongoConnectorHelper mongoConnectorHelper = null;

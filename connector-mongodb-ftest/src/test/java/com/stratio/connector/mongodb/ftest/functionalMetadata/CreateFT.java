@@ -46,7 +46,7 @@ import com.stratio.crossdata.common.statements.structures.BooleanSelector;
 import com.stratio.crossdata.common.statements.structures.Selector;
 import com.stratio.crossdata.common.statements.structures.StringSelector;
 
-public class CreateTest extends GenericMetadataCreateTest {
+public class CreateFT extends GenericMetadataCreateTest {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {

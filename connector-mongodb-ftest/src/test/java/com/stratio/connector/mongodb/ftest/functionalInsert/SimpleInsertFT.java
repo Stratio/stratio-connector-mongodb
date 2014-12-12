@@ -49,7 +49,7 @@ import com.stratio.crossdata.common.metadata.TableMetadata;
 /**
  * Created by jmgomez on 16/07/14.
  */
-public class SimpleInsertTest extends GenericSimpleInsertTest {
+public class SimpleInsertFT extends GenericSimpleInsertTest {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {

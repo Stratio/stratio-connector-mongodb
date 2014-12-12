@@ -15,21 +15,19 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-
-package com.stratio.connector.mongodb.ftest.functionalInsert;
+package com.stratio.connector.mongodb.ftest.workflow;
 
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
-import com.stratio.connector.commons.ftest.functionalInsert.GenericBulkInsertTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
+import com.stratio.connector.commons.ftest.workFlow.ExampleWorkflowsTest;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
 /**
- * Created by jmgomez on 16/07/14.
+ * @author darroyo
  */
-public class BulkInsertTest extends GenericBulkInsertTest {
-
+public class WorkflowFT extends ExampleWorkflowsTest {
     @Override
     protected IConnectorHelper getConnectorHelper() {
         MongoConnectorHelper mongoConnectorHelper = null;
@@ -43,11 +41,6 @@ public class BulkInsertTest extends GenericBulkInsertTest {
             e.printStackTrace();
         }
         return mongoConnectorHelper;
-    }
-
-    @Override
-    protected int getRowToInsert() {
-        return 500;
     }
 
 }

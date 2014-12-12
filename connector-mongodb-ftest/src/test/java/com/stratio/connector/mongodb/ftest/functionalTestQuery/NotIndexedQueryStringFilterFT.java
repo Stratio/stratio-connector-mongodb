@@ -15,36 +15,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package com.stratio.connector.mongodb.ftest.functionalTestQuery;
 
+import org.junit.Test;
+
 import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
-import com.stratio.connector.commons.ftest.functionalTestQuery.GenericLimitTest;
+import com.stratio.connector.commons.ftest.functionalTestQuery.GenericNotIndexedQueryStringFilterTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
-public class LimitTest extends GenericLimitTest {
-
-    MongoConnectorHelper mongoConnectorHelper = null;
+/**
+ * Created by jmgomez on 17/07/14.
+ */
+public class NotIndexedQueryStringFilterFT extends GenericNotIndexedQueryStringFilterTest {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {
-        if (mongoConnectorHelper != null) {
-            return mongoConnectorHelper;
-        } else {
-            try {
-                mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
-            } catch (ConnectionException e) {
-                e.printStackTrace();
-            } catch (InitializationException e) {
-                e.printStackTrace();
-            } catch (CreateNativeConnectionException e) {
-                e.printStackTrace();
-            }
-            return mongoConnectorHelper;
+        MongoConnectorHelper mongoConnectorHelper = null;
+        try {
+            mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
+        } catch (ConnectionException e) {
+            e.printStackTrace();
+        } catch (InitializationException e) {
+            e.printStackTrace();
+        } catch (CreateNativeConnectionException e) {
+            e.printStackTrace();
         }
+        return mongoConnectorHelper;
     }
 
+    @Test
+    public void selectNotIndexedFilterMatch() {
+    };
 }

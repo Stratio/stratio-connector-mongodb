@@ -24,7 +24,7 @@ import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
-public class IndexTest extends GenericMetadataIndexTest {
+public class IndexFT extends GenericMetadataIndexTest {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {
