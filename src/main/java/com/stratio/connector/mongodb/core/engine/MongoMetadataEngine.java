@@ -46,7 +46,6 @@ import com.stratio.crossdata.common.metadata.TableMetadata;
 /**
  * The Class MongoMetadataEngine.
  *
- * @author darroyo
  */
 public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 

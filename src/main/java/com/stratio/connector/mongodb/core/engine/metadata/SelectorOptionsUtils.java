@@ -29,7 +29,6 @@ import com.stratio.crossdata.common.statements.structures.StringSelector;
 /**
  * The Class SelectorOptionsUtils.
  *
- * @author david
  */
 public final class SelectorOptionsUtils {
 

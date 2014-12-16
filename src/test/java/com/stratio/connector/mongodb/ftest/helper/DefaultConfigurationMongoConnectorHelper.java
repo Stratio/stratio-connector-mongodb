@@ -29,9 +29,6 @@ import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
-/**
- * @author darroyo
- */
 public class DefaultConfigurationMongoConnectorHelper extends MongoConnectorHelper {
 
     /**

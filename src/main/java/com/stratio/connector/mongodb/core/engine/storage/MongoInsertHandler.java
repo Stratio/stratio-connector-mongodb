@@ -1,3 +1,20 @@
+/*
+ * Licensed to STRATIO (C) under one or more contributor license agreements.
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.  The STRATIO (C) licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.stratio.connector.mongodb.core.engine.storage;
 
 import java.util.Map;
@@ -19,6 +36,9 @@ import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
+/**
+ * The class handles the different inserts in Mongo.
+ */
 public class MongoInsertHandler {
 
     /** The logger. */
@@ -27,19 +47,54 @@ public class MongoInsertHandler {
     private DBCollection collection;
     private BulkWriteOperation bulkWriteOperation;
 
+    /**
+     * Instantiates a new mongo insert handler.
+     *
+     * @param collection
+     *            the collection
+     */
     public MongoInsertHandler(DBCollection collection) {
         this.collection = collection;
     }
 
+    /**
+     * Start batch.
+     */
     public void startBatch() {
         bulkWriteOperation = collection.initializeUnorderedBulkOperation();
     }
 
+    /**
+     * Insert if not exist.
+     *
+     * @param targetTable
+     *            the target table
+     * @param row
+     *            the row
+     * @param pk
+     *            the pk
+     * @throws UnsupportedException
+     *             the unsupported exception
+     */
     public void insertIfNotExist(TableMetadata targetTable, Row row, String pk) throws UnsupportedException {
         // TODO insert with _id
         throw new UnsupportedException("It will be included soon");
     }
 
+    /**
+     * Upsert.
+     *
+     * @param targetTable
+     *            the target table
+     * @param row
+     *            the row
+     * @param pk
+     *            the pk
+     * @throws MongoInsertException
+     *             the mongo insert exception
+     * @throws MongoValidationException
+     *             the mongo validation exception
+     */
     public void upsert(TableMetadata targetTable, Row row, Object pk) throws MongoInsertException,
                     MongoValidationException {
         // Upsert searching for _id
@@ -62,6 +117,18 @@ public class MongoInsertHandler {
         }
     }
 
+    /**
+     * Insert without pk.
+     *
+     * @param targetTable
+     *            the target table
+     * @param row
+     *            the row
+     * @throws MongoValidationException
+     *             the mongo validation exception
+     * @throws MongoInsertException
+     *             the mongo insert exception
+     */
     public void insertWithoutPK(TableMetadata targetTable, Row row) throws MongoValidationException,
                     MongoInsertException {
 
@@ -83,6 +150,12 @@ public class MongoInsertHandler {
 
     }
 
+    /**
+     * Execute batch.
+     *
+     * @throws MongoInsertException
+     *             the mongo insert exception
+     */
     public void executeBatch() throws MongoInsertException {
         try {
             bulkWriteOperation.execute();

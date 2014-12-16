@@ -23,7 +23,6 @@ import com.stratio.crossdata.common.statements.structures.SelectorType;
 /**
  * Set of table options for the mongo connector. A default value is provided.
  * 
- * @author darroyo
  */
 
 public enum TableOptions {

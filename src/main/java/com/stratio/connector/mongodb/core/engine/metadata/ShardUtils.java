@@ -46,7 +46,6 @@ import com.stratio.crossdata.common.statements.structures.StringSelector;
 /**
  * The Class ShardUtils.
  *
- * @author david
  */
 public final class ShardUtils {
 

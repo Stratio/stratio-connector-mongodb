@@ -46,9 +46,6 @@ import com.stratio.crossdata.common.exceptions.InitializationException;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
-/**
- * Created by jmgomez on 16/07/14.
- */
 public class SimpleInsertFT extends GenericSimpleInsertFT {
 
     @Override

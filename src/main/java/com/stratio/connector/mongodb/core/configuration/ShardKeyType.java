@@ -21,7 +21,6 @@ package com.stratio.connector.mongodb.core.configuration;
 /**
  * Types for the shard key.
  * 
- * @author darroyo
  */
 
 public enum ShardKeyType {

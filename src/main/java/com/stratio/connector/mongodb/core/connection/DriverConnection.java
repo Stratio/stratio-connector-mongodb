@@ -30,7 +30,7 @@ import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.security.ICredentials;
 
 /**
- * @author darroyo
+ * Implements a Mongo Connection. See {@link Connection}
  */
 public class DriverConnection extends Connection<MongoClient> {
 

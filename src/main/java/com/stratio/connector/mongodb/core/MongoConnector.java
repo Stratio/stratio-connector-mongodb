@@ -36,7 +36,7 @@ import com.stratio.crossdata.common.exceptions.InitializationException;
 import com.stratio.crossdata.connectors.ConnectorApp;
 
 /**
- * This class implements the connector for Mongo. Created by darroyo on 8/07/14.
+ * This class implements the connector for Mongo.
  */
 public class MongoConnector extends CommonsConnector {
 

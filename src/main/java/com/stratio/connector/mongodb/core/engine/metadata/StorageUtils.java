@@ -28,11 +28,9 @@ import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class StorageUtils.
  *
- * @author david
  */
 public final class StorageUtils {
 
@@ -114,6 +112,5 @@ public final class StorageUtils {
         }
 
     }
-    
 
 }

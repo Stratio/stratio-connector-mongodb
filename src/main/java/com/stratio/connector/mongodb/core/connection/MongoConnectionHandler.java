@@ -28,7 +28,7 @@ import com.stratio.crossdata.common.connector.IConfiguration;
 import com.stratio.crossdata.common.security.ICredentials;
 
 /**
- * @author darroyo
+ * MongoConnectionHandler. See {@link ConnectionHandler}
  */
 public class MongoConnectionHandler extends ConnectionHandler {
 

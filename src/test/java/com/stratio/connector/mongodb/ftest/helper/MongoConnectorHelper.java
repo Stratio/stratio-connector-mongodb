@@ -49,9 +49,6 @@ import com.stratio.crossdata.common.exceptions.InitializationException;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.security.ICredentials;
 
-/**
- * @author darroyo
- */
 public class MongoConnectorHelper implements IConnectorHelper {
 
     protected String SERVER_IP = "10.200.0.58";// "10.200.0.58,10.200.0.59,10.200.0.60";

@@ -24,9 +24,6 @@ import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
-/**
- * @author darroyo
- */
 public class WorkflowFT extends ExampleWorkflowsFT {
     @Override
     protected IConnectorHelper getConnectorHelper() {

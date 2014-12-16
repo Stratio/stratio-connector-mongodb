@@ -48,7 +48,6 @@ import com.stratio.crossdata.common.statements.structures.StringSelector;
 /**
  * The Class IndexUtils.
  *
- * @author david
  */
 public final class IndexUtils {
 

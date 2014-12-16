@@ -21,7 +21,6 @@ package com.stratio.connector.mongodb.core.configuration;
 /**
  * Native types supported in Mongo.
  * 
- * @author darroyo
  */
 
 public enum NativeTypes {

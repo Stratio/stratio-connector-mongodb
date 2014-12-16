@@ -25,9 +25,6 @@ import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
-/**
- * Created by jmgomez on 16/07/14.
- */
 public class BulkInsertFT extends GenericBulkInsertFT {
 
     @Override

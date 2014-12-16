@@ -22,7 +22,6 @@ package com.stratio.connector.mongodb.core.configuration;
  * The ConfigurationOptions. They could be set in the ConnectorClusterConfiguration Set of options for the Mongo
  * Connector. A default value is provided.
  * 
- * @author darroyo
  */
 
 public enum ConfigurationOptions {

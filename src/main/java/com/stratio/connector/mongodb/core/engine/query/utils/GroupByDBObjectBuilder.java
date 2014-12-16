@@ -18,11 +18,6 @@
 
 package com.stratio.connector.mongodb.core.engine.query.utils;
 
-/**
- * @author david
- *
- */
-
 import java.util.List;
 import java.util.Set;
 

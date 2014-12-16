@@ -25,7 +25,6 @@ import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
 /**
- * @author david
  *
  */
 public class PKQueryIntegerFilterFT extends GenericPKQueryIntegerFilterFT {

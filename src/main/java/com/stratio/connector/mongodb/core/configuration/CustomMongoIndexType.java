@@ -21,7 +21,6 @@ package com.stratio.connector.mongodb.core.configuration;
 /**
  * The ConfigurationOptions. Set of custom index types allowed in Mongo.
  *
- * @author darroyo
  */
 
 public enum CustomMongoIndexType {
