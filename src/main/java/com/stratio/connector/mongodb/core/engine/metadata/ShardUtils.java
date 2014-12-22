@@ -38,7 +38,6 @@ import com.stratio.connector.commons.util.SelectorHelper;
 import com.stratio.connector.mongodb.core.configuration.ShardKeyType;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 import com.stratio.crossdata.common.statements.structures.Selector;
 import com.stratio.crossdata.common.statements.structures.StringSelector;
@@ -90,11 +89,8 @@ public final class ShardUtils {
      *            the table metadata
      * @throws ExecutionException
      *             if an error exist when sharding the collection
-     * @throws UnsupportedException
-     *             if the specified operation is not supported
      */
-    public static void shardCollection(MongoClient mongoClient, TableMetadata tableMetadata) throws ExecutionException,
-                    UnsupportedException {
+    public static void shardCollection(MongoClient mongoClient, TableMetadata tableMetadata) throws ExecutionException {
 
         final String catalogName = tableMetadata.getName().getCatalogName().getName();
         enableSharding(mongoClient, catalogName);

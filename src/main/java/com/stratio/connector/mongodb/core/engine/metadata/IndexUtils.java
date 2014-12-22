@@ -37,7 +37,6 @@ import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.ColumnMetadata;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.IndexType;
@@ -96,10 +95,10 @@ public final class IndexUtils {
      * @param indexMetadata
      *            the index metadata
      * @return the Mongo index
-     * @throws UnsupportedException
+     * @throws MongoValidationException
      *             the unsupported exception
      */
-    public static DBObject getIndexDBObject(IndexMetadata indexMetadata) throws UnsupportedException {
+    public static DBObject getIndexDBObject(IndexMetadata indexMetadata) throws MongoValidationException {
         IndexType indexType = indexMetadata.getType();
 
         DBObject indexDBObject = new BasicDBObject();
@@ -119,26 +118,26 @@ public final class IndexUtils {
         } else {
             String msg = "Index type " + indexMetadata.getType().toString() + " is not supported";
             logger.error(msg);
-            throw new UnsupportedException(msg);
+            throw new MongoValidationException(msg);
         }
 
         return indexDBObject;
     }
 
-    private static DBObject getCustomIndexDBObject(IndexMetadata indexMetadata) throws UnsupportedException {
+    private static DBObject getCustomIndexDBObject(IndexMetadata indexMetadata) throws MongoValidationException {
         DBObject indexDBObject = new BasicDBObject();
         Map<String, Selector> options = SelectorOptionsUtils.processOptions(indexMetadata.getOptions());
 
         if (options == null) {
             String msg = "The custom index must have an index type and fields";
             logger.debug(msg);
-            throw new UnsupportedException(msg);
+            throw new MongoValidationException(msg);
         }
         Selector selector = options.get(INDEX_TYPE.getOptionName());
         if (selector == null) {
             String msg = "The custom index must have an index type";
             logger.debug(msg);
-            throw new UnsupportedException(msg);
+            throw new MongoValidationException(msg);
         }
 
         String indexType = ((StringSelector) selector).getValue().trim();
@@ -151,7 +150,7 @@ public final class IndexUtils {
                 if (fieldInfo.length != 2) {
                     String msg = "Format error. The fields in a compound index must be: fieldname:asc|desc [, field2:desc ...] ";
                     logger.debug(msg);
-                    throw new UnsupportedException(msg);
+                    throw new MongoValidationException(msg);
                 }
                 int order = fieldInfo[1].trim().equals("asc") ? 1 : -1;
                 indexDBObject.put(fieldInfo[0], order);
@@ -160,7 +159,7 @@ public final class IndexUtils {
             if (fields.length != 1) {
                 String msg = "The " + indexType + " index must have a single field";
                 logger.debug(msg);
-                throw new UnsupportedException(msg);
+                throw new MongoValidationException(msg);
             }
             String mongoIndexType;
             if (CustomMongoIndexType.HASHED.getIndexType().equals(indexType)) {
@@ -170,7 +169,7 @@ public final class IndexUtils {
             } else if (GEOSPATIAL_FLAT.getIndexType().equals(indexType)) {
                 mongoIndexType = "2d";
             } else {
-                throw new UnsupportedException("Index " + indexType + " is not supported");
+                throw new MongoValidationException("Index " + indexType + " is not supported");
             }
             indexDBObject.put(fields[0], mongoIndexType);
         }
@@ -188,18 +187,18 @@ public final class IndexUtils {
      * @param indexMetadata
      *            the index metadata
      * @return the index fields
-     * @throws UnsupportedException
+     * @throws MongoValidationException
      *             if the fields are malformed
      */
     private static String[] getCustomIndexDBObjectFields(Map<String, Selector> options, String indexType,
-                    IndexMetadata indexMetadata) throws UnsupportedException {
+                    IndexMetadata indexMetadata) throws MongoValidationException {
         String[] fields = null;
         Selector selector = options.get(COMPOUND_FIELDS.getOptionName());
         if (COMPOUND.getIndexType().equals(indexType)) {
             if (selector != null) {
                 fields = ((StringSelector) selector).getValue().split(",");
             } else {
-                throw new UnsupportedException("The compound index must have 1 o more fields");
+                throw new MongoValidationException("The compound index must have 1 o more fields");
             }
         } else {
             int i = 0;
@@ -218,13 +217,10 @@ public final class IndexUtils {
      *            the index metadata
      * @param db
      *            the db
-     * @throws UnsupportedException
-     *             if not supported
      * @throws ExecutionException
      *             if an error exist when running the db command
      */
-    public static void dropIndexWithDefaultName(IndexMetadata indexMetadata, DB db) throws UnsupportedException,
-                    ExecutionException {
+    public static void dropIndexWithDefaultName(IndexMetadata indexMetadata, DB db) throws ExecutionException {
         if (indexMetadata.getType() == IndexType.DEFAULT) {
             DBObject indexDBObject = new BasicDBObject();
             for (ColumnMetadata columnMeta : indexMetadata.getColumns().values()) {
@@ -257,7 +253,7 @@ public final class IndexUtils {
                 throw new ExecutionException(e.getMessage(), e);
             }
         } else {
-            throw new UnsupportedException("Dropping without the index name is not supported for the index type: "
+            throw new MongoValidationException("Dropping without the index name is not supported for the index type: "
                             + indexMetadata.getType().toString());
         }
 

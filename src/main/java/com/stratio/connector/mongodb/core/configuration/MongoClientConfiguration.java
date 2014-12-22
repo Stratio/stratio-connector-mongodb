@@ -36,10 +36,10 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.util.ConnectorParser;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
+import com.stratio.crossdata.common.exceptions.ConnectionException;
 
 /**
  * Contains the configuration for Mongo connector.
@@ -91,10 +91,11 @@ public class MongoClientConfiguration {
      * Gets the seeds.
      *
      * @return the seeds
+     * @throws ConnectionException
      * @throws CreateNativeConnectionException
      *             if the list of server address cannot be retrieved
      */
-    public List<ServerAddress> getSeeds() throws CreateNativeConnectionException {
+    public List<ServerAddress> getSeeds() throws ConnectionException {
 
         ArrayList<ServerAddress> seeds = new ArrayList<ServerAddress>();
 
@@ -124,16 +125,16 @@ public class MongoClientConfiguration {
 
         // TODO
         if (hosts.length < 1 || (hosts.length != ports.length)) {
-            throw new CreateNativeConnectionException("invalid address");
+            throw new ConnectionException("invalid address");
         } else {
             for (int i = 0; i < hosts.length; i++) {
 
                 try {
                     seeds.add(new ServerAddress(hosts[i], Integer.parseInt(ports[i])));
                 } catch (NumberFormatException e) {
-                    throw new CreateNativeConnectionException("wrong port format " + ports[i], e);
+                    throw new ConnectionException("wrong port format " + ports[i], e);
                 } catch (UnknownHostException e) {
-                    throw new CreateNativeConnectionException("connection failed with" + hosts[i], e);
+                    throw new ConnectionException("connection failed with" + hosts[i], e);
                 }
 
             }

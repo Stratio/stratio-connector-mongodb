@@ -21,10 +21,10 @@ package com.stratio.connector.mongodb.core.connection;
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.connection.ConnectionHandler;
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.connector.IConfiguration;
+import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.security.ICredentials;
 
 /**
@@ -48,13 +48,12 @@ public class MongoConnectionHandler extends ConnectionHandler {
      */
     @Override
     protected Connection<MongoClient> createNativeConnection(ICredentials credentials,
-                    ConnectorClusterConfig connectorClusterConfig) throws CreateNativeConnectionException {
-
+                    ConnectorClusterConfig connectorClusterConfig) throws ConnectionException {
         try {
             return new DriverConnection(credentials, connectorClusterConfig);
         } catch (MongoValidationException e) {
-            throw new CreateNativeConnectionException(e.getMessage(), e);
-
+            throw new ConnectionException("MongoConnector validation error", e);
         }
+
     }
 }

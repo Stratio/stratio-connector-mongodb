@@ -25,7 +25,6 @@ import com.mongodb.DBObject;
 import com.stratio.connector.commons.util.SelectorHelper;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.statements.structures.Operator;
 import com.stratio.crossdata.common.statements.structures.Relation;
 import com.stratio.crossdata.common.statements.structures.RelationSelector;
@@ -65,13 +64,10 @@ public class UpdateDBObjectBuilder {
      *            the operator
      * @param right
      *            the right selector
-     * @throws UnsupportedException
-     *             the unsupported exception
      * @throws ExecutionException
      *             the execution exception
      */
-    public void addUpdateRelation(Selector left, Operator operator, Selector right) throws UnsupportedException,
-                    ExecutionException {
+    public void addUpdateRelation(Selector left, Operator operator, Selector right) throws ExecutionException {
         BasicDBObject basicDBObject;
 
         switch (operator) {
@@ -130,13 +126,12 @@ public class UpdateDBObjectBuilder {
         default:
             String msg = "Operator: " + operator + " is not supported in update queries";
             logger.error(msg);
-            throw new UnsupportedException(msg);
+            throw new MongoValidationException(msg);
         }
 
     }
 
-    private boolean containsAnInnerRelation(Selector left, Selector right) throws UnsupportedException,
-                    ExecutionException {
+    private boolean containsAnInnerRelation(Selector left, Selector right) throws ExecutionException {
 
         if (right.getType() == SelectorType.RELATION) {
             String column = (String) SelectorHelper.getRestrictedValue(left, SelectorType.COLUMN);
@@ -149,7 +144,7 @@ public class UpdateDBObjectBuilder {
                 String msg = "Update relations only can envolve a single field, but found:" + column + " and "
                                 + innerRelationColumn;
                 logger.error(msg);
-                throw new UnsupportedException(msg);
+                throw new MongoValidationException(msg);
             }
 
         }

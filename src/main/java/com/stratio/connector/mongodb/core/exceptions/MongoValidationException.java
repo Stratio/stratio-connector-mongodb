@@ -18,12 +18,12 @@
 
 package com.stratio.connector.mongodb.core.exceptions;
 
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
 
 /**
  * The Class MongoValidationException.
  */
-public class MongoValidationException extends UnsupportedException {
+public class MongoValidationException extends ExecutionException {
 
     /** The Constant serialVersionUID. */
     static final long serialVersionUID = -6751513453299437587L;

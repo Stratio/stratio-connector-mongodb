@@ -44,7 +44,6 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 import com.stratio.crossdata.common.statements.structures.Relation;
@@ -141,15 +140,14 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     }
 
     @Override
-    protected void truncate(TableName tableName, Connection<MongoClient> connection) throws UnsupportedException,
-                    ExecutionException {
+    protected void truncate(TableName tableName, Connection<MongoClient> connection) throws ExecutionException {
         delete(tableName, null, connection);
 
     }
 
     @Override
     protected void delete(TableName tableName, Collection<Filter> whereClauses, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
+                    throws MongoValidationException, ExecutionException {
 
         DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
         if (db.collectionExists(tableName.getName())) {
@@ -168,7 +166,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     @Override
     protected void update(TableName tableName, Collection<Relation> assignments, Collection<Filter> whereClauses,
-                    Connection<MongoClient> connection) throws UnsupportedException, ExecutionException {
+                    Connection<MongoClient> connection) throws MongoValidationException, ExecutionException {
 
         DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
         DBCollection coll = db.getCollection(tableName.getName());

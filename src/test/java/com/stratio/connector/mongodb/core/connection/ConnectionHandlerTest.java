@@ -40,10 +40,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
-import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.connector.IConfiguration;
 import com.stratio.crossdata.common.data.ClusterName;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.security.ICredentials;
 
 @RunWith(PowerMockRunner.class)
@@ -63,7 +63,7 @@ public class ConnectionHandlerTest {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
-    public void createDriverConnectionTest() throws Exception, HandlerConnectionException {
+    public void createDriverConnectionTest() throws Exception {
 
         ICredentials credentials = mock(ICredentials.class);
         Map<String, String> options = new HashMap<>();
@@ -103,7 +103,7 @@ public class ConnectionHandlerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void getConnectionTest() throws HandlerConnectionException {
+    public void getConnectionTest() throws ExecutionException {
         Map<String, DriverConnection> mapConnection = (Map<String, DriverConnection>) Whitebox.getInternalState(
                         connectionHandler, "connections");
         DriverConnection connection = mock(DriverConnection.class);

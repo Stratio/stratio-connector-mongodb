@@ -34,10 +34,10 @@ import org.junit.Test;
 
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.data.ClusterName;
+import com.stratio.crossdata.common.exceptions.ConnectionException;
 
 /**
  * The Test for the configuration for Mongo connector.
@@ -55,7 +55,7 @@ public class MongoClientConfigurationTest {
     private final static String CUSTOM_MAX_CONNECTION = "5000";
 
     @Test
-    public void defaultConfigurationTest() throws CreateNativeConnectionException, MongoValidationException {
+    public void defaultConfigurationTest() throws MongoValidationException, ConnectionException {
         Map<String, String> properties = null;
         ConnectorClusterConfig defaultConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(defaultConfig);
@@ -81,8 +81,7 @@ public class MongoClientConfigurationTest {
     }
 
     @Test
-    public void customConfigurationTest() throws CreateNativeConnectionException, NumberFormatException,
-                    MongoValidationException {
+    public void customConfigurationTest() throws NumberFormatException, MongoValidationException, ConnectionException {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(HOST.getOptionName(), SERVER_IP);
         properties.put(PORT.getOptionName(), SERVER_PORT);
@@ -139,7 +138,7 @@ public class MongoClientConfigurationTest {
     }
 
     @Test
-    public void multipleHostsTest() throws CreateNativeConnectionException {
+    public void multipleHostsTest() throws ConnectionException {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(HOST.getOptionName(), SERVER_IP_LIST);
         properties.put(PORT.getOptionName(), SERVER_PORT_LIST);
@@ -155,17 +154,18 @@ public class MongoClientConfigurationTest {
     }
 
     @Test
-    public void wrongSeedsTest() throws CreateNativeConnectionException {
+    public void wrongSeedsTest() {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(HOST.getOptionName(), SERVER_IP_LIST);
         properties.put(PORT.getOptionName(), SERVER_PORT);
 
         ConnectorClusterConfig wrongConfig = new ConnectorClusterConfig(CLUSTER_NAME, null, properties);
         MongoClientConfiguration config = new MongoClientConfiguration(wrongConfig);
+
         try {
             config.getSeeds();
             fail("An exception must be thrown when number of ports and hosts are different");
-        } catch (CreateNativeConnectionException e) {
+        } catch (ConnectionException e) {
         }
 
     }

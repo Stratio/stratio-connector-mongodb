@@ -40,10 +40,10 @@ import org.mockito.internal.util.reflection.Whitebox;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.mongodb.MongoClient;
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.data.ClusterName;
+import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.security.ICredentials;
 
 @RunWith(PowerMockRunner.class)
@@ -81,12 +81,13 @@ public class DriverConnectionTest {
         Map<String, String> options = new HashMap<>();
         ConnectorClusterConfig configuration = new ConnectorClusterConfig(new ClusterName("CLUSTER_NAME"), null,
                         options);
+
         try {
             driverConnection = new DriverConnection(credentials, configuration);
             fail("Credentials should not be accepted");
-        } catch (CreateNativeConnectionException exception) {
-
+        } catch (ConnectionException e) {
         }
+
     }
 
     @Test

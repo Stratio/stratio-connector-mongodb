@@ -42,7 +42,6 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.stratio.connector.commons.connection.Connection;
-import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
 import com.stratio.connector.commons.test.util.IndexMetadataBuilder;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.AlterOptionsUtils;
@@ -84,7 +83,7 @@ public class MongoMetadataEngineTest {
     DB database;
 
     @Before
-    public void before() throws HandlerConnectionException, Exception {
+    public void before() throws Exception {
         when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
         when(connection.getNativeConnection()).thenReturn(client);
         mongoMetadataEngine = new MongoMetadataEngine(connectionHandler);

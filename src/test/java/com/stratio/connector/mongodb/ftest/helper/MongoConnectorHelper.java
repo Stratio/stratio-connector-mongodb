@@ -35,7 +35,6 @@ import org.junit.Assert;
 
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.core.MongoConnector;
 import com.stratio.connector.mongodb.core.configuration.MongoClientConfiguration;
@@ -59,8 +58,7 @@ public class MongoConnectorHelper implements IConnectorHelper {
     private MongoClient mongoClient;
     protected ClusterName clusterName;
 
-    public MongoConnectorHelper(ClusterName clusterName) throws ConnectionException, InitializationException,
-                    CreateNativeConnectionException {
+    public MongoConnectorHelper(ClusterName clusterName) throws ConnectionException, InitializationException {
         super();
         this.clusterName = clusterName;
 

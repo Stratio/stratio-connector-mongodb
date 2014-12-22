@@ -36,11 +36,10 @@ import com.stratio.connector.mongodb.core.engine.query.utils.GroupByDBObjectBuil
 import com.stratio.connector.mongodb.core.engine.query.utils.LimitDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.query.utils.MetaResultUtils;
 import com.stratio.connector.mongodb.core.engine.query.utils.ProjectDBObjectBuilder;
-import com.stratio.connector.mongodb.core.exceptions.MongoQueryException;
+import com.stratio.connector.mongodb.core.exceptions.MongoExecutionException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.logicalplan.GroupBy;
 import com.stratio.crossdata.common.logicalplan.Limit;
@@ -83,11 +82,11 @@ public class LogicalWorkflowExecutor {
      *
      * @param initialProject
      *            the initial project
-     * @throws UnsupportedException
+     * @throws MongoValidationException
      *             if the query specified in the logical workflow is not supported
      * @throws ExecutionException
      */
-    public LogicalWorkflowExecutor(LogicalStep initialProject) throws UnsupportedException, ExecutionException {
+    public LogicalWorkflowExecutor(LogicalStep initialProject) throws MongoValidationException, ExecutionException {
 
         readLogicalWorkflow(initialProject);
         aggregationRequired();
@@ -110,10 +109,10 @@ public class LogicalWorkflowExecutor {
      *
      * @param initialProject
      *            the initial project
-     * @throws UnsupportedException
-     *             the unsupported exception
+     * @throws MongoValidationException
+     *             the MongoValidationException
      */
-    private void readLogicalWorkflow(LogicalStep initialProject) throws UnsupportedException {
+    private void readLogicalWorkflow(LogicalStep initialProject) throws MongoValidationException {
         LogicalStep logicalStep = initialProject;
 
         do {
@@ -245,12 +244,12 @@ public class LogicalWorkflowExecutor {
      * @param mongoClient
      *            the mongo client
      * @return the result set
-     * @throws MongoQueryException
+     * @throws MongoExecutionException
      *             if an error exist during the execution
      * @throws MongoValidationException
      *             if the query specified in the logical workflow is not supported
      */
-    public ResultSet executeQuery(MongoClient mongoClient) throws MongoQueryException, MongoValidationException {
+    public ResultSet executeQuery(MongoClient mongoClient) throws MongoExecutionException, MongoValidationException {
 
         DB db = mongoClient.getDB(projection.getCatalogName());
         DBCollection collection = db.getCollection(projection.getTableName().getName());
@@ -273,12 +272,13 @@ public class LogicalWorkflowExecutor {
      * @param collection
      *            the collection
      * @return the result set
-     * @throws MongoQueryException
+     * @throws ExecutionException
      *             if an error exist during the execution
      * @throws MongoValidationException
      *             if the query specified in the logical workflow is not supported
      */
-    private ResultSet executeBasicQuery(DBCollection collection) throws MongoQueryException, MongoValidationException {
+    private ResultSet executeBasicQuery(DBCollection collection) throws MongoExecutionException,
+                    MongoValidationException {
 
         ResultSet resultSet = new ResultSet();
         if (logger.isDebugEnabled()) {
@@ -303,7 +303,7 @@ public class LogicalWorkflowExecutor {
         } catch (MongoException e) {
             logger.error("Error executing a basic query :" + query.get(0) + ", with fields: " + buildProject()
                             + "\n Error:" + e.getMessage());
-            throw new MongoQueryException(e.getMessage(), e);
+            throw new MongoExecutionException(e.getMessage(), e);
         } finally {
             cursor.close();
         }
@@ -319,7 +319,7 @@ public class LogicalWorkflowExecutor {
      * @throws MongoQueryException
      *             if an error exist during the execution
      */
-    private ResultSet executeAggregationQuery(DBCollection collection) throws MongoQueryException {
+    private ResultSet executeAggregationQuery(DBCollection collection) throws MongoExecutionException {
         ResultSet resultSet = new ResultSet();
         // AggregationOptions aggOptions = AggregationOptions.builder()
         // .allowDiskUse(true)
@@ -339,7 +339,7 @@ public class LogicalWorkflowExecutor {
             }
         } catch (MongoException mongoException) {
             logger.error("Error executing an aggregation query:" + mongoException.getMessage());
-            throw new MongoQueryException(mongoException.getMessage(), mongoException);
+            throw new MongoExecutionException(mongoException.getMessage(), mongoException);
         }
         return resultSet;
     }

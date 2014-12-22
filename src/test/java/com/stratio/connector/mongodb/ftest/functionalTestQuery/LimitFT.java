@@ -18,7 +18,6 @@
 
 package com.stratio.connector.mongodb.ftest.functionalTestQuery;
 
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.ftest.functionalTestQuery.GenericLimitFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
@@ -39,8 +38,6 @@ public class LimitFT extends GenericLimitFT {
             } catch (ConnectionException e) {
                 e.printStackTrace();
             } catch (InitializationException e) {
-                e.printStackTrace();
-            } catch (CreateNativeConnectionException e) {
                 e.printStackTrace();
             }
             return mongoConnectorHelper;

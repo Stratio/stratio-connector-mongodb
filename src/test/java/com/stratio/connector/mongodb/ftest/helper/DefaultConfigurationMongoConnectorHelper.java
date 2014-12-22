@@ -23,7 +23,6 @@ import static com.stratio.connector.mongodb.core.configuration.ConfigurationOpti
 import java.util.HashMap;
 import java.util.Map;
 
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
@@ -38,7 +37,7 @@ public class DefaultConfigurationMongoConnectorHelper extends MongoConnectorHelp
      * @throws CreateNativeConnectionException
      */
     public DefaultConfigurationMongoConnectorHelper(ClusterName clusterName) throws ConnectionException,
-                    InitializationException, CreateNativeConnectionException {
+                    InitializationException {
         super(clusterName);
     }
 

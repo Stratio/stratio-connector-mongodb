@@ -17,16 +17,14 @@
  */
 package com.stratio.connector.mongodb.ftest.functionalMetadata;
 
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.ftest.functionalMetadata.GenericMetadataAlterTableFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
-public class AlterTableFT extends GenericMetadataAlterTableFT{
-    
-    
+public class AlterTableFT extends GenericMetadataAlterTableFT {
+
     @Override
     protected IConnectorHelper getConnectorHelper() {
         MongoConnectorHelper mongoConnectorHelper = null;
@@ -35,8 +33,6 @@ public class AlterTableFT extends GenericMetadataAlterTableFT{
         } catch (ConnectionException e) {
             e.printStackTrace();
         } catch (InitializationException e) {
-            e.printStackTrace();
-        } catch (CreateNativeConnectionException e) {
             e.printStackTrace();
         }
         return mongoConnectorHelper;

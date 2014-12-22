@@ -34,6 +34,7 @@ import com.stratio.connector.mongodb.core.engine.metadata.AlterOptionsUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.IndexUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.SelectorOptionsUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.ShardUtils;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.AlterOptions;
 import com.stratio.crossdata.common.data.CatalogName;
 import com.stratio.crossdata.common.data.TableName;
@@ -89,21 +90,21 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      *            the tableMetadata
      * @param connection
      *            the connection which contains the native connector
-     * @throws UnsupportedException
+     * @throws MongoValidationException
      *             if the specified operation is not supported
      * @throws ExecutionException
      *             if an error exist when running the database command
      */
     @Override
     protected void createTable(TableMetadata tableMetadata, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
+                    throws MongoValidationException, ExecutionException {
 
         if (tableMetadata == null) {
-            throw new UnsupportedException("the table metadata is required");
+            throw new MongoValidationException("the table metadata is required");
         }
 
         if (tableMetadata.getName() == null) {
-            throw new UnsupportedException("the table name is required");
+            throw new MongoValidationException("the table name is required");
         }
 
         if (ShardUtils.isCollectionSharded(SelectorOptionsUtils.processOptions(tableMetadata.getOptions()))) {
@@ -160,14 +161,14 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      *            the index metadata
      * @param connection
      *            the connection
-     * @throws UnsupportedException
+     * @throws MongoValidationException
      *             if the specified index is not supported
      * @throws ExecutionException
      *             if an error exist when running the database command
      */
     @Override
     protected void createIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
+                    throws MongoValidationException, ExecutionException {
 
         DB db = connection.getNativeConnection().getDB(
                         indexMetadata.getName().getTableName().getCatalogName().getName());
@@ -197,12 +198,12 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      *            the connection
      * @throws ExecutionException
      *             if an error exist when running the database command
-     * @throws UnsupportedException
+     * @throws MongoValidationException
      *             if the specified operation is not supported
      */
     @Override
     protected void dropIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)
-                    throws ExecutionException, UnsupportedException {
+                    throws ExecutionException, MongoValidationException {
         DB db = connection.getNativeConnection().getDB(
                         indexMetadata.getName().getTableName().getCatalogName().getName());
 
@@ -226,7 +227,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 
     @Override
     protected void alterTable(TableName tableName, AlterOptions alterOptions, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
+                    throws MongoValidationException, ExecutionException {
 
         DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
         DBCollection collection = db.getCollection(tableName.getName());
@@ -235,14 +236,14 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         case ADD_COLUMN:
             break;
         case ALTER_COLUMN:
-            throw new UnsupportedException("Alter options is not supported");
+            throw new MongoValidationException("Alter options is not supported");
         case DROP_COLUMN:
             String name = alterOptions.getColumnMetadata().getName().getName();
             collection.updateMulti(new BasicDBObject(), AlterOptionsUtils.buildDropColumnDBObject(name));
             break;
         case ALTER_OPTIONS:
         default:
-            throw new UnsupportedException("Alter options is not supported");
+            throw new MongoValidationException("Alter options is not supported");
         }
 
     }

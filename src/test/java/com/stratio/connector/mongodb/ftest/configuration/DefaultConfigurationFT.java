@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.ftest.GenericConnectorTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.core.MongoConnector;
@@ -46,8 +45,6 @@ public class DefaultConfigurationFT extends GenericConnectorTest<MongoConnector>
         } catch (ConnectionException e) {
             e.printStackTrace();
         } catch (InitializationException e) {
-            e.printStackTrace();
-        } catch (CreateNativeConnectionException e) {
             e.printStackTrace();
         }
         return mongoConnectorHelper;

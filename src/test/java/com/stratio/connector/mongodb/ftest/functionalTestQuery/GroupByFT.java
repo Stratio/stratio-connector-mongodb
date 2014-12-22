@@ -18,7 +18,6 @@
 
 package com.stratio.connector.mongodb.ftest.functionalTestQuery;
 
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.ftest.functionalTestQuery.GenericGroupByFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
@@ -36,12 +35,8 @@ public class GroupByFT extends GenericGroupByFT {
             e.printStackTrace();
         } catch (InitializationException e) {
             e.printStackTrace();
-        } catch (CreateNativeConnectionException e) {
-            e.printStackTrace();
         }
         return mongoConnectorHelper;
     }
 
-    
-  
 }

@@ -23,10 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.mongodb.core.configuration.MongoClientConfiguration;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
+import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.security.ICredentials;
 
 /**
@@ -40,7 +40,6 @@ public class DriverConnection extends Connection<MongoClient> {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private MongoClient mongoClient = null;
-    private boolean isConnected = false;
 
     /**
      * Instantiates a new driver connection.
@@ -49,23 +48,25 @@ public class DriverConnection extends Connection<MongoClient> {
      *            the credentials
      * @param connectorClusterConfig
      *            the connector cluster configuration
-     * @throws CreateNativeConnectionException
-     *             the create native connection exception
+     * @throws ConnectionException
      * @throws MongoValidationException
      *             the mongo validation exception
      */
     public DriverConnection(ICredentials credentials, ConnectorClusterConfig connectorClusterConfig)
-                    throws CreateNativeConnectionException, MongoValidationException {
+                    throws ConnectionException, MongoValidationException {
         MongoClientConfiguration mongoClientConfiguration = new MongoClientConfiguration(connectorClusterConfig);
 
         if (credentials == null) {
             mongoClient = new MongoClient(mongoClientConfiguration.getSeeds(),
                             mongoClientConfiguration.getMongoClientOptions());
-            isConnected = true;
-            logger.info("New MongoDB connection established");
+            if (isConnected()) {
+                logger.info("New MongoDB connection established");
+            } else {
+                throw new ConnectionException("Cannot connect with MongoDB");
+            }
 
         } else {
-            throw new CreateNativeConnectionException("Credentials are not supported yet");
+            throw new ConnectionException("Credentials are not supported yet");
         }
     }
 
@@ -80,7 +81,6 @@ public class DriverConnection extends Connection<MongoClient> {
             mongoClient.close();
             mongoClient = null;
         }
-        isConnected = false;
     }
 
     /*
@@ -99,7 +99,18 @@ public class DriverConnection extends Connection<MongoClient> {
      * @see com.stratio.connector.commons.connection.Connection#isConnect()
      */
     @Override
-    public boolean isConnect() {
+    public boolean isConnected() {
+
+        boolean isConnected = false;
+
+        if (mongoClient != null) {
+            try {
+                mongoClient.getConnectPoint();
+                isConnected = true;
+            } catch (Exception error) {
+                logger.error(error.getMessage());
+            }
+        }
         return isConnected;
     }
 

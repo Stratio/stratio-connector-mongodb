@@ -32,7 +32,6 @@ import org.mockito.internal.util.reflection.Whitebox;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
 import com.stratio.connector.mongodb.core.connection.DriverConnection;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
@@ -47,7 +46,7 @@ public class MongoConnectorTest {
     private static final String CLUSTER_NAME_OTHER = "OTHER_CLUSTER_NAME";
 
     @Test
-    public void connectTest() throws Exception, HandlerConnectionException {
+    public void connectTest() throws Exception {
         MongoConnector mongoConnector = new MongoConnector();
         ICredentials iCredentials = mock(ICredentials.class);
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
@@ -60,7 +59,7 @@ public class MongoConnectorTest {
     }
 
     @Test
-    public void multipleConnectTest() throws Exception, HandlerConnectionException {
+    public void multipleConnectTest() throws Exception {
         MongoConnector mongoConnector = new MongoConnector();
         ICredentials iCredentials = mock(ICredentials.class);
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);

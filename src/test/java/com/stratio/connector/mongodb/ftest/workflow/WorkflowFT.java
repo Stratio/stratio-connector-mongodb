@@ -17,7 +17,6 @@
  */
 package com.stratio.connector.mongodb.ftest.workflow;
 
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.commons.ftest.workFlow.ExampleWorkflowsFT;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
@@ -33,8 +32,6 @@ public class WorkflowFT extends ExampleWorkflowsFT {
         } catch (ConnectionException e) {
             e.printStackTrace();
         } catch (InitializationException e) {
-            e.printStackTrace();
-        } catch (CreateNativeConnectionException e) {
             e.printStackTrace();
         }
         return mongoConnectorHelper;

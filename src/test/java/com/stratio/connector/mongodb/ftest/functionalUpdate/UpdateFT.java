@@ -17,14 +17,13 @@
  */
 package com.stratio.connector.mongodb.ftest.functionalUpdate;
 
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.ftest.functionalUpdate.GenericSimpleUpdateFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
-public class UpdateFT extends GenericSimpleUpdateFT{
+public class UpdateFT extends GenericSimpleUpdateFT {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {
@@ -35,11 +34,8 @@ public class UpdateFT extends GenericSimpleUpdateFT{
             e.printStackTrace();
         } catch (InitializationException e) {
             e.printStackTrace();
-        } catch (CreateNativeConnectionException e) {
-            e.printStackTrace();
         }
         return mongoConnectorHelper;
     }
-    
-   
+
 }

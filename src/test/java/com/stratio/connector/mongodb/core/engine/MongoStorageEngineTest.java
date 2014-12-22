@@ -47,7 +47,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
-import com.stratio.connector.commons.connection.exceptions.HandlerConnectionException;
 import com.stratio.connector.commons.test.util.TableMetadataBuilder;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.StorageUtils;
@@ -58,6 +57,7 @@ import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.data.TableName;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.Operations;
@@ -100,7 +100,7 @@ public class MongoStorageEngineTest {
     private MongoStorageEngine mongoStorageEngine;
 
     @Before
-    public void before() throws HandlerConnectionException {
+    public void before() throws ExecutionException {
         when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
         when(connection.getNativeConnection()).thenReturn(client);
         mongoStorageEngine = new MongoStorageEngine(connectionHandler);

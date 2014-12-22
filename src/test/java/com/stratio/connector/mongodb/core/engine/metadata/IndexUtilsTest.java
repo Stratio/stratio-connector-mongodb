@@ -27,7 +27,6 @@ import com.stratio.connector.commons.test.util.IndexMetadataBuilder;
 import com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType;
 import com.stratio.connector.mongodb.core.configuration.IndexOptions;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.IndexType;
@@ -74,7 +73,7 @@ public class IndexUtilsTest {
     }
 
     @Test
-    public void getIndexDBObjectDefaultTest() throws UnsupportedException {
+    public void getIndexDBObjectDefaultTest() throws MongoValidationException {
         IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME, INDEX_DEFAULT);
         indexMetaBuilder.addColumn(COLUMN_NAME, COLUMN_VARCHAR);
         indexMetaBuilder.addColumn(COLUMN_NAME2, COLUMN_VARCHAR);
@@ -88,7 +87,7 @@ public class IndexUtilsTest {
     }
 
     @Test
-    public void getIndexDBObjectFullTextTest() throws UnsupportedException {
+    public void getIndexDBObjectFullTextTest() throws MongoValidationException {
         IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
                         IndexType.FULL_TEXT);
         indexMetaBuilder.addColumn(COLUMN_NAME, COLUMN_VARCHAR);
@@ -101,7 +100,7 @@ public class IndexUtilsTest {
     }
 
     @Test
-    public void getHashedIndexDBObjectTest() throws UnsupportedException {
+    public void getHashedIndexDBObjectTest() throws MongoValidationException {
         IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
                         IndexType.CUSTOM);
         indexMetaBuilder.addColumn(COLUMN_NAME, COLUMN_VARCHAR);
@@ -113,7 +112,7 @@ public class IndexUtilsTest {
     }
 
     @Test
-    public void getCustomDescendIndexDBObjectTest() throws UnsupportedException {
+    public void getCustomDescendIndexDBObjectTest() throws MongoValidationException {
         IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
                         IndexType.CUSTOM);
         indexMetaBuilder.addColumn(COLUMN_NAME, COLUMN_VARCHAR);
@@ -129,7 +128,7 @@ public class IndexUtilsTest {
     }
 
     @Test
-    public void getCustomCompoundIndexDBObjectTest() throws UnsupportedException {
+    public void getCustomCompoundIndexDBObjectTest() throws MongoValidationException {
         IndexMetadataBuilder indexMetaBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
                         IndexType.CUSTOM);
         indexMetaBuilder.addOption(IndexOptions.INDEX_TYPE.getOptionName(),

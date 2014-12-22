@@ -20,9 +20,10 @@ package com.stratio.connector.mongodb.core.engine;
 
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
-import com.stratio.connector.commons.engine.UniqueProjectQueryEngine;
+import com.stratio.connector.commons.engine.SingleProjectQueryEngine;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutor;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.IResultHandler;
 import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
@@ -34,7 +35,7 @@ import com.stratio.crossdata.common.result.QueryResult;
 /**
  * The MongoQueryEngine.
  */
-public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
+public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
 
     /**
      * Instantiates a new Mongo query engine.
@@ -54,12 +55,12 @@ public class MongoQueryEngine extends UniqueProjectQueryEngine<MongoClient> {
      * @param connection
      *            the connection
      * @return the query result
-     * @throws UnsupportedException
+     * @throws MongoValidationException
      *             if the specified operation is not supported
      * @throws ExecutionException
      */
     @Override
-    public QueryResult execute(Project project, Connection<MongoClient> connection) throws UnsupportedException,
+    public QueryResult execute(Project project, Connection<MongoClient> connection) throws MongoValidationException,
                     ExecutionException {
 
         LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(project);

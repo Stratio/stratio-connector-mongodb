@@ -31,7 +31,6 @@ import java.util.Set;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.stratio.connector.commons.connection.exceptions.CreateNativeConnectionException;
 import com.stratio.connector.commons.ftest.functionalInsert.GenericSimpleInsertFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.commons.test.util.TableMetadataBuilder;
@@ -56,8 +55,6 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         } catch (ConnectionException e) {
             e.printStackTrace();
         } catch (InitializationException e) {
-            e.printStackTrace();
-        } catch (CreateNativeConnectionException e) {
             e.printStackTrace();
         }
         return mongoConnectorHelper;

@@ -23,7 +23,7 @@ import com.stratio.crossdata.common.exceptions.ExecutionException;
 /**
  * The Class MongoQueryException.
  */
-public class MongoQueryException extends ExecutionException {
+public class MongoExecutionException extends ExecutionException {
 
     /** The Constant serialVersionUID. */
     static final long serialVersionUID = 2782686873531397631L;
@@ -36,7 +36,7 @@ public class MongoQueryException extends ExecutionException {
      * @param cause
      *            the cause
      */
-    public MongoQueryException(String msg, Throwable cause) {
+    public MongoExecutionException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
@@ -46,7 +46,7 @@ public class MongoQueryException extends ExecutionException {
      * @param msg
      *            the msg
      */
-    public MongoQueryException(String msg) {
+    public MongoExecutionException(String msg) {
         super(msg);
     }
 }
