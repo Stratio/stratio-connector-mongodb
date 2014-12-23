@@ -44,6 +44,7 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 import com.stratio.crossdata.common.statements.structures.Relation;
@@ -57,13 +58,25 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * Instantiates a new mongo storage engine.
+     * Instantiates a new MongoDB storage engine.
      *
      * @param connectionHandler
      *            the connection handler
      */
     public MongoStorageEngine(MongoConnectionHandler connectionHandler) {
         super(connectionHandler);
+    }
+
+    @Override
+    protected void insert(TableMetadata targetTable, Row row, boolean isNotExists, Connection<MongoClient> connection)
+                    throws UnsupportedException, ExecutionException {
+        // TODO Auto-generated method stub
+
+        if (isNotExists) {
+            throw new UnsupportedException("Insert if not exist not supported");
+        } else {
+            insert(targetTable, row, connection);
+        }
     }
 
     /**
@@ -80,8 +93,8 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      * @throws MongoValidationException
      *             if the specified operation is not supported
      */
-    @Override
-    protected void insert(TableMetadata targetTable, Row row, Connection<MongoClient> connection)
+
+    private void insert(TableMetadata targetTable, Row row, Connection<MongoClient> connection)
                     throws MongoInsertException, MongoValidationException {
 
         MongoClient mongoClient = connection.getNativeConnection();
@@ -101,6 +114,18 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     }
 
+    @Override
+    protected void insert(TableMetadata targetTable, Collection<Row> rows, boolean isNotExists,
+                    Connection<MongoClient> connection) throws UnsupportedException, ExecutionException {
+        // TODO Auto-generated method stub
+        if (isNotExists) {
+            throw new UnsupportedException("Insert if not exist not supported");
+        } else {
+            insert(targetTable, rows, connection);
+        }
+
+    }
+
     /**
      * Inserts a collection of documents in MongoDB.
      *
@@ -115,8 +140,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      * @throws MongoValidationException
      *             if the specified operation is not supported
      */
-    @Override
-    protected void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
+    private void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
                     throws MongoInsertException, MongoValidationException {
 
         MongoClient mongoClient = connection.getNativeConnection();

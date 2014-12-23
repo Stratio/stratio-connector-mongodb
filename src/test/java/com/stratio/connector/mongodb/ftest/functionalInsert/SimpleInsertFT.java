@@ -243,7 +243,7 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         if (getConnectorHelper().isTableMandatory()) {
             connector.getMetadataEngine().createTable(getClusterName(), targetTable);
         }
-        connector.getStorageEngine().insert(cluesterName, targetTable, row);
+        connector.getStorageEngine().insert(cluesterName, targetTable, row, false);
         refresh(CATALOG);
     }
 

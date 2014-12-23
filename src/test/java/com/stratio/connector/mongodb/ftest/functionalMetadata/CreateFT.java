@@ -18,9 +18,9 @@
 package com.stratio.connector.mongodb.ftest.functionalMetadata;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.junit.Ignore;
@@ -87,12 +87,12 @@ public class CreateFT extends GenericMetadataCreateFT {
 
         TableName tableName = new TableName(CATALOG, TABLE);
         ClusterName clusterRef = getClusterName();
-        List<ColumnName> partitionKey = Collections.EMPTY_LIST;
-        List<ColumnName> clusterKey = Collections.EMPTY_LIST;
+        LinkedList<ColumnName> partitionKey = new LinkedList<>();
+        LinkedList<ColumnName> clusterKey = new LinkedList<>();
 
         // ColumnMetadata (all columns)
         Map<Selector, Selector> options;
-        Map<ColumnName, ColumnMetadata> columnsMap = new HashMap<>();
+        LinkedHashMap<ColumnName, ColumnMetadata> columnsMap = new LinkedHashMap<>();
         int i = 1;
         Collection<ColumnType> allSupportedColumnType = getConnectorHelper().getAllSupportedColumnType();
         for (ColumnType columnType : allSupportedColumnType) {

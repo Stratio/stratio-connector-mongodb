@@ -18,6 +18,8 @@
 
 package com.stratio.connector.mongodb.core.engine;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +45,7 @@ import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.CatalogMetadata;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.TableMetadata;
+import com.stratio.crossdata.common.statements.structures.Selector;
 
 /**
  * The Class MongoMetadataEngine.
@@ -78,7 +81,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     @Override
     protected void createCatalog(CatalogMetadata catalogMetadata, Connection<MongoClient> connection)
                     throws UnsupportedException {
-        String msg = "Create catalog is not supported";
+        final String msg = "Create catalog is not supported";
         logger.error(msg);
         throw new UnsupportedException(msg);
     }
@@ -245,6 +248,15 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         default:
             throw new MongoValidationException("Alter options is not supported");
         }
+
+    }
+
+    @Override
+    protected void alterCatalog(CatalogName catalogName, Map<Selector, Selector> options, Connection connection)
+                    throws UnsupportedException, ExecutionException {
+        final String msg = "Alter catalog is not supported";
+        logger.error(msg);
+        throw new UnsupportedException(msg);
 
     }
 

@@ -129,7 +129,7 @@ public class MongoStorageEngineTest {
         when(StorageUtils.buildPK(tableMetadata, row)).thenReturn(null);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
 
-        mongoStorageEngine.insert(clusterName, tableMetadata, row);
+        mongoStorageEngine.insert(clusterName, tableMetadata, row, false);
 
         BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
         doc.put(OTHER_COLUMN_NAME, OTHER_CELL_VALUE);
@@ -159,7 +159,7 @@ public class MongoStorageEngineTest {
         BulkWriteOperation bulkWriteOp = mock(BulkWriteOperation.class);
         when(collection.initializeUnorderedBulkOperation()).thenReturn(bulkWriteOp);
 
-        mongoStorageEngine.insert(clusterName, tableMetadata, Arrays.asList(row, row));
+        mongoStorageEngine.insert(clusterName, tableMetadata, Arrays.asList(row, row), false);
 
         BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
         doc.put(OTHER_COLUMN_NAME, OTHER_CELL_VALUE);
@@ -184,7 +184,7 @@ public class MongoStorageEngineTest {
         when(StorageUtils.buildPK(tableMetadata, row)).thenReturn(CELL_VALUE);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
 
-        mongoStorageEngine.insert(clusterName, tableMetadata, row);
+        mongoStorageEngine.insert(clusterName, tableMetadata, row, false);
 
         DBObject pKeyDBObject = new BasicDBObject("_id", CELL_VALUE);
         BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
@@ -216,7 +216,7 @@ public class MongoStorageEngineTest {
         BulkUpdateRequestBuilder bulkWriteUpB = mock(BulkUpdateRequestBuilder.class);
         when(bulkWriteRB.upsert()).thenReturn(bulkWriteUpB);
 
-        mongoStorageEngine.insert(clusterName, tableMetadata, Arrays.asList(row, row));
+        mongoStorageEngine.insert(clusterName, tableMetadata, Arrays.asList(row, row), false);
 
         DBObject pKeyDBObject = new BasicDBObject("_id", CELL_VALUE);
         BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);

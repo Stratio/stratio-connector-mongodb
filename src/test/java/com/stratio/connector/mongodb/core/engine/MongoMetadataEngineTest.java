@@ -111,7 +111,7 @@ public class MongoMetadataEngineTest {
     }
 
     @Test
-    public void createTableWithoutNameTest() throws ExecutionException {
+    public void createTableWithoutNameTest() throws ExecutionException, UnsupportedException {
 
         TableMetadata tableMetadata = mock(TableMetadata.class);
         when(tableMetadata.getName()).thenReturn(null);
@@ -119,7 +119,7 @@ public class MongoMetadataEngineTest {
         try {
             mongoMetadataEngine.createTable(new ClusterName(CLUSTER_NAME), tableMetadata);
             fail("the table name is necessary");
-        } catch (UnsupportedException e) {
+        } catch (ExecutionException e) {
         }
 
         verify(tableMetadata, times(1)).getName();
@@ -235,7 +235,7 @@ public class MongoMetadataEngineTest {
 
     }
 
-    @Test(expected = UnsupportedException.class)
+    @Test(expected = ExecutionException.class)
     public void alterTableAlterOptionsTest() throws UnsupportedException, ExecutionException {
 
         TableName tableName = new TableName(DB_NAME, TABLE_NAME);
@@ -249,7 +249,7 @@ public class MongoMetadataEngineTest {
 
     }
 
-    @Test(expected = UnsupportedException.class)
+    @Test(expected = ExecutionException.class)
     public void alterTableAlterColumnTest() throws UnsupportedException, ExecutionException {
 
         TableName tableName = new TableName(DB_NAME, TABLE_NAME);

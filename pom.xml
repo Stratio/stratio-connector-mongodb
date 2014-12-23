@@ -23,8 +23,8 @@
 
 	<properties>
 		<mongo.connector.version>0.3.0-SNAPSHOT</mongo.connector.version>
-		<crossdata.version>0.1.1</crossdata.version>
-		<commons.connector.version>0.3.0-SNAPSHOT</commons.connector.version>
+		<crossdata.version>0.2.0-SNAPSHOT</crossdata.version>
+		<commons.connector.version>0.4.0-SNAPSHOT</commons.connector.version>
 		<mongo.driver.version>2.12.4</mongo.driver.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
