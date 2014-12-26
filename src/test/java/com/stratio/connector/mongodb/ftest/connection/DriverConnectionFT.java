@@ -59,8 +59,20 @@ public class DriverConnectionFT {
         ICredentials credentials = null;
 
         Map<String, String> options = new HashMap<>();
-        options.put(HOST.getOptionName(), "10.200.0.58");
-        options.put(PORT.getOptionName(), "27100");
+
+        String serverIP = System.getProperty("SERVER_IP");
+        if (serverIP != null) {
+            options.put(HOST.getOptionName(), serverIP);
+        } else {
+            options.put(HOST.getOptionName(), "10.200.0.58");
+        }
+        String serverPort = System.getProperty("SERVER_PORT");
+        if (serverPort != null) {
+            options.put(PORT.getOptionName(), serverPort);
+        } else {
+            options.put(PORT.getOptionName(), "27100");
+        }
+
         ConnectorClusterConfig configuration = new ConnectorClusterConfig(new ClusterName("CLUSTER_NAME"), null,
                         options);
         driverConnection = new DriverConnection(credentials, configuration);
