@@ -51,7 +51,7 @@ import com.stratio.crossdata.common.statements.structures.StringSelector;
 public final class IndexUtils {
 
     /** The logger. */
-    private final static Logger logger = LoggerFactory.getLogger(IndexUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(IndexUtils.class);
 
     private IndexUtils() {
     }

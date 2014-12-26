@@ -37,7 +37,7 @@ import com.stratio.crossdata.common.statements.structures.SelectorType;
 public class UpdateDBObjectBuilder {
 
     /** The logger. */
-    private final static Logger logger = LoggerFactory.getLogger(UpdateDBObjectBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpdateDBObjectBuilder.class);
 
     /** The Constant INCREMENT_COMMAND. */
     private static final String INCREMENT_COMMAND = "$inc";

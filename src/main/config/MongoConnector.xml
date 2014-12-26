@@ -22,7 +22,7 @@
     <DataStores>
         <DataStoreName>Mongo</DataStoreName>
     </DataStores>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <SupportedOperations>
         <operation>DROP_CATALOG</operation>
         <operation>CREATE_TABLE</operation>
@@ -66,6 +66,7 @@
         <operation>SELECT_OPERATOR</operation>
         <operation>SELECT_LIMIT</operation>
         <operation>SELECT_GROUP_BY</operation>
+        <operation>SELECT_ORDER_BY</operation>
         <operation>FILTER_PK_EQ</operation>
         <operation>FILTER_PK_GT</operation>
         <operation>FILTER_PK_LT</operation>
