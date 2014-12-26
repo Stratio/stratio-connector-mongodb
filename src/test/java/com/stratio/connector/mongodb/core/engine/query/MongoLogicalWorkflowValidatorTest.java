@@ -1,55 +1,29 @@
-/*
- * Licensed to STRATIO (C) under one or more contributor license agreements.
- * See the NOTICE file distributed with this work for additional information
- * regarding copyright ownership.  The STRATIO (C) licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 package com.stratio.connector.mongodb.core.engine.query;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.Whitebox;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.stratio.connector.commons.engine.query.ProjectParsed;
 import com.stratio.connector.commons.test.util.LogicalWorkFlowCreator;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ClusterName;
-import com.stratio.crossdata.common.data.TableName;
-import com.stratio.crossdata.common.logicalplan.Filter;
-import com.stratio.crossdata.common.logicalplan.GroupBy;
 import com.stratio.crossdata.common.logicalplan.Limit;
 import com.stratio.crossdata.common.logicalplan.LogicalStep;
 import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
 import com.stratio.crossdata.common.logicalplan.Project;
-import com.stratio.crossdata.common.logicalplan.Select;
 import com.stratio.crossdata.common.metadata.Operations;
 import com.stratio.crossdata.common.statements.structures.Operator;
+import com.stratio.crossdata.common.statements.structures.OrderDirection;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(value = { LogicalWorkflowExecutor.class, DBCollection.class })
-public class LogicalWorkflowExecutorTest {
-
+public class MongoLogicalWorkflowValidatorTest {
     public static final String COLUMN_1 = "column1";
     public static final String COLUMN_2 = "column2";
     public static final String COLUMN_3 = "column3";
@@ -60,68 +34,37 @@ public class LogicalWorkflowExecutorTest {
     public static final String CATALOG = "catalog_unit_test";
 
     /**
-     * aggregationRequired() test
-     *
-     * @throws Exception
-     */
-    @Test
-    public void logicalWorkflowExecutorAggregationTest() throws Exception {
-
-        LogicalWorkFlowCreator logWorkFlowCreator = new LogicalWorkFlowCreator(CATALOG, TABLE, CLUSTER_NAME);
-        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
-
-        LogicalWorkflowExecutor lwExecutor = new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
-
-        boolean aggregationRequired = (Boolean) Whitebox.getInternalState(lwExecutor, "aggregationRequired");
-
-        assertFalse("The aggregation should not be required without groupBy statements", aggregationRequired);
-
-        logWorkFlowCreator.addGroupBy(COLUMN_1);
-        logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
-        lwExecutor = new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
-        aggregationRequired = (Boolean) Whitebox.getInternalState(lwExecutor, "aggregationRequired");
-
-        assertTrue("The aggregation should be required with groupBy statements", aggregationRequired);
-
-    }
-
-    /**
-     * readLogicalWorkflow() preparation test
+     * readLogicalWorkflow() preparation test. MongoLogicalWorkflowValidator
      *
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
     public void logicalWorkflowExecutorPreparationTest() throws Exception {
-
         LogicalWorkFlowCreator logWorkFlowCreator = new LogicalWorkFlowCreator(CATALOG, TABLE, CLUSTER_NAME);
         logWorkFlowCreator.addEqualFilter(COLUMN_1, 5, false, false);
         logWorkFlowCreator.addColumnName(COLUMN_1);
         logWorkFlowCreator.addColumnName(COLUMN_2);
         logWorkFlowCreator.addGroupBy(COLUMN_MONEY, COLUMN_3);
         logWorkFlowCreator.addLimit(5);
-
         LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
 
-        LogicalWorkflowExecutor lwExecutor = new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
+        ProjectParsed logWorkflowData = new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0),
+                        new MongoLogicalWorkflowValidator());
 
-        Project project = (Project) Whitebox.getInternalState(lwExecutor, "projection");
-        List<Filter> filterList = (List<Filter>) Whitebox.getInternalState(lwExecutor, "filterList");
-        Limit limit = (Limit) Whitebox.getInternalState(lwExecutor, "limit");
-        Select select = (Select) Whitebox.getInternalState(lwExecutor, "select");
-        GroupBy groupBy = (GroupBy) Whitebox.getInternalState(lwExecutor, "groupBy");
-        assertEquals("The project should contain the catalog" + CATALOG, CATALOG, project.getCatalogName());
-        assertEquals("The number of filters should be 1", 1, filterList.size());
-        assertEquals("The filter should have a equal relation", Operator.EQ, ((Filter) filterList.get(0)).getRelation()
-                        .getOperator());
-        assertEquals("The limit value should be 5", 5, limit.getLimit());
-        assertEquals("The select should have 2 columns", 2, select.getColumnMap().size());
-        assertEquals("The groupBy should have 2 ids", 2, groupBy.getIds().size());
+        assertEquals("The project should contain the catalog" + CATALOG, CATALOG, logWorkflowData.getProject()
+                        .getCatalogName());
+        assertEquals("The number of filters should be 1", 1, logWorkflowData.getFilter().size());
+        assertEquals("The filter should have a equal relation", Operator.EQ,
+                        (logWorkflowData.getFilter().iterator().next()).getRelation().getOperator());
+        assertEquals("The limit value should be 5", 5, logWorkflowData.getLimit().getLimit());
+        assertEquals("The select should have 2 columns", 2, logWorkflowData.getSelect().getColumnMap().size());
+        assertEquals("The groupBy should have 2 ids", 2, logWorkflowData.getGroupBy().getIds().size());
 
     }
 
     /**
-     * readLogicalWorkflow() validation test
+     * readLogicalWorkflow() validation test. MongoLogicalWorkflowValidator
      *
      * @throws Exception
      */
@@ -136,21 +79,8 @@ public class LogicalWorkflowExecutorTest {
             logElement.setNextStep(new Limit(Operations.SELECT_LIMIT, 5));
         }
 
-        new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
-    }
+        new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0), new MongoLogicalWorkflowValidator());
 
-    @Test(expected = MongoValidationException.class)
-    public void logicalWorkflowExecutorTwoProjectsTest() throws Exception {
-
-        LogicalWorkFlowCreator logWorkFlowCreator = new LogicalWorkFlowCreator(CATALOG, TABLE, CLUSTER_NAME);
-        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
-
-        // removing the select. Adding a limit instead of the select
-        for (LogicalStep logElement : logicalWorkflow.getLastStep().getPreviousSteps()) {
-            logElement.setNextStep(new Project(Operations.PROJECT, new TableName(CATALOG, TABLE), CLUSTER_NAME));
-        }
-
-        new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
     }
 
     @Test(expected = MongoValidationException.class)
@@ -160,7 +90,7 @@ public class LogicalWorkflowExecutorTest {
         logWorkFlowCreator.addMatchFilter(COLUMN_1, "any");
         LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
 
-        new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
+        new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0), new MongoLogicalWorkflowValidator());
     }
 
     /**
@@ -178,10 +108,11 @@ public class LogicalWorkflowExecutorTest {
         logWorkFlowCreator.addGreaterFilter(COLUMN_2, 1, false);
         logWorkFlowCreator.addColumnName(COLUMN_1);
         logWorkFlowCreator.addColumnName(COLUMN_2);
-
         LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
 
-        LogicalWorkflowExecutor lwExecutor = new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
+        ProjectParsed logWorkflowData = new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0),
+                        new MongoLogicalWorkflowValidator());
+        LogicalWorkflowExecutor lwExecutor = LogicalWorkflowExecutorFactory.getLogicalWorkflowExecutor(logWorkflowData);
 
         List<DBObject> query = (List<DBObject>) Whitebox.getInternalState(lwExecutor, "query");
 
@@ -189,15 +120,18 @@ public class LogicalWorkflowExecutorTest {
 
         // Verify an aggregation query
         logWorkFlowCreator.addLimit(5);
+        logWorkFlowCreator.addOrderByClause(COLUMN_3, OrderDirection.ASC);
         logWorkFlowCreator.addGroupBy(COLUMN_AGE);
 
         logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
 
-        lwExecutor = new LogicalWorkflowExecutor(logicalWorkflow.getInitialSteps().get(0));
+        logWorkflowData = new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0),
+                        new MongoLogicalWorkflowValidator());
+        lwExecutor = LogicalWorkflowExecutorFactory.getLogicalWorkflowExecutor(logWorkflowData);
 
         query = (List<DBObject>) Whitebox.getInternalState(lwExecutor, "query");
 
-        assertEquals("The aggregation framework should include 3 stages", 3, query.size());
+        assertEquals("The aggregation framework should include 4 stages", 4, query.size());
 
     }
 

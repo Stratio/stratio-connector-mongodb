@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -35,8 +36,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
+import com.stratio.connector.commons.engine.query.ProjectParsed;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutor;
+import com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutorFactory;
 import com.stratio.crossdata.common.connector.IResultHandler;
 import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
@@ -46,7 +49,8 @@ import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.result.QueryResult;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ MongoQueryEngine.class, LogicalWorkflowExecutor.class, QueryResult.class, ResultSet.class })
+@PrepareForTest({ MongoQueryEngine.class, LogicalWorkflowExecutor.class, LogicalWorkflowExecutorFactory.class,
+                QueryResult.class, ResultSet.class })
 public class MongoQueryEngineTest {
 
     private MongoQueryEngine mongoQueryEngine;
@@ -69,7 +73,11 @@ public class MongoQueryEngineTest {
         Connection<MongoClient> connection = mock(Connection.class);
         MongoClient mongoClient = mock(MongoClient.class);
         when(connection.getNativeConnection()).thenReturn(mongoClient);
-        PowerMockito.whenNew(LogicalWorkflowExecutor.class).withArguments(project).thenReturn(logicalWorkflowExecutor);
+        ProjectParsed projectParsed = mock(ProjectParsed.class);
+        PowerMockito.whenNew(ProjectParsed.class).withAnyArguments().thenReturn(projectParsed);
+        PowerMockito.mockStatic(LogicalWorkflowExecutorFactory.class);
+        PowerMockito.when(LogicalWorkflowExecutorFactory.getLogicalWorkflowExecutor(Matchers.any(ProjectParsed.class)))
+                        .thenReturn(logicalWorkflowExecutor);
         ResultSet resultSet = mock(ResultSet.class);
         when(logicalWorkflowExecutor.executeQuery(mongoClient)).thenReturn(resultSet);
         QueryResult queryResult = mock(QueryResult.class);

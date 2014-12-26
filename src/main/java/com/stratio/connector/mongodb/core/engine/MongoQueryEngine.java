@@ -21,8 +21,11 @@ package com.stratio.connector.mongodb.core.engine;
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.SingleProjectQueryEngine;
+import com.stratio.connector.commons.engine.query.ProjectParsed;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutor;
+import com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutorFactory;
+import com.stratio.connector.mongodb.core.engine.query.MongoLogicalWorkflowValidator;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.IResultHandler;
 import com.stratio.crossdata.common.data.ResultSet;
@@ -53,17 +56,20 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
      * @param project
      *            the initial step of the logical workflow
      * @param connection
-     *            the connection
+     *            the MongoDB connection
      * @return the query result
      * @throws MongoValidationException
      *             if the specified operation is not supported
      * @throws ExecutionException
+     *             if the execution fails
      */
     @Override
     public QueryResult execute(Project project, Connection<MongoClient> connection) throws MongoValidationException,
                     ExecutionException {
 
-        LogicalWorkflowExecutor executor = new LogicalWorkflowExecutor(project);
+        ProjectParsed logicalWorkfloParsed = new ProjectParsed(project, new MongoLogicalWorkflowValidator());
+        LogicalWorkflowExecutor executor = LogicalWorkflowExecutorFactory
+                        .getLogicalWorkflowExecutor(logicalWorkfloParsed);
         ResultSet resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
 
         return QueryResult.createQueryResult(resultSet);
@@ -79,8 +85,7 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
     @Override
     public void asyncExecute(String queryId, LogicalWorkflow workflow, IResultHandler resultHandler)
                     throws UnsupportedException {
-        throw new UnsupportedException("Not yet supported");
-
+        throw new UnsupportedException("Not supported");
     }
 
     /*
@@ -90,7 +95,7 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
      */
     @Override
     public void stop(String queryId) throws UnsupportedException {
-        throw new UnsupportedException("Not yet supported");
+        throw new UnsupportedException("Not supported");
 
     }
 

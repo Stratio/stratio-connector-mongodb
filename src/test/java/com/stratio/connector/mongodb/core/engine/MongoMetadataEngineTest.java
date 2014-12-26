@@ -287,6 +287,11 @@ public class MongoMetadataEngineTest {
 
     }
 
+    @Test(expected = UnsupportedException.class)
+    public void alterCatalogTest() throws UnsupportedException, ExecutionException {
+        mongoMetadataEngine.alterCatalog(new CatalogName(DB_NAME), null, connection);
+    }
+
     // TODO Options => IndexUtils
     // Map<Selector, Selector> options = new HashMap<Selector, Selector>();
     // StringSelector optSelector = new StringSelector("index_type");

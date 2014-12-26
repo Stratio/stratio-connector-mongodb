@@ -18,7 +18,7 @@
 
 package com.stratio.connector.mongodb.core.engine.query.utils;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.bson.types.BasicBSONList;
 
@@ -49,22 +49,24 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
      *
      * @param useAggregation
      *            whether the query use the aggregation framework or not
-     * @param filterList
-     *            the filter list
+     * @param filterCollection
+     *            the set of filters
      * @throws MongoValidationException
      *             if the query specified in the logical workflow is not supported
      */
-    public FilterDBObjectBuilder(boolean useAggregation, List<Filter> filterList) throws MongoValidationException {
+    public FilterDBObjectBuilder(boolean useAggregation, Collection<Filter> filterCollection)
+                    throws MongoValidationException {
+
         super(useAggregation);
 
-        if (filterList.size() > 1) {
+        if (filterCollection.size() > 1) {
             BasicBSONList filterExpressions = new BasicBSONList();
-            for (Filter filter : filterList) {
+            for (Filter filter : filterCollection) {
                 filterExpressions.add(getFilterQuery(filter));
             }
             filterQuery = new BasicDBObject("$and", filterExpressions);
-        } else if (filterList.size() == 1) {
-            filterQuery = getFilterQuery(filterList.get(0));
+        } else if (filterCollection.size() == 1) {
+            filterQuery = getFilterQuery(filterCollection.iterator().next());
         } else {
             filterQuery = new BasicDBObject();
         }
