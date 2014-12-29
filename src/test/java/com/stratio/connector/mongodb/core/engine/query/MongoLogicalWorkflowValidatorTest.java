@@ -131,7 +131,7 @@ public class MongoLogicalWorkflowValidatorTest {
 
         query = (List<DBObject>) Whitebox.getInternalState(lwExecutor, "query");
 
-        assertEquals("The aggregation framework should include 4 stages", 4, query.size());
+        assertEquals("The aggregation framework should include 5 stages", 5, query.size());
 
     }
 

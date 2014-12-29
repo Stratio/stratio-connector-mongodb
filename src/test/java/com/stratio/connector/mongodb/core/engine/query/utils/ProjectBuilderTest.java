@@ -31,34 +31,60 @@ import org.mockito.internal.util.reflection.Whitebox;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
+import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.data.ColumnName;
+import com.stratio.crossdata.common.data.TableName;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.logicalplan.Select;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.Operations;
+import com.stratio.crossdata.common.statements.structures.ColumnSelector;
+import com.stratio.crossdata.common.statements.structures.Selector;
 
 public class ProjectBuilderTest {
 
     public static final String COLUMN_1 = "column1";
     public static final String ALIAS_COLUMN_1 = "alias1";
     public static final String COLUMN_2 = "column2";
-    public static final String COLUMN_3 = "column3";
+    public static final String ALIAS_COLUMN_2 = "alias2";
     public static final String TABLE = "table_unit_test";
     public static final String CATALOG = "catalog_unit_test";
+    public static final String CLUSTER_NAME = "cluster";
 
     @Test
-    public void projectDBObjectBuilderTest() throws MongoValidationException {
+    public void projectDBObjectBuilderTest() throws ExecutionException {
 
+        // Project without aggregation => expected the select columns
         List<ConnectorField> columns;
         columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, ColumnType.VARCHAR));
         Select select = getSelect(columns);
-        ProjectDBObjectBuilder projectBuilder = new ProjectDBObjectBuilder(false, select);
+        Project project = getProject(COLUMN_1, COLUMN_2);
+        ProjectDBObjectBuilder projectBuilder = new ProjectDBObjectBuilder(false, project, select);
         DBObject expectedProject = new BasicDBObject(COLUMN_1, 1);
         expectedProject.put("_id", 0);
         DBObject internalProjectDBObject = (DBObject) Whitebox.getInternalState(projectBuilder, "projectQuery");
 
         Assert.assertEquals("The project is not the expected", expectedProject, internalProjectDBObject);
 
+        // Project with aggregation => expected the project columns
+        projectBuilder = new ProjectDBObjectBuilder(true, project, select);
+        expectedProject = new BasicDBObject(COLUMN_1, 1);
+        expectedProject.put(COLUMN_2, 1);
+        expectedProject.put("_id", 0);
+        internalProjectDBObject = (DBObject) Whitebox.getInternalState(projectBuilder, "projectQuery");
+
+        Assert.assertEquals("The project is not the expected", expectedProject, internalProjectDBObject);
+
+    }
+
+    private Project getProject(String... columnName) {
+        Project project = new Project(Operations.PROJECT, new TableName(CATALOG, TABLE), new ClusterName(CLUSTER_NAME));
+        for (String col : columnName) {
+            project.addColumn(new ColumnName(CATALOG, TABLE, col));
+        }
+
+        return project;
     }
 
     @Test
@@ -66,7 +92,8 @@ public class ProjectBuilderTest {
         List<ConnectorField> columns;
         columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, ColumnType.VARCHAR));
         Select select = getSelect(columns);
-        ProjectDBObjectBuilder projectBuilder = new ProjectDBObjectBuilder(false, select);
+        Project project = getProject(COLUMN_1);
+        ProjectDBObjectBuilder projectBuilder = new ProjectDBObjectBuilder(false, project, select);
         DBObject fakeProject = new BasicDBObject(COLUMN_1, 1);
 
         // Default build
@@ -89,17 +116,18 @@ public class ProjectBuilderTest {
 
     private Select getSelect(List<ConnectorField> fields) {
         Select select;
-        Map<ColumnName, String> mapping = new LinkedHashMap<>();
+        Map<Selector, String> mapping = new LinkedHashMap<>();
         Map<String, ColumnType> types = new LinkedHashMap<>();
-        Map<ColumnName, ColumnType> typeMapFormColumnName = new LinkedHashMap<>();
+        Map<Selector, ColumnType> typeMapFormColumnName = new LinkedHashMap<>();
+
         for (ConnectorField connectorField : fields) {
-            ColumnName columName = new ColumnName(CATALOG, TABLE, connectorField.name);
-            mapping.put(columName, connectorField.alias);
+            ColumnSelector columnSelector = new ColumnSelector(new ColumnName(CATALOG, TABLE, connectorField.name));
+            mapping.put(columnSelector, connectorField.alias);
             types.put(connectorField.alias, connectorField.columnType);
-            typeMapFormColumnName.put(columName, connectorField.columnType);
+            typeMapFormColumnName.put(columnSelector, connectorField.columnType);
         }
 
-        select = new Select(Operations.PROJECT, mapping, types, typeMapFormColumnName);
+        select = new Select(Operations.SELECT_OPERATOR, mapping, types, typeMapFormColumnName);
 
         return select;
 

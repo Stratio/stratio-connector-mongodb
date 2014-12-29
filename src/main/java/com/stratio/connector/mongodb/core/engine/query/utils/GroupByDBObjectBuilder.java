@@ -24,7 +24,6 @@ import java.util.Set;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.stratio.connector.commons.util.SelectorHelper;
-import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.logicalplan.GroupBy;
 import com.stratio.crossdata.common.statements.structures.Selector;
@@ -46,9 +45,9 @@ public class GroupByDBObjectBuilder extends DBObjectBuilder {
      * @param selectColumns
      *            the columns expected in the result
      * @throws ExecutionException
-     *             the execution exception
+     *             if the conditions specified in the logical workflow are not supported
      */
-    public GroupByDBObjectBuilder(GroupBy groupBy, Set<ColumnName> selectColumns) throws ExecutionException {
+    public GroupByDBObjectBuilder(GroupBy groupBy, Set<Selector> selectColumns) throws ExecutionException {
         super(true);
         groupQuery = new BasicDBObject();
 
@@ -66,8 +65,9 @@ public class GroupByDBObjectBuilder extends DBObjectBuilder {
             }
             groupQuery.put("_id", groupFields);
         }
-        for (ColumnName colName : selectColumns) {
-            groupQuery.put(colName.getName(), new BasicDBObject("$first", "$" + colName.getName()));
+        for (Selector colSelector : selectColumns) {
+            String columnName = (String) SelectorHelper.getRestrictedValue(colSelector, SelectorType.COLUMN);
+            groupQuery.put(columnName, new BasicDBObject("$first", "$" + columnName));
         }
 
     }

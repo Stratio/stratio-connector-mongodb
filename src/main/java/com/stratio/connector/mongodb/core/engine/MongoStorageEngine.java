@@ -79,6 +79,18 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         }
     }
 
+    @Override
+    protected void insert(TableMetadata targetTable, Collection<Row> rows, boolean isNotExists,
+                    Connection<MongoClient> connection) throws UnsupportedException, ExecutionException {
+        // TODO Auto-generated method stub
+        if (isNotExists) {
+            throw new UnsupportedException("Insert if not exist not supported");
+        } else {
+            insert(targetTable, rows, connection);
+        }
+
+    }
+
     /**
      * Inserts a document in MongoDB.
      *
@@ -110,18 +122,6 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
             insertHandler.upsert(targetTable, row, pk);
         } else {
             insertHandler.insertWithoutPK(targetTable, row);
-        }
-
-    }
-
-    @Override
-    protected void insert(TableMetadata targetTable, Collection<Row> rows, boolean isNotExists,
-                    Connection<MongoClient> connection) throws UnsupportedException, ExecutionException {
-        // TODO Auto-generated method stub
-        if (isNotExists) {
-            throw new UnsupportedException("Insert if not exist not supported");
-        } else {
-            insert(targetTable, rows, connection);
         }
 
     }

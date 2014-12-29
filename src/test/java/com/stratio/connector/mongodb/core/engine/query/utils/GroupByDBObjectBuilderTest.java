@@ -52,8 +52,8 @@ public class GroupByDBObjectBuilderTest {
     public void groupByDBObjectBuilderTest() throws MongoValidationException, ExecutionException {
 
         // GroupBy with one column
-        Set<ColumnName> colSelected = new HashSet<ColumnName>(Arrays.asList(new ColumnName(CATALOG, TABLE,
-                        SELECTED_FIELD)));
+        Set<Selector> colSelected = new HashSet<Selector>(Arrays.asList(new ColumnSelector(new ColumnName(CATALOG,
+                        TABLE, SELECTED_FIELD))));
         GroupBy groupBy = getGroupBy(GROUP_COLUMN);
         GroupByDBObjectBuilder groupByDBObjectBuilder = new GroupByDBObjectBuilder(groupBy, colSelected);
         assertTrue("useAggregations should be true",
@@ -91,8 +91,8 @@ public class GroupByDBObjectBuilderTest {
     @Test
     public void buildTest() throws Exception {
 
-        Set<ColumnName> colSelected = new HashSet<ColumnName>(Arrays.asList(new ColumnName(CATALOG, TABLE,
-                        SELECTED_FIELD)));
+        Set<Selector> colSelected = new HashSet<Selector>(Arrays.asList(new ColumnSelector(new ColumnName(CATALOG,
+                        TABLE, SELECTED_FIELD))));
         GroupBy groupBy = getGroupBy(GROUP_COLUMN);
         GroupByDBObjectBuilder groupByDBObjectBuilder = new GroupByDBObjectBuilder(groupBy, colSelected);
 

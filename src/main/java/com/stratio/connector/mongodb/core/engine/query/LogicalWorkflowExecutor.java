@@ -118,12 +118,12 @@ public abstract class LogicalWorkflowExecutor {
      * @param aggregationRequired
      *            whether the query use the aggregation framework or not.
      * @return the DB object.
-     * @throws MongoValidationException
+     * @throws ExecutionException
      *             if the project specified in the logical workflow is not supported
      */
-    protected DBObject buildProject(boolean aggregationRequired) throws MongoValidationException {
+    protected DBObject buildProject(boolean aggregationRequired) throws ExecutionException {
         ProjectDBObjectBuilder projectDBObject = new ProjectDBObjectBuilder(aggregationRequired,
-                        logicalWorkflowData.getSelect());
+                        logicalWorkflowData.getProject(), logicalWorkflowData.getSelect());
         return projectDBObject.build();
     }
 

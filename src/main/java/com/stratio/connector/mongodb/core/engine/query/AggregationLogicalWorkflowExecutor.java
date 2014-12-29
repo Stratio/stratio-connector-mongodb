@@ -61,6 +61,9 @@ public class AggregationLogicalWorkflowExecutor extends LogicalWorkflowExecutor 
     protected void buildQuery() throws MongoValidationException, ExecutionException {
         query = new ArrayList<DBObject>();
 
+        if (logicalWorkflowData.getProject() != null) {
+            query.add(buildProject(true));
+        }
         if (!logicalWorkflowData.getFilter().isEmpty()) {
             query.add(buildFilter(true));
         }
@@ -82,13 +85,13 @@ public class AggregationLogicalWorkflowExecutor extends LogicalWorkflowExecutor 
      * @param mongoClient
      *            the MongoDB client.
      * @return the Crossdata ResultSet.
-     * @throws MongoValidationException
-     *             if the query specified in the logical workflow is not supported.
      * @throws ExecutionException
+     *             if the query specified in the logical workflow is not supported.
+     * @throws MongoExecutionException
      *             if the execution fails.
      */
     @Override
-    public ResultSet executeQuery(MongoClient mongoClient) throws MongoExecutionException, MongoValidationException {
+    public ResultSet executeQuery(MongoClient mongoClient) throws MongoExecutionException, ExecutionException {
 
         DB db = mongoClient.getDB(logicalWorkflowData.getProject().getCatalogName());
         DBCollection collection = db.getCollection(logicalWorkflowData.getProject().getTableName().getName());

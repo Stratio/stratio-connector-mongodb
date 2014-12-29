@@ -28,14 +28,18 @@ import org.mockito.Mockito;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.data.TableName;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.logicalplan.Select;
 import com.stratio.crossdata.common.metadata.ColumnMetadata;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.Operations;
+import com.stratio.crossdata.common.statements.structures.ColumnSelector;
+import com.stratio.crossdata.common.statements.structures.Selector;
 
 public class MetaResultUtilTest {
 
@@ -51,7 +55,7 @@ public class MetaResultUtilTest {
     public static final String CATALOG = "catalog_unit_test";
 
     @Test
-    public void createRowWithAliasTest() {
+    public void createRowWithAliasTest() throws ExecutionException {
         List<ConnectorField> columns;
         columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, ColumnType.VARCHAR), new ConnectorField(
                         COLUMN_2, ALIAS_COLUMN_2, ColumnType.VARCHAR), new ConnectorField(COLUMN_3, ALIAS_COLUMN_3,
@@ -76,7 +80,7 @@ public class MetaResultUtilTest {
     }
 
     @Test
-    public void createMetadataTest() {
+    public void createMetadataTest() throws MongoValidationException {
         List<ConnectorField> columns;
         columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, ColumnType.VARCHAR), new ConnectorField(
                         COLUMN_2, ALIAS_COLUMN_2, ColumnType.VARCHAR), new ConnectorField(COLUMN_3, ALIAS_COLUMN_3,
@@ -101,15 +105,15 @@ public class MetaResultUtilTest {
 
     private Select getSelect(List<ConnectorField> fields) {
         Select select;
-        Map<ColumnName, String> mapping = new LinkedHashMap<>();
+        Map<Selector, String> mapping = new LinkedHashMap<>();
         Map<String, ColumnType> types = new LinkedHashMap<>();
-        Map<ColumnName, ColumnType> typeMapFormColumnName = new LinkedHashMap<>();
+        Map<Selector, ColumnType> typeMapFormColumnName = new LinkedHashMap<>();
 
         for (ConnectorField connectorField : fields) {
-            ColumnName columName = new ColumnName(CATALOG, TABLE, connectorField.name);
-            mapping.put(columName, connectorField.alias);
+            ColumnSelector columnSelector = new ColumnSelector(new ColumnName(CATALOG, TABLE, connectorField.name));
+            mapping.put(columnSelector, connectorField.alias);
             types.put(connectorField.alias, connectorField.columnType);
-            typeMapFormColumnName.put(columName, connectorField.columnType);
+            typeMapFormColumnName.put(columnSelector, connectorField.columnType);
         }
 
         select = new Select(Operations.PROJECT, mapping, types, typeMapFormColumnName);

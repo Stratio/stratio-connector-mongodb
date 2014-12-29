@@ -18,6 +18,7 @@
 
 package com.stratio.connector.mongodb.core.engine;
 
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.AlterOptions;
 import com.stratio.crossdata.common.data.CatalogName;
 import com.stratio.crossdata.common.data.TableName;
+import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.CatalogMetadata;
@@ -258,6 +260,25 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         logger.error(msg);
         throw new UnsupportedException(msg);
 
+    }
+
+    @Override
+    protected List<CatalogMetadata> provideMetadata(Connection connection) throws ConnectorException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected CatalogMetadata provideCatalogMetadata(CatalogName catalogName, Connection connection)
+                    throws ConnectorException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected TableMetadata provideTableMetadata(TableName tableName, Connection connection) throws ConnectorException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

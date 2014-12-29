@@ -18,13 +18,19 @@
 
 package com.stratio.connector.mongodb.core.engine.query.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ColumnName;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.logicalplan.Select;
+import com.stratio.crossdata.common.statements.structures.ColumnSelector;
+import com.stratio.crossdata.common.statements.structures.Selector;
 
 /**
  * The Class ProjectDBObjectBuilder.
@@ -39,22 +45,35 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
      *
      * @param useAggregation
      *            whether the project use the aggregation framework or not
+     * @param project
+     *            the project
      * @param select
      *            the select
-     * @throws MongoValidationException
+     * @throws ExecutionException
      *             if the select specified in the logical workflow is not supported
      */
-    public ProjectDBObjectBuilder(boolean useAggregation, Select select) throws MongoValidationException {
+    public ProjectDBObjectBuilder(boolean useAggregation, Project project, Select select) throws ExecutionException {
         super(useAggregation);
 
         projectQuery = new BasicDBObject();
-        Set<ColumnName> columnMetadataList = select.getColumnMap().keySet();
+        List<ColumnName> columnNameList;
 
-        if (columnMetadataList == null || columnMetadataList.isEmpty()) {
+        if (!useAggregation) {
+            Set<Selector> columnSelectorList = select.getColumnMap().keySet();
+            columnNameList = new ArrayList<ColumnName>();
+            for (Selector selector : columnSelectorList) {
+                columnNameList.add(((ColumnSelector) selector).getColumnName());
+            }
+
+        } else {
+            columnNameList = project.getColumnList();
+        }
+
+        if (columnNameList == null || columnNameList.isEmpty()) {
             throw new MongoValidationException("The query has to request at least one field");
         } else {
 
-            for (ColumnName columnName : columnMetadataList) {
+            for (ColumnName columnName : columnNameList) {
                 projectQuery.put(columnName.getName(), 1);
             }
             projectQuery.put("_id", 0);
