@@ -44,7 +44,6 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 import com.stratio.crossdata.common.statements.structures.Relation;
@@ -67,30 +66,6 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         super(connectionHandler);
     }
 
-    @Override
-    protected void insert(TableMetadata targetTable, Row row, boolean isNotExists, Connection<MongoClient> connection)
-                    throws UnsupportedException, ExecutionException {
-        // TODO Auto-generated method stub
-
-        if (isNotExists) {
-            throw new UnsupportedException("Insert if not exist not supported");
-        } else {
-            insert(targetTable, row, connection);
-        }
-    }
-
-    @Override
-    protected void insert(TableMetadata targetTable, Collection<Row> rows, boolean isNotExists,
-                    Connection<MongoClient> connection) throws UnsupportedException, ExecutionException {
-        // TODO Auto-generated method stub
-        if (isNotExists) {
-            throw new UnsupportedException("Insert if not exist not supported");
-        } else {
-            insert(targetTable, rows, connection);
-        }
-
-    }
-
     /**
      * Inserts a document in MongoDB.
      *
@@ -98,6 +73,8 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      *            the table metadata
      * @param row
      *            the row. it will be the MongoDB document
+     * @param isNotExists
+     *            Insert only if primary key doesn't exist yet.
      * @param connection
      *            the connection
      * @throws MongoInsertException
@@ -105,8 +82,8 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      * @throws MongoValidationException
      *             if the specified operation is not supported
      */
-
-    private void insert(TableMetadata targetTable, Row row, Connection<MongoClient> connection)
+    @Override
+    protected void insert(TableMetadata targetTable, Row row, boolean isNotExists, Connection<MongoClient> connection)
                     throws MongoInsertException, MongoValidationException {
 
         MongoClient mongoClient = connection.getNativeConnection();
@@ -114,15 +91,8 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
                         targetTable.getName().getName());
 
         MongoInsertHandler insertHandler = new MongoInsertHandler(collection);
-        validateInsert(targetTable, row);
 
-        Object pk = StorageUtils.buildPK(targetTable, row);
-
-        if (pk != null) {
-            insertHandler.upsert(targetTable, row, pk);
-        } else {
-            insertHandler.insertWithoutPK(targetTable, row);
-        }
+        insertRow(targetTable, row, isNotExists, insertHandler);
 
     }
 
@@ -133,6 +103,8 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      *            the table metadata.
      * @param rows
      *            the set of rows.
+     * @param isNotExists
+     *            Insert only if primary key doesn't exist yet.
      * @param connection
      *            the connection
      * @throws MongoInsertException
@@ -140,8 +112,9 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      * @throws MongoValidationException
      *             if the specified operation is not supported
      */
-    private void insert(TableMetadata targetTable, Collection<Row> rows, Connection<MongoClient> connection)
-                    throws MongoInsertException, MongoValidationException {
+    @Override
+    protected void insert(TableMetadata targetTable, Collection<Row> rows, boolean isNotExists,
+                    Connection<MongoClient> connection) throws MongoInsertException, MongoValidationException {
 
         MongoClient mongoClient = connection.getNativeConnection();
         DBCollection collection = mongoClient.getDB(targetTable.getName().getCatalogName().getName()).getCollection(
@@ -151,16 +124,43 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         insertHandler.startBatch();
 
         for (Row row : rows) {
-            validateInsert(targetTable, row);
-            Object pk = StorageUtils.buildPK(targetTable, row);
+            insertRow(targetTable, row, isNotExists, insertHandler);
+        }
+        insertHandler.executeBatch();
+
+    }
+
+    /**
+     * Insert a single row in a table.
+     *
+     * @param targetTable
+     *            target table metadata including fully qualified including catalog.
+     * @param row
+     *            the row to be inserted.
+     * @param isNotExists
+     *            insert only if primary key doesn't exist yet.
+     * @throws MongoValidationException
+     *             if the operation is not supported by the connector.
+     * @throws MongoInsertException
+     *             if the insertion fails.
+     */
+    private void insertRow(TableMetadata targetTable, Row row, boolean isNotExist, MongoInsertHandler insertHandler)
+                    throws MongoValidationException, MongoInsertException {
+        validateInsert(targetTable, row);
+
+        Object pk = StorageUtils.buildPK(targetTable, row);
+        if (isNotExist) {
+            if (pk == null) {
+                throw new MongoValidationException("The primary key is required when inserting if not exist");
+            }
+            insertHandler.insertIfNotExist(targetTable, row, pk);
+        } else {
             if (pk != null) {
                 insertHandler.upsert(targetTable, row, pk);
             } else {
                 insertHandler.insertWithoutPK(targetTable, row);
             }
         }
-        insertHandler.executeBatch();
-
     }
 
     @Override

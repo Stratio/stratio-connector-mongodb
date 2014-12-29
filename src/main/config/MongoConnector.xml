@@ -28,6 +28,7 @@
         <operation>CREATE_TABLE</operation>
         <operation>ALTER_TABLE</operation>
         <operation>DROP_TABLE</operation> 
+        <operation>UPDATE_NO_FILTERS</operation> 
         <operation>UPDATE_PK_EQ</operation>
         <operation>UPDATE_PK_GT</operation>
         <operation>UPDATE_PK_LT</operation>
@@ -45,6 +46,8 @@
         <operation>UPDATE_INDEXED_LET</operation>
         <operation>TRUNCATE_TABLE</operation>
         <operation>INSERT</operation>
+        <operation>INSERT_IF_NOT_EXISTS</operation>
+        <operation>DELETE_NO_FILTERS</operation>
         <operation>DELETE_PK_EQ</operation>
         <operation>DELETE_PK_GT</operation>
         <operation>DELETE_PK_LT</operation>

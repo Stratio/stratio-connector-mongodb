@@ -32,7 +32,6 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.Cell;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.Row;
-import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
@@ -44,7 +43,10 @@ public class MongoInsertHandler {
     /** The logger. */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /** The MongoDB collection. */
     private DBCollection collection;
+
+    /** The bulk write operation. */
     private BulkWriteOperation bulkWriteOperation;
 
     /**
@@ -73,12 +75,29 @@ public class MongoInsertHandler {
      *            the row
      * @param pk
      *            the pk
-     * @throws UnsupportedException
-     *             the unsupported exception
+     * @throws MongoValidationException
+     *             if the operation is not supported by the connector
+     * @throws MongoInsertException
+     *             if the insertion fails
      */
-    public void insertIfNotExist(TableMetadata targetTable, Row row, String pk) throws UnsupportedException {
-        // TODO insert with _id
-        throw new UnsupportedException("It will be included soon");
+    public void insertIfNotExist(TableMetadata targetTable, Row row, Object pk) throws MongoValidationException,
+                    MongoInsertException {
+        DBObject doc = getBSONFromRow(targetTable, row);
+        doc.put("_id", pk);
+        try {
+            if (bulkWriteOperation != null) {
+                bulkWriteOperation.insert(doc);
+            } else {
+                collection.insert(doc);
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Row inserted with fields: " + doc.keySet());
+            }
+        } catch (MongoException e) {
+            logger.error("Error inserting data: " + e.getMessage());
+            throw new MongoInsertException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -91,9 +110,9 @@ public class MongoInsertHandler {
      * @param pk
      *            the pk
      * @throws MongoInsertException
-     *             the mongo insert exception
+     *             if the insertion fails
      * @throws MongoValidationException
-     *             the mongo validation exception
+     *             if the operation is not supported by the connector
      */
     public void upsert(TableMetadata targetTable, Row row, Object pk) throws MongoInsertException,
                     MongoValidationException {
@@ -125,9 +144,9 @@ public class MongoInsertHandler {
      * @param row
      *            the row
      * @throws MongoValidationException
-     *             the mongo validation exception
+     *             if the operation is not supported by the connector
      * @throws MongoInsertException
-     *             the mongo insert exception
+     *             if the insertion fails
      */
     public void insertWithoutPK(TableMetadata targetTable, Row row) throws MongoValidationException,
                     MongoInsertException {
