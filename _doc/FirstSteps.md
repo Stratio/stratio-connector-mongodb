@@ -44,8 +44,7 @@ Prerequisites
 -------------
 
 -   Basic knowledge of SQL like language.
--   First of all [Stratio Crossdata 0.1.1](https://github.com/Stratio/crossdata) is needed and must be installed. The 
-server and the shell must be running.
+-   First of all [Stratio Crossdata 0.1.1](https://github.com/Stratio/crossdata) is needed and must be installed. The server and the shell must be running.
 -   An installation of [MongoDB](http://docs.mongodb.org/manual/installation/). 
 -   Build an MongoConnector executable and run it following this [guide](https://github.com/Stratio/stratio-connector-mongodb#build-an-executable-connector-mongo). 
 
@@ -62,8 +61,36 @@ In the Crossdata Shell we need to add the Datastore Manifest.
 The output must be:
 
 ```
-   [INFO|Shell] Response time: 0 seconds    
-   [INFO|Shell] OK
+   [INFO|Shell] CrossdataManifest added 
+DATASTORE
+Name: Mongo
+Version: 0.3.0
+Required properties: 
+	Property: 
+		PropertyName: Hosts
+		Description: The list of hosts ips (csv). Example: host1,host2,host3
+	Property: 
+		PropertyName: Port
+		Description: The list of ports (csv).
+Optional properties: 
+	Property: 
+		PropertyName: mongo.readPreference
+		Description: primary, primarypreferred(default), secondary, secondarypreferred or nearest
+	Property: 
+		PropertyName: mongo.writeConcern
+		Description: acknowledged(default), unacknowledged, replica_acknowledged or journaled
+	Property: 
+		PropertyName: mongo.acceptableLatencyDifference
+		Description: the acceptable latency difference(ms)
+	Property: 
+		PropertyName: mongo.maxConnectionsPerHost
+		Description: the maximum number of connections allowed per host
+	Property: 
+		PropertyName: mongo.maxConnectionIdleTime
+		Description: The maximum idle time of a pooled connection(ms). A zero value indicates no limit
+	Property: 
+		PropertyName: mongo.connectTimeout
+		Description: the connection timeout(ms). A zero value indicates no timeout
 ```
 
 Now we need to add the ConnectorManifest.
@@ -75,8 +102,17 @@ The output must be:
 
 
 ```
-   [INFO|Shell] Response time: 0 seconds    
-   [INFO|Shell] OK
+   [INFO|Shell] CrossdataManifest added 
+    CONNECTOR
+    ConnectorName: MongoConnector
+   DataStores: 
+	DataStoreName: Mongo
+    Version: 0.3.0
+    Supported operations:
+							.
+							.
+							.
+
 ```
 
 At this point we have reported to Crossdata the connector options and operations. Now we configure the 
@@ -300,6 +336,8 @@ Now we execute a set of queries and we will show the expected results.
 
 ### Select with limit
 
+  > SELECT * FROM students LIMIT 3;
+
 ```
   Partial result: true
   -------------------------------
@@ -311,6 +349,7 @@ Now we execute a set of queries and we will show the expected results.
   -------------------------------
 
 ```
+
 ### Select with several where clauses
 
 ```
@@ -341,6 +380,84 @@ Now we execute a set of queries and we will show the expected results.
   | 20  | 
   | 16  | 
   -------
+  
+```
+
+### Select with orderby
+
+```
+  >  SELECT age FROM students ORDER BY age;
+  
+  Partial result: true
+  ----------------------------------
+  | id | name     | age | enrolled | 
+  ----------------------------------
+  | 1  | Jhon     | 16  | true     | 
+  | 4  | Cole     | 16  | true     | 
+  | 8  | Henry    | 16  | false    | 
+  | 5  | Finn     | 17  | false    | 
+  | 9  | Tommy    | 17  | true     | 
+  | 3  | Lucie    | 18  | true     | 
+  | 7  | Beatrice | 18  | true     | 
+  | 2  | Eva      | 20  | true     | 
+  | 10 | Betty    | 20  | true     | 
+  | 6  | Violet   | 21  | false    | 
+  ----------------------------------
+
+  >  SELECT age FROM students ORDER BY name;
+  
+  Partial result: true
+  ----------------------------------
+  | id | name     | age | enrolled | 
+  ----------------------------------
+  | 7  | Beatrice | 18  | true     | 
+  | 10 | Betty    | 20  | true     | 
+  | 4  | Cole     | 16  | true     | 
+  | 2  | Eva      | 20  | true     | 
+  | 5  | Finn     | 17  | false    | 
+  | 8  | Henry    | 16  | false    | 
+  | 1  | Jhon     | 16  | true     | 
+  | 3  | Lucie    | 18  | true     | 
+  | 9  | Tommy    | 17  | true     | 
+  | 6  | Violet   | 21  | false    | 
+  ----------------------------------
+  
+   >  SELECT age FROM students ORDER BY id DESC;
+   
+   Partial result: true
+  ----------------------------------
+  | id | name     | age | enrolled | 
+  ----------------------------------
+  | 10 | Betty    | 20  | true     | 
+  | 9  | Tommy    | 17  | true     | 
+  | 8  | Henry    | 16  | false    | 
+  | 7  | Beatrice | 18  | true     | 
+  | 6  | Violet   | 21  | false    | 
+  | 5  | Finn     | 17  | false    | 
+  | 4  | Cole     | 16  | true     | 
+  | 3  | Lucie    | 18  | true     | 
+  | 2  | Eva      | 20  | true     | 
+  | 1  | Jhon     | 16  | true     | 
+  ----------------------------------
+   
+  >  SELECT age FROM students ORDER BY age ASC, id DESC;
+  
+  Partial result: true
+  ----------------------------------
+  | id | name     | age | enrolled | 
+  ----------------------------------
+  | 8  | Henry    | 16  | false    | 
+  | 4  | Cole     | 16  | true     | 
+  | 1  | Jhon     | 16  | true     | 
+  | 9  | Tommy    | 17  | true     | 
+  | 5  | Finn     | 17  | false    | 
+  | 7  | Beatrice | 18  | true     | 
+  | 3  | Lucie    | 18  | true     | 
+  | 10 | Betty    | 20  | true     | 
+  | 2  | Eva      | 20  | true     | 
+  | 6  | Violet   | 21  | false    | 
+  ----------------------------------
+    
   
 ```
 
