@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.BulkWriteError;
+import com.mongodb.BulkWriteException;
 import com.mongodb.BulkWriteOperation;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -49,6 +51,8 @@ public class MongoInsertHandler {
     /** The bulk write operation. */
     private BulkWriteOperation bulkWriteOperation;
 
+    private static final int MONGODB_DUPLICATE_KEY_ERROR = 11000;
+
     /**
      * Instantiates a new mongo insert handler.
      *
@@ -64,6 +68,8 @@ public class MongoInsertHandler {
      */
     public void startBatch() {
         bulkWriteOperation = collection.initializeUnorderedBulkOperation();
+        // TODO with ordered operations an exception is thrown when the first operation fails
+
     }
 
     /**
@@ -95,8 +101,12 @@ public class MongoInsertHandler {
                 logger.debug("Row inserted with fields: " + doc.keySet());
             }
         } catch (MongoException e) {
-            logger.error("Error inserting data: " + e.getMessage());
-            throw new MongoInsertException(e.getMessage(), e);
+            if (e.getCode() == MONGODB_DUPLICATE_KEY_ERROR) {
+                logger.debug("Duplicate key found");
+            } else {
+                logger.error("Error inserting data: " + e.getMessage());
+                throw new MongoInsertException(e.getMessage(), e);
+            }
         }
     }
 
@@ -175,13 +185,23 @@ public class MongoInsertHandler {
      * @throws MongoInsertException
      *             the mongo insert exception
      */
-    public void executeBatch() throws MongoInsertException {
+    public void executeBatch(boolean isNotExist) throws MongoInsertException {
         try {
             bulkWriteOperation.execute();
+        } catch (BulkWriteException e) {
+            for (BulkWriteError error : e.getWriteErrors()) {
+                if (isNotExist && error.getCode() == MONGODB_DUPLICATE_KEY_ERROR) {
+                    logger.debug("Duplicate key found");
+                } else {
+                    logger.error("Error inserting data: " + e.getMessage());
+                    throw new MongoInsertException(e.getMessage(), e);
+                }
+            }
         } catch (MongoException e) {
             logger.error("Error inserting data: " + e.getMessage());
             throw new MongoInsertException(e.getMessage(), e);
         }
+
     }
 
     // Building the fields to insert in Mongo

@@ -83,7 +83,6 @@ public class ShardUtilsTest {
         PowerMockito.mockStatic(SelectorOptionsUtils.class);
         Map<String, Selector> options = new HashMap<>();
         Mockito.when(SelectorOptionsUtils.processOptions(Matchers.anyMap())).thenReturn(options);
-
         ShardUtils.shardCollection(client, tableMetadataBuilder.build());
 
         Mockito.verify(database, Mockito.times(1)).command(new BasicDBObject("enableSharding", DB_NAME));

@@ -126,7 +126,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         for (Row row : rows) {
             insertRow(targetTable, row, isNotExists, insertHandler);
         }
-        insertHandler.executeBatch();
+        insertHandler.executeBatch(isNotExists);
 
     }
 
