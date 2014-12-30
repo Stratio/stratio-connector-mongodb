@@ -336,9 +336,10 @@ Now we execute a set of queries and we will show the expected results.
 
 ### Select with limit
 
+```
   > SELECT * FROM students LIMIT 3;
 
-```
+
   Partial result: true
   -------------------------------
   | age | name  | id | enrolled | 
