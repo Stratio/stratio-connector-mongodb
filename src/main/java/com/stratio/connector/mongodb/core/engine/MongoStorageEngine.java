@@ -47,6 +47,7 @@ import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 import com.stratio.crossdata.common.statements.structures.Relation;
+
 /**
  * This class performs insert and delete operations in Mongo.
  */
@@ -125,7 +126,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         for (Row row : rows) {
             insertRow(targetTable, row, isNotExists, insertHandler);
         }
-        insertHandler.executeBatch(isNotExists);
+        insertHandler.executeBatch();
 
     }
 

@@ -26,7 +26,7 @@ import java.util.Collections;
 import org.junit.Test;
 
 import com.mongodb.DBObject;
-import com.stratio.connector.commons.test.util.TableMetadataBuilder;
+import com.stratio.connector.commons.metadata.TableMetadataBuilder;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.Cell;
 import com.stratio.crossdata.common.data.Row;

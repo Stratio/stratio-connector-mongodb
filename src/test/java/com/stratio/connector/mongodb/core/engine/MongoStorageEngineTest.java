@@ -47,7 +47,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
-import com.stratio.connector.commons.test.util.TableMetadataBuilder;
+import com.stratio.connector.commons.metadata.TableMetadataBuilder;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.StorageUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.UpdateDBObjectBuilder;
@@ -235,31 +235,8 @@ public class MongoStorageEngineTest {
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
         TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
-        tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE)
-                        .withPartitionKey(COLUMN_NAME);
-        TableMetadata tableMetadata = tableMetaBuilder.build();
-        Row row = new Row();
-        row.addCell(COLUMN_NAME, new Cell(CELL_VALUE));
-        row.addCell(OTHER_COLUMN_NAME, new Cell(OTHER_CELL_VALUE));
-
-        PowerMockito.mockStatic(StorageUtils.class);
-        when(StorageUtils.buildPK(tableMetadata, row)).thenReturn(CELL_VALUE);
-        when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
-
-        mongoStorageEngine.insert(clusterName, tableMetadata, row, true);
-
-        BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
-        doc.put("_id", CELL_VALUE);
-        doc.put(OTHER_COLUMN_NAME, OTHER_CELL_VALUE);
-        verify(collection, times(1)).insert(doc);
-    }
-
-    @Test
-    public void testBatchInsertIfNotExist() throws Exception {
-
-        ClusterName clusterName = new ClusterName(CLUSTER_NAME);
-        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
+        tableMetaBuilder.withPartitionKey(COLUMN_NAME);
         TableMetadata tableMetadata = tableMetaBuilder.build();
         Row row = new Row();
         row.addCell(COLUMN_NAME, new Cell(CELL_VALUE));
@@ -270,13 +247,58 @@ public class MongoStorageEngineTest {
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
         BulkWriteOperation bulkWriteOp = mock(BulkWriteOperation.class);
         when(collection.initializeUnorderedBulkOperation()).thenReturn(bulkWriteOp);
+        BulkWriteRequestBuilder bulkWriteRB = mock(BulkWriteRequestBuilder.class);
+        when(bulkWriteOp.find(Matchers.any(DBObject.class))).thenReturn(bulkWriteRB);
+        BulkUpdateRequestBuilder bulkWriteUpB = mock(BulkUpdateRequestBuilder.class);
+        when(bulkWriteRB.upsert()).thenReturn(bulkWriteUpB);
 
         mongoStorageEngine.insert(clusterName, tableMetadata, Arrays.asList(row, row), true);
 
+        DBObject pKeyDBObject = new BasicDBObject("_id", CELL_VALUE);
         BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
         doc.put(OTHER_COLUMN_NAME, OTHER_CELL_VALUE);
-        doc.put("_id", CELL_VALUE);
-        verify(bulkWriteOp, times(2)).insert(doc);
+
+        verify(collection, times(1)).initializeUnorderedBulkOperation();
+        verify(bulkWriteOp, times(2)).find(pKeyDBObject);
+        verify(bulkWriteRB, times(2)).upsert();
+        verify(bulkWriteUpB, times(2)).update(new BasicDBObject("$setOnInsert", doc));
+        verify(bulkWriteOp, times(1)).execute();
+    }
+
+    @Test
+    public void testBatchInsertIfNotExist() throws Exception {
+
+        ClusterName clusterName = new ClusterName(CLUSTER_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE)
+                        .withPartitionKey(COLUMN_NAME);
+
+        TableMetadata tableMetadata = tableMetaBuilder.build();
+        Row row = new Row();
+        row.addCell(COLUMN_NAME, new Cell(CELL_VALUE));
+        row.addCell(OTHER_COLUMN_NAME, new Cell(OTHER_CELL_VALUE));
+
+        PowerMockito.mockStatic(StorageUtils.class);
+        when(StorageUtils.buildPK(tableMetadata, row)).thenReturn(CELL_VALUE);
+        when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
+        BulkWriteOperation bulkWriteOp = mock(BulkWriteOperation.class);
+        when(collection.initializeUnorderedBulkOperation()).thenReturn(bulkWriteOp);
+        BulkWriteRequestBuilder bulkWriteRB = mock(BulkWriteRequestBuilder.class);
+        when(bulkWriteOp.find(Matchers.any(DBObject.class))).thenReturn(bulkWriteRB);
+        BulkUpdateRequestBuilder bulkWriteUpB = mock(BulkUpdateRequestBuilder.class);
+        when(bulkWriteRB.upsert()).thenReturn(bulkWriteUpB);
+
+        mongoStorageEngine.insert(clusterName, tableMetadata, Arrays.asList(row, row), true);
+
+        DBObject pKeyDBObject = new BasicDBObject("_id", CELL_VALUE);
+        BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
+        doc.put(OTHER_COLUMN_NAME, OTHER_CELL_VALUE);
+
+        verify(collection, times(1)).initializeUnorderedBulkOperation();
+        verify(bulkWriteOp, times(2)).find(pKeyDBObject);
+        verify(bulkWriteRB, times(2)).upsert();
+        verify(bulkWriteUpB, times(2)).update(new BasicDBObject("$setOnInsert", doc));
+        verify(bulkWriteOp, times(1)).execute();
 
     }
 

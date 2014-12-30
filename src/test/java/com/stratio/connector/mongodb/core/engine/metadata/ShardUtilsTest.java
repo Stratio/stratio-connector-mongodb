@@ -34,7 +34,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
-import com.stratio.connector.commons.test.util.TableMetadataBuilder;
+import com.stratio.connector.commons.metadata.TableMetadataBuilder;
 import com.stratio.connector.mongodb.core.configuration.ShardKeyType;
 import com.stratio.connector.mongodb.core.configuration.TableOptions;
 import com.stratio.crossdata.common.exceptions.ExecutionException;

@@ -42,7 +42,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.stratio.connector.commons.connection.Connection;
-import com.stratio.connector.commons.test.util.IndexMetadataBuilder;
+import com.stratio.connector.commons.metadata.IndexMetadataBuilder;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.AlterOptionsUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.IndexUtils;

@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.mongodb.DBObject;
-import com.stratio.connector.commons.test.util.IndexMetadataBuilder;
+import com.stratio.connector.commons.metadata.IndexMetadataBuilder;
 import com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType;
 import com.stratio.connector.mongodb.core.configuration.IndexOptions;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;

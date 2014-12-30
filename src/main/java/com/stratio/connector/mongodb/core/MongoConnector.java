@@ -128,6 +128,12 @@ public class MongoConnector extends CommonsConnector {
         return datastoreName.clone();
     }
 
+    @Override
+    public boolean UpdateMetadata(MetadataStruct metadata) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
     /**
      * The main method.
      *
@@ -158,12 +164,6 @@ public class MongoConnector extends CommonsConnector {
                 }
             }
         });
-    }
-
-    @Override
-    public boolean UpdateMetadata(MetadataStruct metadata) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
 }
