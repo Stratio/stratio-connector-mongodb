@@ -33,7 +33,7 @@ import org.junit.Test;
 
 import com.stratio.connector.commons.ftest.functionalInsert.GenericSimpleInsertIfNotExistFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
-import com.stratio.connector.commons.test.util.TableMetadataBuilder;
+import com.stratio.connector.commons.metadata.TableMetadataBuilder;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
 import com.stratio.crossdata.common.data.Cell;
 import com.stratio.crossdata.common.data.ClusterName;
@@ -238,7 +238,7 @@ public class SimpleInsertIfNotExistFT extends GenericSimpleInsertIfNotExistFT {
         if (withPK) {
             tableMetadataBuilder.withPartitionKey(COLUMN_1);
         }
-        TableMetadata targetTable = tableMetadataBuilder.build(getConnectorHelper());
+        TableMetadata targetTable = tableMetadataBuilder.build(true);
 
         if (getConnectorHelper().isTableMandatory()) {
             connector.getMetadataEngine().createTable(getClusterName(), targetTable);

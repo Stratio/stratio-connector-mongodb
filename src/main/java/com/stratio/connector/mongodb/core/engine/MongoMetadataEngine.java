@@ -40,6 +40,7 @@ import com.stratio.connector.mongodb.core.engine.metadata.ShardUtils;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.AlterOptions;
 import com.stratio.crossdata.common.data.CatalogName;
+import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
@@ -254,8 +255,8 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     }
 
     @Override
-    protected void alterCatalog(CatalogName catalogName, Map<Selector, Selector> options, Connection connection)
-                    throws UnsupportedException, ExecutionException {
+    protected void alterCatalog(CatalogName catalogName, Map<Selector, Selector> options,
+                    Connection<MongoClient> connection) throws UnsupportedException, ExecutionException {
         final String msg = "Alter catalog is not supported";
         logger.error(msg);
         throw new UnsupportedException(msg);
@@ -263,22 +264,33 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     }
 
     @Override
-    protected List<CatalogMetadata> provideMetadata(Connection connection) throws ConnectorException {
+    protected List<CatalogMetadata> provideMetadata(Connection<MongoClient> connection) throws ConnectorException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    protected CatalogMetadata provideCatalogMetadata(CatalogName catalogName, Connection connection)
+    protected CatalogMetadata provideCatalogMetadata(CatalogName catalogName, Connection<MongoClient> connection)
                     throws ConnectorException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    protected TableMetadata provideTableMetadata(TableName tableName, Connection connection) throws ConnectorException {
-        // TODO Auto-generated method stub
+    protected TableMetadata provideTableMetadata(TableName tableName, ClusterName clusterName,
+                    Connection<MongoClient> connection) throws ConnectorException {
+
+        // TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(tableName.getCatalogName().getName(),
+        // tableName.getName(), clusterName.getName());
+        // tableMetadataBuilder.addColumn(columnName, colType)
+        // tableMetadataBuilder.addIndex(indType, indexName, fields)
+        // tableMetadataBuilder.withPartitionKey(fields)
+        // tableMetadataBuilder.build()
+
+        /*
+         * DB db = connection.getNativeConnection().getDB(
+         * indexMetadata.getName().getTableName().getCatalogName().getName());
+         */
         return null;
     }
-
 }
