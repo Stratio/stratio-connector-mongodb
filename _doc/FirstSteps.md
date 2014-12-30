@@ -62,10 +62,10 @@ The output must be:
 
 ```
    [INFO|Shell] CrossdataManifest added 
-DATASTORE
-Name: Mongo
-Version: 0.3.0
-Required properties: 
+	DATASTORE
+	Name: Mongo
+	Version: 0.3.0
+	Required properties: 
 	Property: 
 		PropertyName: Hosts
 		Description: The list of hosts ips (csv). Example: host1,host2,host3
