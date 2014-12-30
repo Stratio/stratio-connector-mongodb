@@ -18,8 +18,10 @@
 
 package com.stratio.connector.mongodb.core.engine;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +34,11 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsMetadataEngine;
+import com.stratio.connector.commons.metadata.CatalogMetadataBuilder;
+import com.stratio.connector.commons.metadata.TableMetadataBuilder;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.AlterOptionsUtils;
+import com.stratio.connector.mongodb.core.engine.metadata.DiscoverMetadataUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.IndexUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.SelectorOptionsUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.ShardUtils;
@@ -46,6 +51,7 @@ import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.CatalogMetadata;
+import com.stratio.crossdata.common.metadata.ColumnMetadata;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 import com.stratio.crossdata.common.statements.structures.Selector;
@@ -264,33 +270,52 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     }
 
     @Override
-    protected List<CatalogMetadata> provideMetadata(Connection<MongoClient> connection) throws ConnectorException {
-        // TODO Auto-generated method stub
-        return null;
+    protected List<CatalogMetadata> provideMetadata(ClusterName clusterName, Connection<MongoClient> connection)
+                    throws ConnectorException {
+        List<String> databaseNames = connection.getNativeConnection().getDatabaseNames();
+        List<CatalogMetadata> catalogMetadataList = new ArrayList<>();
+        for (String databaseName : databaseNames) {
+            CatalogName dbName = new CatalogName(databaseName);
+            catalogMetadataList.add(provideCatalogMetadata(dbName, clusterName, connection));
+        }
+        return catalogMetadataList;
     }
 
     @Override
-    protected CatalogMetadata provideCatalogMetadata(CatalogName catalogName, Connection<MongoClient> connection)
-                    throws ConnectorException {
-        // TODO Auto-generated method stub
-        return null;
+    protected CatalogMetadata provideCatalogMetadata(CatalogName catalogName, ClusterName clusterName,
+                    Connection<MongoClient> connection) throws ConnectorException {
+        DB db = connection.getNativeConnection().getDB(catalogName.getName());
+        Set<String> collectionNames = db.getCollectionNames();
+        CatalogMetadataBuilder catalogMetadataBuilder = new CatalogMetadataBuilder(catalogName.getName());
+        for (String collectionName : collectionNames) {
+            TableName tableName = new TableName(catalogName.getName(), collectionName);
+            catalogMetadataBuilder.withTables(provideTableMetadata(tableName, clusterName, connection));
+        }
+        return catalogMetadataBuilder.build();
     }
 
     @Override
     protected TableMetadata provideTableMetadata(TableName tableName, ClusterName clusterName,
                     Connection<MongoClient> connection) throws ConnectorException {
 
-        // TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(tableName.getCatalogName().getName(),
-        // tableName.getName(), clusterName.getName());
-        // tableMetadataBuilder.addColumn(columnName, colType)
-        // tableMetadataBuilder.addIndex(indType, indexName, fields)
-        // tableMetadataBuilder.withPartitionKey(fields)
-        // tableMetadataBuilder.build()
+        DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
+        DBCollection collection = db.getCollection(tableName.getName());
 
-        /*
-         * DB db = connection.getNativeConnection().getDB(
-         * indexMetadata.getName().getTableName().getCatalogName().getName());
-         */
-        return null;
+        TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(tableName.getCatalogName().getName(),
+                        tableName.getName(), clusterName.getName());
+
+        // Add columns
+        for (String field : DiscoverMetadataUtils.discoverField(collection)) {
+            tableMetadataBuilder.addColumn(field, null);
+        }
+        // Add indexes and column with indexes
+        for (IndexMetadata indexMetadata : DiscoverMetadataUtils.discoverIndexes(collection)) {
+            tableMetadataBuilder.withColumns(new ArrayList<ColumnMetadata>(indexMetadata.getColumns().values()));
+            tableMetadataBuilder.addIndex(indexMetadata);
+        }
+        // Add pkey
+        tableMetadataBuilder.withPartitionKey("_id");
+        return tableMetadataBuilder.build();
+
     }
 }
