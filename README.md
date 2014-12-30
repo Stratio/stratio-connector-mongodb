@@ -29,7 +29,7 @@ To generate the executable, execute the following command:
 The user and the group of the service are setted up to root by default. It could be changed in the following file:
 
 ```
-   > target/stratio-connector-mongodb-0.3.0-SNAPSHOT/bin/stratio-connector-mongodb-0.3.0
+   > target/stratio-connector-mongodb-0.3.0/bin/stratio-connector-mongodb-0.3.0
 ```
 
 
@@ -38,13 +38,13 @@ The user and the group of the service are setted up to root by default. It could
 To run Mongo Connector execute:
 
 ```
-   > target/stratio-connector-mongodb-0.3.0-SNAPSHOT/bin/stratio-connector-mongodb-0.3.0 start
+   > target/stratio-connector-mongodb-0.3.0/bin/stratio-connector-mongodb-0.3.0 start
 ```
 
 To stop the connector execute:
 
 ```
-   > target/stratio-connector-mongodb-0.3.0-SNAPSHOT/bin/stratio-connector-mongodb-0.3.0 stop
+   > target/stratio-connector-mongodb-0.3.0/bin/stratio-connector-mongodb-0.3.0 stop
 ```
 
 
