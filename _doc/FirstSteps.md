@@ -16,6 +16,7 @@ Table of Contents
         -   [Create a custom index](#create-a-custom-index)
 -   [Inserting Data](#inserting-data)
     -   [Step 4: Insert into collection students](#step-4-insert-into-collection-students)
+    	-   [Insert if not exists](#insert-if-not-exists)
 -   [Updating Data](#updating-data)
     -   [Step 5: Update collection students](#step-5-update-collection-students)
 -   [Querying Data](#querying-data)
@@ -26,6 +27,7 @@ Table of Contents
         -   [Select with limit](#select-with-limit)
         -   [Select with several where clauses](#select-with-several-where-clauses)
         -   [Select with groupby](#select-with-groupby)
+        -   [Select with orderby](#select-with-orderby)
 -   [Altering schemas](#altering-schemas)
     -   [Step 7: Alter collection](#step-7-alter-collection)
         -   [Add column](#add-column)
@@ -198,6 +200,7 @@ And the output must show:
 ```
 TABLE created successfully
 ```
+
 Step 3: Create Indexes
 ----------------------
 
@@ -230,16 +233,15 @@ Step 4: Insert into collection students
 
 At first we must insert some rows in the table created before.
 ```
-  >  INSERT INTO students(id, name,age,enrolled) VALUES (1, 'Jhon', 16,true);
-  >  INSERT INTO students(id, name,age,enrolled) VALUES (2, 'Eva',20,true);
-  >  INSERT INTO students(id, name,age,enrolled) VALUES (3, 'Lucie',18,true);
-  >  INSERT INTO students(id, name,age,enrolled) VALUES (4, 'Cole',16,true);
-  >  INSERT INTO students(id, name,age,enrolled) VALUES (5, 'Finn',17,false);
-  >  INSERT INTO students(id, name,age,enrolled) VALUES (6, 'Violet',21,false);
-  >  INSERT INTO students(id, name,age,enrolled) VALUES (7, 'Beatrice',18,true);
-  >  INSERT INTO students(id, name,age,enrolled) VALUES (8, 'Henry',16,false);
-  >  INSERT INTO students(id, name,age,enrolled) VALUES (9, 'Tom',17,true);
-  >  INSERT INTO students(id, name,age,enrolled) VALUES (10, 'Betty',19,true);
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (1, 'Jhon', 16, true);
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (2, 'Eva', 20, true);
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (3, 'Lucie', 18, true);
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (4, 'Cole', 16, true);
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (5, 'Finn', 17, false);
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (6, 'Violet', 21, false);
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (7, 'Beatrice', 18, true);
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (8, 'Henry', 16, false);
+  
 ```
 
 For each row the output must be:
@@ -247,6 +249,15 @@ For each row the output must be:
 ```
 STORED successfully
 ```
+
+### Insert if not exists
+ 
+```
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (8, 'Allan', 16, false) IF NOT EXISTS;
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (9, 'Tom', 17, true) IF NOT EXISTS;
+  >  INSERT INTO students(id, name,age,enrolled) VALUES (10, 'Betty', 19, true) IF NOT EXISTS;
+```
+The first "INSERT IF NOT EXISTS" will not store new values for the record with primary key = 8 because this record already exists.
 
 Updating Data
 ==============
