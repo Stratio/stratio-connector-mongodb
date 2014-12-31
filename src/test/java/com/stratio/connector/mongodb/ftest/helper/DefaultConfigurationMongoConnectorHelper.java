@@ -24,11 +24,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
-import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 
 public class DefaultConfigurationMongoConnectorHelper extends MongoConnectorHelper {
+
+    private static final MongoConnectorHelper INSTANCE = new DefaultConfigurationMongoConnectorHelper();
+
+    private String readPreference = "primary";
+    private String writeConcern = "acknowledged";// TODO test different writeConcern
 
     /**
      * @param clusterName
@@ -36,9 +40,12 @@ public class DefaultConfigurationMongoConnectorHelper extends MongoConnectorHelp
      * @throws InitializationException
      * @throws CreateNativeConnectionException
      */
-    public DefaultConfigurationMongoConnectorHelper(ClusterName clusterName) throws ConnectionException,
-                    InitializationException {
-        super(clusterName);
+    public DefaultConfigurationMongoConnectorHelper() {
+        super();
+    }
+
+    public static MongoConnectorHelper getInstance() {
+        return INSTANCE;
     }
 
     @Override
@@ -48,4 +55,15 @@ public class DefaultConfigurationMongoConnectorHelper extends MongoConnectorHelp
         optionsNode.put(PORT.getOptionName(), SERVER_PORT);
         return new ConnectorClusterConfig(clusterName, null, optionsNode);
     }
+
+    // @Override
+    // public ConnectorClusterConfig getConnectorClusterConfig() {
+    // Map<String, String> optionsNode = new HashMap<>();
+    // optionsNode.put(HOST.getOptionName(), SERVER_IP);
+    // optionsNode.put(PORT.getOptionName(), SERVER_PORT);
+    // optionsNode.put(READ_PREFERENCE.getOptionName(), readPreference); // primary,primiaryPreferred,secondary,
+    // // secondaryPreferred, nearest
+    // optionsNode.put(WRITE_CONCERN.getOptionName(), writeConcern);
+    // return new ConnectorClusterConfig(clusterName, null, optionsNode);
+    // }
 }

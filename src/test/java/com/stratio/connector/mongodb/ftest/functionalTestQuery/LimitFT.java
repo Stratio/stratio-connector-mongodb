@@ -20,9 +20,8 @@ package com.stratio.connector.mongodb.ftest.functionalTestQuery;
 
 import com.stratio.connector.commons.ftest.functionalTestQuery.GenericLimitFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
+import com.stratio.connector.mongodb.ftest.helper.DefaultConfigurationMongoConnectorHelper;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
-import com.stratio.crossdata.common.exceptions.ConnectionException;
-import com.stratio.crossdata.common.exceptions.InitializationException;
 
 public class LimitFT extends GenericLimitFT {
 
@@ -30,18 +29,7 @@ public class LimitFT extends GenericLimitFT {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {
-        if (mongoConnectorHelper != null) {
-            return mongoConnectorHelper;
-        } else {
-            try {
-                mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
-            } catch (ConnectionException e) {
-                e.printStackTrace();
-            } catch (InitializationException e) {
-                e.printStackTrace();
-            }
-            return mongoConnectorHelper;
-        }
+        return DefaultConfigurationMongoConnectorHelper.getInstance();
     }
 
 }

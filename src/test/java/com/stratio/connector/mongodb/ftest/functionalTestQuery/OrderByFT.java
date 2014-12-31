@@ -20,24 +20,14 @@ package com.stratio.connector.mongodb.ftest.functionalTestQuery;
 
 import com.stratio.connector.commons.ftest.functionalTestQuery.GenericOrderByFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
+import com.stratio.connector.mongodb.ftest.helper.DefaultConfigurationMongoConnectorHelper;
 import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
-import com.stratio.crossdata.common.exceptions.ConnectionException;
-import com.stratio.crossdata.common.exceptions.InitializationException;
 
 public class OrderByFT extends GenericOrderByFT {
     MongoConnectorHelper mongoConnectorHelper = null;
 
     @Override
     protected IConnectorHelper getConnectorHelper() {
-        if (mongoConnectorHelper == null) {
-            try {
-                mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
-            } catch (ConnectionException e) {
-                e.printStackTrace();
-            } catch (InitializationException e) {
-                e.printStackTrace();
-            }
-        }
-        return mongoConnectorHelper;
+        return DefaultConfigurationMongoConnectorHelper.getInstance();
     }
 }

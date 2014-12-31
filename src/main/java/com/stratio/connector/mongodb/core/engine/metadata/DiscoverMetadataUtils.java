@@ -59,7 +59,6 @@ public class DiscoverMetadataUtils {
             for (String field : key.keySet()) {
                 indexMetadataBuilder.addColumn(field, null);
             }
-
             indexMetadataList.add(indexMetadataBuilder.build());
         }
         return indexMetadataList;

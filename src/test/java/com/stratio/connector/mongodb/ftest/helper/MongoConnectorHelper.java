@@ -17,14 +17,9 @@
  */
 package com.stratio.connector.mongodb.ftest.helper;
 
-import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.HOST;
-import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.PORT;
-import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.READ_PREFERENCE;
-import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.WRITE_CONCERN;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -38,29 +33,22 @@ import com.mongodb.MongoClient;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.core.MongoConnector;
 import com.stratio.connector.mongodb.core.configuration.MongoClientConfiguration;
-import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
-import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.connector.IConfiguration;
 import com.stratio.crossdata.common.connector.IConnector;
 import com.stratio.crossdata.common.data.ClusterName;
-import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.security.ICredentials;
 
-public class MongoConnectorHelper implements IConnectorHelper {
+public abstract class MongoConnectorHelper implements IConnectorHelper {
 
     protected String SERVER_IP = "10.200.0.58";// "10.200.0.58,10.200.0.59,10.200.0.60";
     protected String SERVER_PORT = "27100";// TODO config test "9300,9300,9300";
-    private String readPreference = "primary";
-    private String writeConcern = "acknowledged";// TODO test different writeConcern
-
     private MongoClient mongoClient;
-    protected ClusterName clusterName;
+    protected ClusterName clusterName = new ClusterName("deafult_test_cluster");
 
-    public MongoConnectorHelper(ClusterName clusterName) throws ConnectionException, InitializationException {
+    protected MongoConnectorHelper() {
         super();
-        this.clusterName = clusterName;
 
         String serverIP = System.getProperty("SERVER_IP");
         if (serverIP != null) {
@@ -75,8 +63,9 @@ public class MongoConnectorHelper implements IConnectorHelper {
 
         try {
             mongoClient = new MongoClient(clientConfig.getSeeds(), clientConfig.getMongoClientOptions());
-        } catch (MongoValidationException e) {
-            throw new InitializationException("validation error", e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Connection cannot be established to run functional test");
         }
 
     }
@@ -97,17 +86,6 @@ public class MongoConnectorHelper implements IConnectorHelper {
     public IConfiguration getConfiguration() {
         // return null;
         return mock(IConfiguration.class);
-    }
-
-    @Override
-    public ConnectorClusterConfig getConnectorClusterConfig() {
-        Map<String, String> optionsNode = new HashMap<>();
-        optionsNode.put(HOST.getOptionName(), SERVER_IP);
-        optionsNode.put(PORT.getOptionName(), SERVER_PORT);
-        optionsNode.put(READ_PREFERENCE.getOptionName(), readPreference); // primary,primiaryPreferred,secondary,
-        // secondaryPreferred, nearest
-        optionsNode.put(WRITE_CONCERN.getOptionName(), writeConcern);
-        return new ConnectorClusterConfig(clusterName, null, optionsNode);
     }
 
     @Override

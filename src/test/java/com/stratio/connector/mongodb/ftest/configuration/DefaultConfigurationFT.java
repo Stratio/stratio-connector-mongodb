@@ -26,8 +26,6 @@ import com.stratio.connector.commons.ftest.GenericConnectorTest;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.core.MongoConnector;
 import com.stratio.connector.mongodb.ftest.helper.DefaultConfigurationMongoConnectorHelper;
-import com.stratio.crossdata.common.exceptions.ConnectionException;
-import com.stratio.crossdata.common.exceptions.InitializationException;
 
 public class DefaultConfigurationFT extends GenericConnectorTest<MongoConnector> {
 
@@ -38,21 +36,11 @@ public class DefaultConfigurationFT extends GenericConnectorTest<MongoConnector>
      */
     @Override
     protected IConnectorHelper getConnectorHelper() {
-
-        DefaultConfigurationMongoConnectorHelper mongoConnectorHelper = null;
-        try {
-            mongoConnectorHelper = new DefaultConfigurationMongoConnectorHelper(getClusterName());
-        } catch (ConnectionException e) {
-            e.printStackTrace();
-        } catch (InitializationException e) {
-            e.printStackTrace();
-        }
-        return mongoConnectorHelper;
+        return DefaultConfigurationMongoConnectorHelper.getInstance();
     }
 
     @Test
     public void defaultConfig() {
-
         assertTrue("It is possible connect without optional properties", getConnector() != null);
     }
 }

@@ -34,14 +34,12 @@ import org.junit.Test;
 import com.stratio.connector.commons.ftest.functionalInsert.GenericSimpleInsertIfNotExistFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.commons.metadata.TableMetadataBuilder;
-import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
+import com.stratio.connector.mongodb.ftest.helper.DefaultConfigurationMongoConnectorHelper;
 import com.stratio.crossdata.common.data.Cell;
 import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.data.Row;
-import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.ConnectorException;
-import com.stratio.crossdata.common.exceptions.InitializationException;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
@@ -49,15 +47,7 @@ public class SimpleInsertIfNotExistFT extends GenericSimpleInsertIfNotExistFT {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {
-        MongoConnectorHelper mongoConnectorHelper = null;
-        try {
-            mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
-        } catch (ConnectionException e) {
-            e.printStackTrace();
-        } catch (InitializationException e) {
-            e.printStackTrace();
-        }
-        return mongoConnectorHelper;
+        return DefaultConfigurationMongoConnectorHelper.getInstance();
     }
 
     @Test

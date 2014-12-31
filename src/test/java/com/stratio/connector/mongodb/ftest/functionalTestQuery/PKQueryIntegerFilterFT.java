@@ -19,9 +19,7 @@ package com.stratio.connector.mongodb.ftest.functionalTestQuery;
 
 import com.stratio.connector.commons.ftest.functionalTestQuery.GenericPKQueryIntegerFilterFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
-import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
-import com.stratio.crossdata.common.exceptions.ConnectionException;
-import com.stratio.crossdata.common.exceptions.InitializationException;
+import com.stratio.connector.mongodb.ftest.helper.DefaultConfigurationMongoConnectorHelper;
 
 /**
  *
@@ -29,14 +27,6 @@ import com.stratio.crossdata.common.exceptions.InitializationException;
 public class PKQueryIntegerFilterFT extends GenericPKQueryIntegerFilterFT {
     @Override
     protected IConnectorHelper getConnectorHelper() {
-        MongoConnectorHelper mongoConnectorHelper = null;
-        try {
-            mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
-        } catch (ConnectionException e) {
-            e.printStackTrace();
-        } catch (InitializationException e) {
-            e.printStackTrace();
-        }
-        return mongoConnectorHelper;
+        return DefaultConfigurationMongoConnectorHelper.getInstance();
     }
 }

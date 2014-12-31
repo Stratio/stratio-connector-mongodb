@@ -19,23 +19,13 @@ package com.stratio.connector.mongodb.ftest.functionalUpdate;
 
 import com.stratio.connector.commons.ftest.functionalUpdate.GenericAggregationUpdateFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
-import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
-import com.stratio.crossdata.common.exceptions.ConnectionException;
-import com.stratio.crossdata.common.exceptions.InitializationException;
+import com.stratio.connector.mongodb.ftest.helper.DefaultConfigurationMongoConnectorHelper;
 
 public class AggregationUpdateFT extends GenericAggregationUpdateFT {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {
-        MongoConnectorHelper mongoConnectorHelper = null;
-        try {
-            mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
-        } catch (ConnectionException e) {
-            e.printStackTrace();
-        } catch (InitializationException e) {
-            e.printStackTrace();
-        }
-        return mongoConnectorHelper;
+        return DefaultConfigurationMongoConnectorHelper.getInstance();
     }
 
 }

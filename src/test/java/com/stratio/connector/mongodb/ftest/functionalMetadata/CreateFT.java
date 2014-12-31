@@ -29,14 +29,12 @@ import org.junit.Test;
 import com.stratio.connector.commons.ftest.functionalMetadata.GenericMetadataCreateFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.core.configuration.TableOptions;
-import com.stratio.connector.mongodb.ftest.helper.MongoConnectorHelper;
+import com.stratio.connector.mongodb.ftest.helper.DefaultConfigurationMongoConnectorHelper;
 import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.TableName;
-import com.stratio.crossdata.common.exceptions.ConnectionException;
 import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
-import com.stratio.crossdata.common.exceptions.InitializationException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.ColumnMetadata;
 import com.stratio.crossdata.common.metadata.ColumnType;
@@ -49,15 +47,7 @@ public class CreateFT extends GenericMetadataCreateFT {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {
-        MongoConnectorHelper mongoConnectorHelper = null;
-        try {
-            mongoConnectorHelper = new MongoConnectorHelper(getClusterName());
-        } catch (ConnectionException e) {
-            e.printStackTrace();
-        } catch (InitializationException e) {
-            e.printStackTrace();
-        }
-        return mongoConnectorHelper;
+        return DefaultConfigurationMongoConnectorHelper.getInstance();
     }
 
     @Override
