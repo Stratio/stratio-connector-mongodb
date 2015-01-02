@@ -209,4 +209,9 @@ public class MongoConnectorHelper implements IConnectorHelper {
         return false;
     }
 
+	@Override
+	public boolean isInsertMandatory() {
+		return true;
+	}
+
 }
