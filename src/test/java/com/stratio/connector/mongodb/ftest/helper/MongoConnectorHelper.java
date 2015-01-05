@@ -57,6 +57,7 @@ public class MongoConnectorHelper implements IConnectorHelper {
 
     private MongoClient mongoClient;
     protected ClusterName clusterName;
+    private IConnector connector;
 
     public MongoConnectorHelper(ClusterName clusterName) throws ConnectionException, InitializationException {
         super();
@@ -84,7 +85,10 @@ public class MongoConnectorHelper implements IConnectorHelper {
     @Override
     public IConnector getConnector() {
         try {
-            return new MongoConnector();
+        	if (connector==null){
+        		connector =new MongoConnector();
+        	}
+            return  connector;
         } catch (InitializationException e) {
             // TODO Auto-generated catch block
             Assert.fail("Cannot retrieve the connector");
