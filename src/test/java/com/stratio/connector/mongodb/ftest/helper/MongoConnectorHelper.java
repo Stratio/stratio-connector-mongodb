@@ -45,7 +45,9 @@ public abstract class MongoConnectorHelper implements IConnectorHelper {
     protected String SERVER_IP = "10.200.0.58";// "10.200.0.58,10.200.0.59,10.200.0.60";
     protected String SERVER_PORT = "27100";// TODO config test "9300,9300,9300";
     private MongoClient mongoClient;
+
     protected ClusterName clusterName = new ClusterName("deafult_test_cluster");
+    private IConnector connector;
 
     protected MongoConnectorHelper() {
         super();
@@ -73,7 +75,10 @@ public abstract class MongoConnectorHelper implements IConnectorHelper {
     @Override
     public IConnector getConnector() {
         try {
-            return new MongoConnector();
+            if (connector == null) {
+                connector = new MongoConnector();
+            }
+            return connector;
         } catch (InitializationException e) {
             // TODO Auto-generated catch block
             Assert.fail("Cannot retrieve the connector");

@@ -161,7 +161,7 @@ public class MongoConnector extends CommonsConnector {
     }
 
     @Override
-    public boolean UpdateMetadata(IMetadata metadata) {
+    public boolean updateMetadata(IMetadata metadata) {
         // TODO Auto-generated method stub
         return false;
     }
