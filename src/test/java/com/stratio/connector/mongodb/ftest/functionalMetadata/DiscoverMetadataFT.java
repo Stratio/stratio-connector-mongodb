@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.stratio.connector.commons.ftest.functionalMetadata.GenericDiscoverCatalogMetadataFT;
+import com.stratio.connector.commons.ftest.functionalMetadata.GenericDiscoverMetadataFT;
 import com.stratio.connector.commons.ftest.helper.IConnectorHelper;
 import com.stratio.connector.mongodb.ftest.helper.DefaultConfigurationMongoConnectorHelper;
 import com.stratio.crossdata.common.data.Cell;
@@ -22,7 +22,7 @@ import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.IndexType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
-public class DiscoverMetadataFT extends GenericDiscoverCatalogMetadataFT {
+public class DiscoverMetadataFT extends GenericDiscoverMetadataFT {
 
     @Override
     protected IConnectorHelper getConnectorHelper() {

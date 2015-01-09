@@ -19,6 +19,7 @@ package com.stratio.connector.mongodb.ftest.helper;
 
 import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.HOST;
 import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.PORT;
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.READ_PREFERENCE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,9 +54,9 @@ public class DefaultConfigurationMongoConnectorHelper extends MongoConnectorHelp
         Map<String, String> optionsNode = new HashMap<>();
         optionsNode.put(HOST.getOptionName(), SERVER_IP);
         optionsNode.put(PORT.getOptionName(), SERVER_PORT);
+        optionsNode.put(READ_PREFERENCE.getOptionName(), "primary");
         return new ConnectorClusterConfig(clusterName, null, optionsNode);
     }
-
     // @Override
     // public ConnectorClusterConfig getConnectorClusterConfig() {
     // Map<String, String> optionsNode = new HashMap<>();

@@ -33,9 +33,11 @@ public class DiscoverMetadataUtils {
         CommandResult command = collection.getDB().command(discoverFieldCommand);
         BasicDBList results = (BasicDBList) command.get("results");
         Set<String> fields = new HashSet<>();
-        for (Object object : results) {
-            DBObject bson = (DBObject) object;
-            fields.add((String) bson.get("_id"));
+        if (results != null) {
+            for (Object object : results) {
+                DBObject bson = (DBObject) object;
+                fields.add((String) bson.get("_id"));
+            }
         }
         return new ArrayList<String>(fields);
     }

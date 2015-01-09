@@ -154,7 +154,6 @@ public class DiscoverCatalogMetadataFT extends GenericDiscoverCatalogMetadataFT 
         for (ColumnName colName : tableMetadata.getColumns().keySet()) {
             row1.addCell(colName.getName(), new Cell(1));
         }
-
         getConnector().getStorageEngine().insert(getClusterName(), tableMetadata, row1, true);
 
     }
