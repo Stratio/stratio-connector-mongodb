@@ -33,7 +33,6 @@ import com.stratio.crossdata.common.connector.IQueryEngine;
 import com.stratio.crossdata.common.connector.IStorageEngine;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.InitializationException;
-import com.stratio.crossdata.common.metadata.IMetadata;
 import com.stratio.crossdata.connectors.ConnectorApp;
 
 /**
@@ -158,12 +157,6 @@ public class MongoConnector extends CommonsConnector {
                 }
             }
         });
-    }
-
-    @Override
-    public boolean updateMetadata(IMetadata metadata) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
 }
