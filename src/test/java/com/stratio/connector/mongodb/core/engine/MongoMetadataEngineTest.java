@@ -25,6 +25,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,6 +58,7 @@ import com.stratio.crossdata.common.data.CatalogName;
 import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.TableName;
+import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.metadata.CatalogMetadata;
@@ -62,12 +69,15 @@ import com.stratio.crossdata.common.metadata.IndexType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(value = { MongoClient.class, Connection.class, IndexUtils.class, AlterOptionsUtils.class })
+@PrepareForTest(value = { MongoClient.class, Connection.class, IndexUtils.class, AlterOptionsUtils.class,
+                MongoMetadataEngine.class })
 public class MongoMetadataEngineTest {
 
     private final static String CLUSTER_NAME = "clustername";
     private static final String DB_NAME = "catalog_name";
+    private static final String DB_NAME_SEC = "catalog_sec";
     private static final String TABLE_NAME = "tablename";
+    private static final String TABLE_NAME_SEC = "tablename_sec";
     private final String INDEX_NAME = "indexname";
     private final String COLUMN_NAME = "colname";
     private final String COLUMN_NAME2 = "colname2";
@@ -103,7 +113,7 @@ public class MongoMetadataEngineTest {
         TableMetadata tableMetadata = mock(TableMetadata.class);
         when(tableMetadata.getName()).thenReturn(tableName);
 
-        mongoMetadataEngine.createTable(new ClusterName(CLUSTER_NAME), tableMetadata);
+        mongoMetadataEngine.createTable(tableMetadata, connection);
 
         verify(tableMetadata, times(1)).getName();
         verify(tableMetadata, times(1)).getOptions();
@@ -117,7 +127,7 @@ public class MongoMetadataEngineTest {
         when(tableMetadata.getName()).thenReturn(null);
 
         try {
-            mongoMetadataEngine.createTable(new ClusterName(CLUSTER_NAME), tableMetadata);
+            mongoMetadataEngine.createTable(tableMetadata, connection);
             fail("the table name is necessary");
         } catch (ExecutionException e) {
         }
@@ -129,7 +139,7 @@ public class MongoMetadataEngineTest {
     @Test
     public void dropCatalogTest() throws ExecutionException, UnsupportedException {
 
-        mongoMetadataEngine.dropCatalog(new ClusterName(CLUSTER_NAME), new CatalogName(DB_NAME));
+        mongoMetadataEngine.dropCatalog(new CatalogName(DB_NAME), connection);
         verify(client, times(1)).dropDatabase(Matchers.anyString());
 
     }
@@ -139,7 +149,7 @@ public class MongoMetadataEngineTest {
 
         Mockito.doThrow(new MongoException("exception")).when(client).dropDatabase(Matchers.anyString());
         try {
-            mongoMetadataEngine.dropCatalog(new ClusterName(CLUSTER_NAME), new CatalogName(DB_NAME));
+            mongoMetadataEngine.dropCatalog(new CatalogName(DB_NAME), connection);
             fail("An execution exception must be thown");
         } catch (ExecutionException e) {
         }
@@ -156,7 +166,7 @@ public class MongoMetadataEngineTest {
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(TABLE_NAME)).thenReturn(collection);
 
-        mongoMetadataEngine.dropTable(new ClusterName(CLUSTER_NAME), new TableName(DB_NAME, TABLE_NAME));
+        mongoMetadataEngine.dropTable(new TableName(DB_NAME, TABLE_NAME), connection);
 
         verify(collection, times(1)).drop();
 
@@ -173,7 +183,7 @@ public class MongoMetadataEngineTest {
         Mockito.doThrow(new MongoException("exception")).when(collection).drop();
 
         try {
-            mongoMetadataEngine.dropTable(new ClusterName(CLUSTER_NAME), new TableName(DB_NAME, TABLE_NAME));
+            mongoMetadataEngine.dropTable(new TableName(DB_NAME, TABLE_NAME), connection);
             fail("An execution exception must be thown");
         } catch (ExecutionException e) {
 
@@ -198,7 +208,7 @@ public class MongoMetadataEngineTest {
 
         // PowerMockito.mockStatic(IndexUtils.class);
 
-        mongoMetadataEngine.createIndex(new ClusterName(CLUSTER_NAME), indexMetadata);
+        mongoMetadataEngine.createIndex(indexMetadata, connection);
 
         // PowerMockito.verifyStatic(Mockito.times(1));
         // IndexUtils.getIndexDBObject(indexMetadata);
@@ -225,7 +235,7 @@ public class MongoMetadataEngineTest {
 
         PowerMockito.mockStatic(IndexUtils.class);
 
-        mongoMetadataEngine.dropIndex(new ClusterName(CLUSTER_NAME), indexMetadata);
+        mongoMetadataEngine.dropIndex(indexMetadata, connection);
 
         PowerMockito.verifyStatic(Mockito.never());
         IndexUtils.dropIndexWithDefaultName(indexMetadata, database);
@@ -290,6 +300,71 @@ public class MongoMetadataEngineTest {
     @Test(expected = UnsupportedException.class)
     public void alterCatalogTest() throws UnsupportedException, ExecutionException {
         mongoMetadataEngine.alterCatalog(new CatalogName(DB_NAME), null, connection);
+    }
+
+    @Test
+    public void provideMetadataTest() throws ConnectorException {
+
+        ClusterName clusterName = new ClusterName(CLUSTER_NAME);
+
+        MongoMetadataEngine spyMetadataEngine = PowerMockito.spy(new MongoMetadataEngine(connectionHandler));
+        CatalogMetadata catalogMetadata1 = mock(CatalogMetadata.class);
+        CatalogMetadata catalogMetadata2 = mock(CatalogMetadata.class);
+
+        when(client.getDatabaseNames()).thenReturn(Arrays.asList(DB_NAME, DB_NAME_SEC));
+        PowerMockito.doReturn(catalogMetadata1)
+                        .doReturn(catalogMetadata2)
+                        .when(spyMetadataEngine)
+                        .provideCatalogMetadata(Matchers.any(CatalogName.class), Matchers.eq(clusterName),
+                                        Matchers.eq(connection));
+
+        List<CatalogMetadata> providedMetadata = spyMetadataEngine.provideMetadata(clusterName, connection);
+
+        Assert.assertEquals(providedMetadata.size(), 2);
+        Assert.assertEquals(providedMetadata.get(0), catalogMetadata1);
+        Assert.assertEquals(providedMetadata.get(1), catalogMetadata2);
+
+    }
+
+    @Test
+    public void provideCatalogMetadataTest() throws ConnectorException {
+
+        ClusterName clusterName = new ClusterName(CLUSTER_NAME);
+
+        MongoMetadataEngine spyMetadataEngine = PowerMockito.spy(new MongoMetadataEngine(connectionHandler));
+
+        TableMetadata tableMetadata1 = mock(TableMetadata.class);
+        TableMetadata tableMetadata2 = mock(TableMetadata.class);
+
+        TableName tableName1 = new TableName(DB_NAME, TABLE_NAME);
+        TableName tableName2 = new TableName(DB_NAME, TABLE_NAME_SEC);
+
+        when(tableMetadata1.getName()).thenReturn(tableName1);
+        when(tableMetadata2.getName()).thenReturn(tableName2);
+
+        Set<String> set = new TreeSet<>();
+        set.add(TABLE_NAME);
+        set.add(TABLE_NAME_SEC);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+        when(database.getCollectionNames()).thenReturn(set);
+        PowerMockito.doReturn(tableMetadata1).when(spyMetadataEngine)
+                        .provideTableMetadata(new TableName(DB_NAME, TABLE_NAME), clusterName, connection);
+        PowerMockito.doReturn(tableMetadata2).when(spyMetadataEngine)
+                        .provideTableMetadata(new TableName(DB_NAME, TABLE_NAME_SEC), clusterName, connection);
+
+        CatalogMetadata providedCatalogMetadata = spyMetadataEngine.provideCatalogMetadata(new CatalogName(DB_NAME),
+                        clusterName, connection);
+
+        Assert.assertEquals(providedCatalogMetadata.getName().getName(), DB_NAME);
+        Assert.assertEquals(providedCatalogMetadata.getTables().size(), 2);
+        Assert.assertEquals(providedCatalogMetadata.getTables().get(tableName1), tableMetadata1);
+        Assert.assertEquals(providedCatalogMetadata.getTables().get(tableName2), tableMetadata2);
+
+    }
+
+    @Test
+    public void provideTableMetadataTest() throws ConnectorException {
+        Assert.assertFalse(true);
     }
 
     // TODO Options => IndexUtils
