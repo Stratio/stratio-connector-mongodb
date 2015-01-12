@@ -44,6 +44,7 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 import com.stratio.crossdata.common.statements.structures.Relation;
@@ -164,14 +165,15 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     }
 
     @Override
-    protected void truncate(TableName tableName, Connection<MongoClient> connection) throws ExecutionException {
+    protected void truncate(TableName tableName, Connection<MongoClient> connection) throws ExecutionException,
+                    UnsupportedException {
         delete(tableName, null, connection);
 
     }
 
     @Override
     protected void delete(TableName tableName, Collection<Filter> whereClauses, Connection<MongoClient> connection)
-                    throws MongoValidationException, ExecutionException {
+                    throws MongoValidationException, ExecutionException, UnsupportedException {
 
         DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
         if (db.collectionExists(tableName.getName())) {
@@ -190,7 +192,8 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     @Override
     protected void update(TableName tableName, Collection<Relation> assignments, Collection<Filter> whereClauses,
-                    Connection<MongoClient> connection) throws MongoValidationException, ExecutionException {
+                    Connection<MongoClient> connection) throws MongoValidationException, ExecutionException,
+                    UnsupportedException {
 
         DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
         DBCollection coll = db.getCollection(tableName.getName());
@@ -203,12 +206,12 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
             coll.update(buildFilter(whereClauses), updateBuilder.build(), false, true);
         } catch (MongoException e) {
             logger.error("Error updating the data: " + e.getMessage());
-            throw new MongoInsertException(e.getMessage(), e);
+            throw new ExecutionException(e.getMessage(), e);
         }
 
     }
 
-    private DBObject buildFilter(Collection<Filter> whereClauses) throws MongoValidationException {
+    private DBObject buildFilter(Collection<Filter> whereClauses) throws MongoValidationException, UnsupportedException {
         List<Filter> filters;
         if (whereClauses == null) {
             return new BasicDBObject();

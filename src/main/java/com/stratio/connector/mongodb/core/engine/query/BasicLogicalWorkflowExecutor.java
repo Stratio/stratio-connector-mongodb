@@ -31,6 +31,7 @@ import com.stratio.connector.mongodb.core.exceptions.MongoExecutionException;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
 
 public class BasicLogicalWorkflowExecutor extends LogicalWorkflowExecutor {
 
@@ -43,9 +44,11 @@ public class BasicLogicalWorkflowExecutor extends LogicalWorkflowExecutor {
      *             if the query specified in the logical workflow is not supported
      * @throws ExecutionException
      *             if the execution fails
+     * @throws UnsupportedException
+     *             if the specified operation is not supported.
      */
     public BasicLogicalWorkflowExecutor(ProjectParsed logicalWorkflowParsed) throws MongoValidationException,
-                    ExecutionException {
+                    ExecutionException, UnsupportedException {
         super(logicalWorkflowParsed);
     }
 
@@ -55,7 +58,7 @@ public class BasicLogicalWorkflowExecutor extends LogicalWorkflowExecutor {
      * @see com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutor#buildQuery()
      */
     @Override
-    protected void buildQuery() throws MongoValidationException {
+    protected void buildQuery() throws MongoValidationException, UnsupportedException {
         query = new ArrayList<DBObject>();
         query.add(buildFilter(false));
 

@@ -21,6 +21,7 @@ import com.stratio.connector.commons.engine.query.ProjectParsed;
 import com.stratio.connector.commons.engine.query.ProjectValidator;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
 
 /**
  * Validates the logical workflow and stores the needed steps.
@@ -32,12 +33,14 @@ public class MongoLogicalWorkflowValidator implements ProjectValidator {
      * 
      * @param projectParsed
      *            the projectParsed.
+     * @throws UnsupportedException
+     *             if the specified operation is not supported
      *
      * @throws ExecutionException
      *             if the project is not validated.
      */
     @Override
-    public void validate(ProjectParsed projectParsed) throws MongoValidationException {
+    public void validate(ProjectParsed projectParsed) throws MongoValidationException, UnsupportedException {
 
         if (projectParsed.getProject() == null) {
             throw new MongoValidationException("Projection has not been found in the logical workflow");
@@ -47,7 +50,7 @@ public class MongoLogicalWorkflowValidator implements ProjectValidator {
 
         }
         if (!projectParsed.getMatchList().isEmpty()) {
-            throw new MongoValidationException("Full-text queries not yet supported");
+            throw new UnsupportedException("Full-text queries not yet supported");
         }
 
         // do {

@@ -25,6 +25,7 @@ import org.bson.types.BasicBSONList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.statements.structures.BooleanSelector;
 import com.stratio.crossdata.common.statements.structures.ColumnSelector;
@@ -53,9 +54,11 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
      *            the set of filters
      * @throws MongoValidationException
      *             if the query specified in the logical workflow is not supported
+     * @throws UnsupportedException
+     *             if the specified operation is not supported
      */
     public FilterDBObjectBuilder(boolean useAggregation, Collection<Filter> filterCollection)
-                    throws MongoValidationException {
+                    throws MongoValidationException, UnsupportedException {
 
         super(useAggregation);
 
@@ -98,8 +101,10 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
      * @return the filter query
      * @throws MongoValidationException
      *             if the filter specified in the logical workflow is not supported
+     * @throws UnsupportedException
+     *             if the specified operation is not supported
      */
-    private DBObject getFilterQuery(Filter filter) throws MongoValidationException {
+    private DBObject getFilterQuery(Filter filter) throws MongoValidationException, UnsupportedException {
 
         Relation relation = filter.getRelation();
         Operator operator = relation.getOperator();
@@ -201,8 +206,10 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
      * @return the mongo operator
      * @throws MongoValidationException
      *             if the operator is not supported
+     * @throws UnsupportedException
+     *             if the operator is not supported
      */
-    private String getMongoOperator(Operator operator) throws MongoValidationException {
+    private String getMongoOperator(Operator operator) throws MongoValidationException, UnsupportedException {
         String mongoOperator = null;
 
         switch (operator) {
@@ -229,10 +236,10 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             mongoOperator = "$regex";
             break;
         case BETWEEN:
-            new MongoValidationException("Waiting for Meta to implement between filters");
+            new UnsupportedException("Waiting for Meta to implement between filters");
             break;
         case IN:
-            new MongoValidationException("Waiting for Meta to implement in filters");
+            new UnsupportedException("Waiting for Meta to implement in filters");
             break;
         case ADD:
         case ASSIGN:
@@ -241,7 +248,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         case SUBTRACT:
         case MATCH:
         default:
-            throw new MongoValidationException("The operator: " + operator.toString() + " is not supported");
+            throw new UnsupportedException("The operator: " + operator.toString() + " is not supported");
 
         }
         return mongoOperator;

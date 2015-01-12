@@ -34,6 +34,7 @@ import com.stratio.connector.mongodb.core.engine.query.utils.ProjectDBObjectBuil
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
 
 /**
  * Prepares and performs MongoDB queries from a logical workflow.
@@ -58,9 +59,11 @@ public abstract class LogicalWorkflowExecutor {
      *             if the query specified in the logical workflow is not supported.
      * @throws ExecutionException
      *             if the execution fails.
+     * @throws UnsupportedException
+     *             if the specified operation is not supported.
      */
     public LogicalWorkflowExecutor(ProjectParsed logicalWorkflowParsed) throws MongoValidationException,
-                    ExecutionException {
+                    ExecutionException, UnsupportedException {
         logicalWorkflowData = logicalWorkflowParsed;
         this.buildQuery();
     }
@@ -72,8 +75,10 @@ public abstract class LogicalWorkflowExecutor {
      *             if the query specified in the logical workflow is not supported.
      * @throws ExecutionException
      *             if the execution fails.
+     * @throws UnsupportedException
+     *             if the specified operation is not supported.
      */
-    protected abstract void buildQuery() throws MongoValidationException, ExecutionException;
+    protected abstract void buildQuery() throws MongoValidationException, ExecutionException, UnsupportedException;
 
     /**
      * Execute the query.
@@ -135,8 +140,10 @@ public abstract class LogicalWorkflowExecutor {
      * @return the DB object.
      * @throws MongoValidationException
      *             if any filters specified in the logical workflow is not supported.
+     * @throws UnsupportedException
+     *             if the specified filter operation is not supported
      */
-    protected DBObject buildFilter(boolean aggregationRequired) throws MongoValidationException {
+    protected DBObject buildFilter(boolean aggregationRequired) throws MongoValidationException, UnsupportedException {
 
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(aggregationRequired,
                         logicalWorkflowData.getFilter());
