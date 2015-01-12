@@ -51,12 +51,14 @@ import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.metadata.IndexMetadataBuilder;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.AlterOptionsUtils;
+import com.stratio.connector.mongodb.core.engine.metadata.DiscoverMetadataUtils;
 import com.stratio.connector.mongodb.core.engine.metadata.IndexUtils;
 import com.stratio.crossdata.common.data.AlterOperation;
 import com.stratio.crossdata.common.data.AlterOptions;
 import com.stratio.crossdata.common.data.CatalogName;
 import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.data.ColumnName;
+import com.stratio.crossdata.common.data.IndexName;
 import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
@@ -70,7 +72,7 @@ import com.stratio.crossdata.common.metadata.TableMetadata;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(value = { MongoClient.class, Connection.class, IndexUtils.class, AlterOptionsUtils.class,
-                MongoMetadataEngine.class })
+                MongoMetadataEngine.class, DiscoverMetadataUtils.class })
 public class MongoMetadataEngineTest {
 
     private final static String CLUSTER_NAME = "clustername";
@@ -364,8 +366,51 @@ public class MongoMetadataEngineTest {
 
     @Test
     public void provideTableMetadataTest() throws ConnectorException {
-        // TODO
-        // Assert.assertFalse(true);
+
+        DBCollection collection = mock(DBCollection.class);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+        when(database.getCollection(TABLE_NAME)).thenReturn(collection);
+        PowerMockito.mockStatic(DiscoverMetadataUtils.class);
+        when(DiscoverMetadataUtils.discoverField(collection)).thenReturn(Arrays.asList(COLUMN_NAME));
+        when(DiscoverMetadataUtils.discoverIndexes(collection)).thenReturn(
+                        getIndexMetadata(COLUMN_NAME2, IndexType.CUSTOM));
+
+        TableMetadata tableMetadataProvided = mongoMetadataEngine.provideTableMetadata(new TableName(DB_NAME,
+                        TABLE_NAME), new ClusterName(CLUSTER_NAME), connection);
+
+        // names
+        Assert.assertEquals("The table name is not the expected", TABLE_NAME, tableMetadataProvided.getName().getName());
+        Assert.assertEquals("The cluster name is not the expected", CLUSTER_NAME, tableMetadataProvided.getClusterRef()
+                        .getName());
+        Assert.assertEquals("The catalog name is not the expected", DB_NAME, tableMetadataProvided.getName()
+                        .getCatalogName().getName());
+        // pKey
+        Assert.assertEquals("The primary key must have only one field", 1, tableMetadataProvided.getPrimaryKey().size());
+        Assert.assertEquals("The primary key must be _id", "_id", tableMetadataProvided.getPrimaryKey().get(0)
+                        .getName());
+
+        // columns
+        Assert.assertEquals("The columns must have two columns", 2, tableMetadataProvided.getColumns().size());
+        Assert.assertTrue("The column found in existing bson is not the expected", tableMetadataProvided.getColumns()
+                        .keySet().contains(new ColumnName(DB_NAME, TABLE_NAME, COLUMN_NAME)));
+        Assert.assertTrue("The column found in existing index is not the expected",
+
+        tableMetadataProvided.getColumns().keySet().contains(new ColumnName(DB_NAME, TABLE_NAME, COLUMN_NAME2)));
+        // index
+        Assert.assertEquals("There must be a single index", 1, tableMetadataProvided.getIndexes().size());
+        Assert.assertTrue("The index name is not the expected",
+                        tableMetadataProvided.getIndexes().containsKey(new IndexName(DB_NAME, TABLE_NAME, INDEX_NAME)));
+        IndexMetadata indexMetadata = tableMetadataProvided.getIndexes().get(
+                        new IndexName(DB_NAME, TABLE_NAME, INDEX_NAME));
+        Assert.assertEquals("The index type is not the expected", IndexType.CUSTOM, indexMetadata.getType());
+        Assert.assertEquals("There must be a single column", 1, indexMetadata.getColumns().size());
+        Assert.assertTrue("There index column is not the expected",
+                        indexMetadata.getColumns().containsKey(new ColumnName(DB_NAME, TABLE_NAME, COLUMN_NAME2)));
+    }
+
+    private List<IndexMetadata> getIndexMetadata(String columnName, IndexType indexType) {
+        IndexMetadataBuilder indexMetadataBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME, indexType);
+        return Arrays.asList(indexMetadataBuilder.addColumn(columnName, ColumnType.INT).build());
     }
 
     // TODO Options => IndexUtils
