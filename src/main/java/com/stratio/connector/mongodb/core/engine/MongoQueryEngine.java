@@ -29,7 +29,7 @@ import com.stratio.connector.mongodb.core.engine.query.MongoLogicalWorkflowValid
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.IResultHandler;
 import com.stratio.crossdata.common.data.ResultSet;
-import com.stratio.crossdata.common.exceptions.ExecutionException;
+import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
 import com.stratio.crossdata.common.logicalplan.Project;
@@ -60,12 +60,12 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
      * @return the query result
      * @throws MongoValidationException
      *             if the specified operation is not supported
-     * @throws ExecutionException
+     * @throws ConnectorException
      *             if the execution fails
      */
     @Override
     public QueryResult execute(Project project, Connection<MongoClient> connection) throws MongoValidationException,
-                    ExecutionException {
+                    ConnectorException {
 
         ProjectParsed logicalWorkfloParsed = new ProjectParsed(project, new MongoLogicalWorkflowValidator());
         LogicalWorkflowExecutor executor = LogicalWorkflowExecutorFactory
