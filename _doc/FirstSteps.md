@@ -398,7 +398,7 @@ Now we execute a set of queries and we will show the expected results.
 ### Select with orderby
 
 ```
-  >  SELECT age FROM students ORDER BY age;
+  >  SELECT * FROM students ORDER BY age;
   
   Partial result: true
   ----------------------------------
@@ -416,7 +416,7 @@ Now we execute a set of queries and we will show the expected results.
   | 6  | Violet   | 21  | false    | 
   ----------------------------------
 
-  >  SELECT age FROM students ORDER BY name;
+  >  SELECT * FROM students ORDER BY name;
   
   Partial result: true
   ----------------------------------
