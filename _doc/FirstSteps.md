@@ -434,7 +434,7 @@ Now we execute a set of queries and we will show the expected results.
   | 6  | Violet   | 21  | false    | 
   ----------------------------------
   
-   >  SELECT age FROM students ORDER BY id DESC;
+   >  SELECT * FROM students ORDER BY id DESC;
    
    Partial result: true
   ----------------------------------
@@ -452,7 +452,7 @@ Now we execute a set of queries and we will show the expected results.
   | 1  | Jhon     | 16  | true     | 
   ----------------------------------
    
-  >  SELECT age FROM students ORDER BY age ASC, id DESC;
+  >  SELECT * FROM students ORDER BY age ASC, id DESC;
   
   Partial result: true
   ----------------------------------
