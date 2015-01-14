@@ -14,6 +14,7 @@ import com.stratio.connector.commons.engine.query.ProjectParsed;
 import com.stratio.connector.commons.test.util.LogicalWorkFlowCreator;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ClusterName;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Limit;
 import com.stratio.crossdata.common.logicalplan.LogicalStep;
 import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
@@ -83,7 +84,7 @@ public class MongoLogicalWorkflowValidatorTest {
 
     }
 
-    @Test(expected = MongoValidationException.class)
+    @Test(expected = UnsupportedException.class)
     public void fulltextFilterTest() throws Exception {
 
         LogicalWorkFlowCreator logWorkFlowCreator = new LogicalWorkFlowCreator(CATALOG, TABLE, CLUSTER_NAME);

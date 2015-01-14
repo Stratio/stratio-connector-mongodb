@@ -32,8 +32,8 @@ import org.mockito.internal.util.reflection.Whitebox;
 
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
-import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ColumnName;
+import com.stratio.crossdata.common.exceptions.UnsupportedException;
 import com.stratio.crossdata.common.logicalplan.Filter;
 import com.stratio.crossdata.common.metadata.Operations;
 import com.stratio.crossdata.common.statements.structures.BooleanSelector;
@@ -144,7 +144,7 @@ public class FilterDBObjectBuilderTest {
 
     }
 
-    @Test(expected = MongoValidationException.class)
+    @Test(expected = UnsupportedException.class)
     public void addNotSupportedFilterTest() throws Exception {
 
         Filter filter = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.MATCH, 5);
