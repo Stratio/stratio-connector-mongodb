@@ -24,7 +24,7 @@ import com.stratio.crossdata.common.exceptions.UnsupportedException;
 /**
  * A factory for creating LogicalWorkflowExecutor objects.
  */
-public class LogicalWorkflowExecutorFactory {
+public final class LogicalWorkflowExecutorFactory {
 
     private LogicalWorkflowExecutorFactory() {
 

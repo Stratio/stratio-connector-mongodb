@@ -37,7 +37,7 @@ import com.stratio.crossdata.common.metadata.IndexType;
 /**
  * Utilities to discover MongoDB schemas.
  */
-public class DiscoverMetadataUtils {
+public final class DiscoverMetadataUtils {
 
     private DiscoverMetadataUtils() {
 

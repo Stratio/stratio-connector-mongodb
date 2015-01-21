@@ -55,15 +55,12 @@ public abstract class LogicalWorkflowExecutor {
      *
      * @param logicalWorkflowParsed
      *            the logical workflow parsed.
-     * @throws MongoValidationException
-     *             if the query specified in the logical workflow is not supported.
      * @throws ExecutionException
-     *             if the execution fails.
+     *             if the execution fails or the query specified in the logical workflow is not supported.
      * @throws UnsupportedException
      *             if the specified operation is not supported.
      */
-    public LogicalWorkflowExecutor(ProjectParsed logicalWorkflowParsed) throws MongoValidationException,
-                    ExecutionException, UnsupportedException {
+    public LogicalWorkflowExecutor(ProjectParsed logicalWorkflowParsed) throws ExecutionException, UnsupportedException {
         logicalWorkflowData = logicalWorkflowParsed;
         this.buildQuery();
     }
