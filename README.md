@@ -26,7 +26,7 @@ To generate the executable, execute the following command:
    > mvn crossdata-connector:install
 ```
 
-The user and the group of the service are setted up to root by default. It could be changed in the following file:
+The user and the group of the service are set up to root by default. It could be changed in the following file:
 
 ```
    > target/stratio-connector-mongodb-0.3.0/bin/stratio-connector-mongodb-0.3.0
