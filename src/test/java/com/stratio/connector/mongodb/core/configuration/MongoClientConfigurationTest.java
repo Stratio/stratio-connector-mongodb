@@ -75,8 +75,8 @@ public class MongoClientConfigurationTest {
                         .getWriteConcern(), WriteConcern.ACKNOWLEDGED);
 
         // Connector properties
-        assertTrue(config.getSeeds().size() == 1);
-        assertEquals(config.getSeeds().get(0).getPort(), 27017);
+        assertTrue("There should be only 1 seed by default", config.getSeeds().size() == 1);
+        assertEquals("The default port should be 27017", config.getSeeds().get(0).getPort(), 27017);
 
     }
 

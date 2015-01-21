@@ -28,7 +28,6 @@ import com.mongodb.MongoException;
 import com.stratio.connector.commons.engine.query.ProjectParsed;
 import com.stratio.connector.mongodb.core.engine.query.utils.MetaResultUtils;
 import com.stratio.connector.mongodb.core.exceptions.MongoExecutionException;
-import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
@@ -43,15 +42,13 @@ public class AggregationLogicalWorkflowExecutor extends LogicalWorkflowExecutor 
      *
      * @param logicalWorkflowParsed
      *            the logical workflow parsed
-     * @throws MongoValidationException
-     *             if the query specified in the logical workflow is not supported
      * @throws ExecutionException
-     *             if the execution fails
+     *             if the execution fails or if the query specified in the logical workflow is not supported
      * @throws UnsupportedException
      *             if the specified operation is not supported.
      */
-    public AggregationLogicalWorkflowExecutor(ProjectParsed logicalWorkflowParsed) throws MongoValidationException,
-                    ExecutionException, UnsupportedException {
+    public AggregationLogicalWorkflowExecutor(ProjectParsed logicalWorkflowParsed) throws ExecutionException,
+                    UnsupportedException {
         super(logicalWorkflowParsed);
     }
 
@@ -61,7 +58,7 @@ public class AggregationLogicalWorkflowExecutor extends LogicalWorkflowExecutor 
      * @see com.stratio.connector.mongodb.core.engine.query.LogicalWorkflowExecutor#buildQuery()
      */
     @Override
-    protected void buildQuery() throws MongoValidationException, ExecutionException, UnsupportedException {
+    protected void buildQuery() throws ExecutionException, UnsupportedException {
         query = new ArrayList<DBObject>();
 
         if (logicalWorkflowData.getProject() != null) {
@@ -89,12 +86,10 @@ public class AggregationLogicalWorkflowExecutor extends LogicalWorkflowExecutor 
      *            the MongoDB client.
      * @return the Crossdata ResultSet.
      * @throws ExecutionException
-     *             if the query specified in the logical workflow is not supported.
-     * @throws MongoExecutionException
      *             if the execution fails.
      */
     @Override
-    public ResultSet executeQuery(MongoClient mongoClient) throws MongoExecutionException, ExecutionException {
+    public ResultSet executeQuery(MongoClient mongoClient) throws ExecutionException {
 
         DB db = mongoClient.getDB(logicalWorkflowData.getProject().getCatalogName());
         DBCollection collection = db.getCollection(logicalWorkflowData.getProject().getTableName().getName());

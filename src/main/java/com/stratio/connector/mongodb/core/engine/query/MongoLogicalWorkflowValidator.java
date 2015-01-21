@@ -35,7 +35,6 @@ public class MongoLogicalWorkflowValidator implements ProjectValidator {
      *            the projectParsed.
      * @throws UnsupportedException
      *             if the specified operation is not supported
-     *
      * @throws ExecutionException
      *             if the project is not validated.
      */
@@ -53,49 +52,6 @@ public class MongoLogicalWorkflowValidator implements ProjectValidator {
             throw new UnsupportedException("Full-text queries not yet supported");
         }
 
-        // do {
-        // if (select != null) {
-        // throw new MongoValidationException("Select must be the last step");
-        // }
-        //
-        // if (logicalStep instanceof Project) {
-        // if (projection == null) {
-        // projection = (Project) logicalStep;
-        // } else {
-        // throw new MongoValidationException(" # Project > 1");
-        // }
-        // } else if (logicalStep instanceof Filter) {
-        // Filter step = (Filter) logicalStep;
-        // if (Operator.MATCH == step.getRelation().getOperator()) {
-        // throw new MongoValidationException("Full-text queries not yet supported");
-        // } else {
-        // filterList.add(step);
-        // }
-        // } else if (logicalStep instanceof Limit) {
-        // if (limit == null) {
-        // limit = (Limit) logicalStep;
-        // } else {
-        // throw new MongoValidationException(" # Limit > 1");
-        // }
-        // } else if (logicalStep instanceof GroupBy) {
-        // if (groupBy == null) {
-        // groupBy = (GroupBy) logicalStep;
-        // } else {
-        // throw new MongoValidationException(" # GroupBy > 1");
-        // }
-        // } else if (logicalStep instanceof Select) {
-        // select = (Select) logicalStep;
-        // } else {
-        // throw new MongoValidationException("Step unsupported" + logicalStep.getClass());
-        // }
-        // } while ((logicalStep = logicalStep.getNextStep()) != null);
-        //
-        // if (projection == null) {
-        // throw new MongoValidationException("Projection has not been found in the logical workflow");
-        // }
-        // if (select == null) {
-        // throw new MongoValidationException("Select has not been found in the logical workflow");
-        // }
     }
 
 }

@@ -34,12 +34,22 @@ import com.stratio.connector.commons.metadata.IndexMetadataBuilder;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.IndexType;
 
+/**
+ * Utilities to discover MongoDB schemas.
+ */
 public class DiscoverMetadataUtils {
 
     private DiscoverMetadataUtils() {
 
     }
 
+    /**
+     * Discover the existing fields stored in the collection.
+     *
+     * @param collection
+     *            the collection
+     * @return the list of fields including the _id
+     */
     public static List<String> discoverField(DBCollection collection) {
         String map = "function() { for (var field in this) { emit(field, null); }}";
         String reduce = "function(field, stuff) { return null; }";
@@ -47,11 +57,6 @@ public class DiscoverMetadataUtils {
         DBObject getFieldsCommand = mapReduceCommand.toDBObject();
         CommandResult command = collection.getDB().command(getFieldsCommand);
 
-        // DBObject discoverFieldCommand = new BasicDBObject("mapreduce", collection.getName());
-        // discoverFieldCommand.put("map", "function() { for (var field in this) { emit(field, null); }}");
-        // discoverFieldCommand.put("reduce", "function(field, stuff) { return null; }");
-        // discoverFieldCommand.put("out", new BasicDBObject("inline", 1));
-        // CommandResult command = collection.getDB().command(discoverFieldCommand);
         BasicDBList results = (BasicDBList) command.get("results");
         Set<String> fields = new HashSet<>();
         if (results != null) {
@@ -63,6 +68,13 @@ public class DiscoverMetadataUtils {
         return new ArrayList<String>(fields);
     }
 
+    /**
+     * Discover the existing indexes stored in the collection.
+     *
+     * @param collection
+     *            the collection
+     * @return the list of indexMetadata.
+     */
     public static List<IndexMetadata> discoverIndexes(DBCollection collection) {
         // TODO add TextIndex, Geospatial,etc...
         // TODO supported only simple, compound and hashed index
@@ -100,7 +112,7 @@ public class DiscoverMetadataUtils {
 
         Iterator<Object> iterator = key.values().iterator();
 
-        while (iterator.hasNext() && isDefault == true) {
+        while (iterator.hasNext() && isDefault) {
             isDefault = iterator.next().toString().startsWith("1");
         }
 

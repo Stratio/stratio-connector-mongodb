@@ -37,7 +37,7 @@ import com.stratio.crossdata.common.statements.structures.SelectorType;
 public class UpdateDBObjectBuilder {
 
     /** The logger. */
-    private static final Logger logger = LoggerFactory.getLogger(UpdateDBObjectBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateDBObjectBuilder.class);
 
     /** The Constant INCREMENT_COMMAND. */
     private static final String INCREMENT_COMMAND = "$inc";
@@ -125,7 +125,7 @@ public class UpdateDBObjectBuilder {
 
         default:
             String msg = "Operator: " + operator + " is not supported in update queries";
-            logger.error(msg);
+            LOGGER.error(msg);
             throw new MongoValidationException(msg);
         }
 
@@ -143,7 +143,7 @@ public class UpdateDBObjectBuilder {
             } else {
                 String msg = "Update relations only can envolve a single field, but found:" + column + " and "
                                 + innerRelationColumn;
-                logger.error(msg);
+                LOGGER.error(msg);
                 throw new MongoValidationException(msg);
             }
 
@@ -160,8 +160,7 @@ public class UpdateDBObjectBuilder {
         return relations;
     }
 
-    private DBObject getNumberRelation(Selector left, Selector right) throws MongoValidationException,
-                    ExecutionException {
+    private DBObject getNumberRelation(Selector left, Selector right) throws ExecutionException {
         Number number = retrieveNumberDataType(right, false);
         return new BasicDBObject((String) SelectorHelper.getRestrictedValue(left, SelectorType.COLUMN), number);
     }
@@ -173,7 +172,7 @@ public class UpdateDBObjectBuilder {
     }
 
     private DBObject getIncrementalRelation(Selector left, Selector right, boolean isDecrement)
-                    throws ExecutionException, MongoValidationException {
+                    throws ExecutionException {
 
         Number number = retrieveNumberDataType(right, isDecrement);
         return new BasicDBObject((String) SelectorHelper.getRestrictedValue(left, SelectorType.COLUMN), number);
@@ -187,12 +186,10 @@ public class UpdateDBObjectBuilder {
      *            the columnType type
      * @param cellValue
      *            the cell value
-     * @throws MongoValidationException
-     *             if the type is not supported
      * @throws ExecutionException
+     *             if the conversion fails
      */
-    private static Number retrieveNumberDataType(Selector selector, boolean isDecrement)
-                    throws MongoValidationException, ExecutionException {
+    private static Number retrieveNumberDataType(Selector selector, boolean isDecrement) throws ExecutionException {
         Number number = null;
         switch (selector.getType()) {
         case FLOATING_POINT:
@@ -205,7 +202,7 @@ public class UpdateDBObjectBuilder {
             break;
         default:
             String msg = "The requested operation does not support the type: " + selector.getType().toString();
-            logger.error(msg);
+            LOGGER.error(msg);
             throw new MongoValidationException(msg);
 
         }

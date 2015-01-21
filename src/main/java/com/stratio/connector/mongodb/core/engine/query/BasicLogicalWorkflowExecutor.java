@@ -33,6 +33,9 @@ import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 
+/**
+ * The LogicalWorkflowExecutor for non-aggregation queries.
+ */
 public class BasicLogicalWorkflowExecutor extends LogicalWorkflowExecutor {
 
     /**
@@ -40,15 +43,13 @@ public class BasicLogicalWorkflowExecutor extends LogicalWorkflowExecutor {
      *
      * @param logicalWorkflowParsed
      *            the logical workflow parsed
-     * @throws MongoValidationException
-     *             if the query specified in the logical workflow is not supported
      * @throws ExecutionException
-     *             if the execution fails
+     *             if the execution fails or the query specified in the logical workflow is not supported
      * @throws UnsupportedException
      *             if the specified operation is not supported.
      */
-    public BasicLogicalWorkflowExecutor(ProjectParsed logicalWorkflowParsed) throws MongoValidationException,
-                    ExecutionException, UnsupportedException {
+    public BasicLogicalWorkflowExecutor(ProjectParsed logicalWorkflowParsed) throws ExecutionException,
+                    UnsupportedException {
         super(logicalWorkflowParsed);
     }
 
@@ -70,12 +71,11 @@ public class BasicLogicalWorkflowExecutor extends LogicalWorkflowExecutor {
      * @param mongoClient
      *            the MongoDB client.
      * @return the Crossdata ResultSet.
-     * @throws MongoValidationException
-     *             if the query specified in the logical workflow is not supported.
+     * @throws MongoValidationException .
      * @throws ExecutionException
-     *             if the execution fails.
+     *             if the execution fails or the query specified in the logical workflow is not supported.
      */
-    public ResultSet executeQuery(MongoClient mongoClient) throws ExecutionException, MongoValidationException {
+    public ResultSet executeQuery(MongoClient mongoClient) throws ExecutionException {
 
         DB db = mongoClient.getDB(logicalWorkflowData.getProject().getCatalogName());
         DBCollection collection = db.getCollection(logicalWorkflowData.getProject().getTableName().getName());

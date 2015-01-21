@@ -71,27 +71,23 @@ public abstract class LogicalWorkflowExecutor {
     /**
      * Builds the query.
      *
-     * @throws MongoValidationException
-     *             if the query specified in the logical workflow is not supported.
      * @throws ExecutionException
-     *             if the execution fails.
+     *             if the execution fails or the query specified in the logical workflow is not supported.
      * @throws UnsupportedException
      *             if the specified operation is not supported.
      */
-    protected abstract void buildQuery() throws MongoValidationException, ExecutionException, UnsupportedException;
+    protected abstract void buildQuery() throws ExecutionException, UnsupportedException;
 
     /**
      * Execute the query.
      *
      * @param mongoClient
      *            the MongoDB client.
-     * @return the Crossdata ResultSet.
-     * @throws MongoValidationException
-     *             if the query specified in the logical workflow is not supported.
      * @throws ExecutionException
-     *             if the execution fails.
+     *             if the execution fails or the query specified in the logical workflow is not supported.
+     * @return the Crossdata ResultSet.
      */
-    public abstract ResultSet executeQuery(MongoClient mongoClient) throws MongoValidationException, ExecutionException;
+    public abstract ResultSet executeQuery(MongoClient mongoClient) throws ExecutionException;
 
     /**
      * Builds the group by.
