@@ -163,6 +163,12 @@ Connector: connector.mongoconnector	ONLINE	[]	[datastore.mongo]	akka.tcp://Cross
 Creating the database and collection
 ===============================
 
+If schema metadata has not been imported from MongoDB, Crossdata cannot work with databases previously created. So, before inserting new data it is possible discover the existing databases and collections with an asynchronous operation running this command:
+```
+    > DISCOVER METADATA ON CLUSTER mongoCluster;
+```
+The existing schemas will be displayed when the operation finishes. 
+
 Step 1: Create the database
 ---------------------------
 
