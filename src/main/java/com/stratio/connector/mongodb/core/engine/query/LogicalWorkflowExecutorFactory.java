@@ -18,24 +18,25 @@
 package com.stratio.connector.mongodb.core.engine.query;
 
 import com.stratio.connector.commons.engine.query.ProjectParsed;
-import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
 
 /**
  * A factory for creating LogicalWorkflowExecutor objects.
  */
-public class LogicalWorkflowExecutorFactory {
+public final class LogicalWorkflowExecutorFactory {
+
+    private LogicalWorkflowExecutorFactory() {
+
+    }
 
     /**
      * Checks Whether the aggregation framework is required for logicalworkflow or not.
-     *
+     * 
      * @param logicalWorkfloParsed
      *            the logical workflow parsed
-     * @throws MongoValidationException
-     *             if the query specified in the logical workflow is not supported.
      * @throws ExecutionException
-     *             if the execution fails.
+     *             if the execution fails or the query specified in the logical workflow is not supported.
      * @throws UnsupportedException
      *             if the specified operation is not supported.
      * @return a BasicLogicalWorkflowExecutor if the aggregation is not required. Otherwise, a
@@ -43,10 +44,8 @@ public class LogicalWorkflowExecutorFactory {
      * 
      */
     public static LogicalWorkflowExecutor getLogicalWorkflowExecutor(ProjectParsed logicalWorkfloParsed)
-                    throws MongoValidationException, ExecutionException, UnsupportedException {
+                    throws ExecutionException, UnsupportedException {
         LogicalWorkflowExecutor logicalWorkflowExecutor;
-
-        // Computes if the aggregation is required.
 
         if (logicalWorkfloParsed.getGroupBy() != null) {
             logicalWorkflowExecutor = new AggregationLogicalWorkflowExecutor(logicalWorkfloParsed);

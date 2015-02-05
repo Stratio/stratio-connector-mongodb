@@ -51,7 +51,7 @@ import com.stratio.crossdata.common.statements.structures.StringSelector;
 public final class IndexUtils {
 
     /** The logger. */
-    private static final Logger logger = LoggerFactory.getLogger(IndexUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IndexUtils.class);
 
     private IndexUtils() {
     }
@@ -117,7 +117,7 @@ public final class IndexUtils {
             indexDBObject = getCustomIndexDBObject(indexMetadata);
         } else {
             String msg = "Index type " + indexMetadata.getType().toString() + " is not supported";
-            logger.error(msg);
+            LOGGER.error(msg);
             throw new MongoValidationException(msg);
         }
 
@@ -130,13 +130,13 @@ public final class IndexUtils {
 
         if (options == null) {
             String msg = "The custom index must have an index type and fields";
-            logger.debug(msg);
+            LOGGER.debug(msg);
             throw new MongoValidationException(msg);
         }
         Selector selector = options.get(INDEX_TYPE.getOptionName());
         if (selector == null) {
             String msg = "The custom index must have an index type";
-            logger.debug(msg);
+            LOGGER.debug(msg);
             throw new MongoValidationException(msg);
         }
 
@@ -149,7 +149,7 @@ public final class IndexUtils {
                 String[] fieldInfo = field.split(":");
                 if (fieldInfo.length != 2) {
                     String msg = "Format error. The fields in a compound index must be: fieldname:asc|desc [, field2:desc ...] ";
-                    logger.debug(msg);
+                    LOGGER.debug(msg);
                     throw new MongoValidationException(msg);
                 }
                 int order = fieldInfo[1].trim().equals("asc") ? 1 : -1;
@@ -158,7 +158,7 @@ public final class IndexUtils {
         } else {
             if (fields.length != 1) {
                 String msg = "The " + indexType + " index must have a single field";
-                logger.debug(msg);
+                LOGGER.debug(msg);
                 throw new MongoValidationException(msg);
             }
             String mongoIndexType;
@@ -229,7 +229,7 @@ public final class IndexUtils {
             try {
                 db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(indexDBObject);
             } catch (Exception e) {
-                logger.error("Error dropping the index with " + indexDBObject + " :" + e.getMessage());
+                LOGGER.error("Error dropping the index with " + indexDBObject + " :" + e.getMessage());
                 throw new ExecutionException(e.getMessage(), e);
             }
         } else if (indexMetadata.getType() == IndexType.FULL_TEXT) {
@@ -249,7 +249,7 @@ public final class IndexUtils {
             try {
                 db.getCollection(indexMetadata.getName().getTableName().getName()).dropIndex(defaultTextIndexName);
             } catch (Exception e) {
-                logger.error("Error dropping the index " + defaultTextIndexName + " :" + e.getMessage());
+                LOGGER.error("Error dropping the index " + defaultTextIndexName + " :" + e.getMessage());
                 throw new ExecutionException(e.getMessage(), e);
             }
         } else {

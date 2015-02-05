@@ -91,7 +91,7 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         for (Row recoveredRow : resultIterator) {
             Object obj = recoveredRow.getCell(COLUMN_4).getValue();
             List<Integer> valueL = (List<Integer>) obj;
-            assertTrue(valueL.contains(5));
+            assertTrue("The set must contain the value 5", valueL.contains(5));
             assertTrue("The type is correct ", obj instanceof List<?>);
             // assertEquals("The value is correct ", value4, recoveredRow.getCell(COLUMN_4).getValue());
         }
@@ -117,7 +117,7 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         for (Row recoveredRow : resultIterator) {
             Object obj = recoveredRow.getCell(COLUMN_4).getValue();
             List<Integer> valueL = (List<Integer>) obj;
-            assertTrue(valueL.contains(3));
+            assertTrue("The list must contain the value 3", valueL.contains(3));
             assertTrue("The type is correct ", obj instanceof List<?>);
             assertEquals("The value is correct ", value4, recoveredRow.getCell(COLUMN_4).getValue());
         }
@@ -146,9 +146,9 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         for (Row recoveredRow : resultIterator) {
             Object obj = recoveredRow.getCell(COLUMN_4).getValue();
             Map<String, Integer> valueMap = (Map<String, Integer>) obj;
-            assertEquals((Object) valueMap.get("a"), 1);
-            assertTrue("The type is correct ", obj instanceof Map<?, ?>);
-            assertEquals("The value is correct ", value4, recoveredRow.getCell(COLUMN_4).getValue());
+            assertEquals("The value of the key a should be 1", (Object) valueMap.get("a"), 1);
+            assertTrue("The type is not correct ", obj instanceof Map<?, ?>);
+            assertEquals("The value is not correct ", value4, recoveredRow.getCell(COLUMN_4).getValue());
         }
 
     }

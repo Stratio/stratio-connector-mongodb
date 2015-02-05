@@ -102,14 +102,12 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      *            the tableMetadata
      * @param connection
      *            the connection which contains the native connector
-     * @throws MongoValidationException
-     *             if the specified operation is not supported
      * @throws ExecutionException
-     *             if an error exist when running the database command
+     *             if an error exist when running the database command or the specified operation is not supported
      */
     @Override
     protected void createTable(TableMetadata tableMetadata, Connection<MongoClient> connection)
-                    throws MongoValidationException, ExecutionException {
+                    throws ExecutionException {
 
         if (tableMetadata == null) {
             throw new MongoValidationException("the table metadata is required");
@@ -173,14 +171,12 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      *            the index metadata
      * @param connection
      *            the connection
-     * @throws MongoValidationException
-     *             if the specified index is not supported
      * @throws ExecutionException
-     *             if an error exist when running the database command
+     *             if an error exist when running the database command or the specified operation is not supported
      */
     @Override
     protected void createIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)
-                    throws MongoValidationException, ExecutionException {
+                    throws ExecutionException {
 
         DB db = connection.getNativeConnection().getDB(
                         indexMetadata.getName().getTableName().getCatalogName().getName());
@@ -209,13 +205,10 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      * @param connection
      *            the connection
      * @throws ExecutionException
-     *             if an error exist when running the database command
-     * @throws MongoValidationException
-     *             if the specified operation is not supported
+     *             if an error exist when running the database command or the specified operation is not supported
      */
     @Override
-    protected void dropIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection)
-                    throws ExecutionException, MongoValidationException {
+    protected void dropIndex(IndexMetadata indexMetadata, Connection<MongoClient> connection) throws ExecutionException {
         DB db = connection.getNativeConnection().getDB(
                         indexMetadata.getName().getTableName().getCatalogName().getName());
 
@@ -239,7 +232,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 
     @Override
     protected void alterTable(TableName tableName, AlterOptions alterOptions, Connection<MongoClient> connection)
-                    throws MongoValidationException, ExecutionException {
+                    throws ExecutionException {
 
         DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
         DBCollection collection = db.getCollection(tableName.getName());

@@ -75,8 +75,8 @@ public class DiscoverCatalogMetadataFT extends GenericDiscoverCatalogMetadataFT 
         assertEquals("The index should have 2 columns", 2, indexMetadata.getColumns().keySet().size());
         Iterator<ColumnName> iterator = indexMetadata.getColumns().keySet().iterator();
 
-        assertEquals(COLUMN_1, iterator.next().getName());
-        assertEquals(COLUMN_2, iterator.next().getName());
+        assertEquals("The first index column should be " + COLUMN_1, COLUMN_1, iterator.next().getName());
+        assertEquals("The second index column should be " + COLUMN_2, COLUMN_2, iterator.next().getName());
     }
 
     @Test
@@ -99,23 +99,29 @@ public class DiscoverCatalogMetadataFT extends GenericDiscoverCatalogMetadataFT 
 
         // table1
         assertEquals("The table must have 3 columns", 3, tableWithIndexProvided.getColumns().size());
-        String columnNameId = tableWithIndexProvided.getColumns().get(new ColumnName(tableMetadata.getName(), "_id"))
-                        .getName().getName();
-        assertEquals("_id", columnNameId);
-        String columnNameProvided_1 = tableWithIndexProvided.getColumns()
-                        .get(new ColumnName(tableMetadata.getName(), COLUMN_1)).getName().getName();
-        assertEquals(COLUMN_1, columnNameProvided_1);
-        String columnNameProvided_2 = tableWithIndexProvided.getColumns()
-                        .get(new ColumnName(tableMetadata.getName(), COLUMN_2)).getName().getName();
-        assertEquals(COLUMN_2, columnNameProvided_2);
+
+        assertTrue("The column _id has not been found",
+                        tableWithIndexProvided.getColumns().containsKey(new ColumnName(tableMetadata.getName(), "_id")));
+
+        assertTrue("The column " + COLUMN_1 + " has not been found",
+                        tableWithIndexProvided.getColumns().containsKey(
+                                        new ColumnName(tableMetadata.getName(), COLUMN_1)));
+        assertTrue("The column " + COLUMN_2 + " has not been found",
+                        tableWithIndexProvided.getColumns().containsKey(
+                                        new ColumnName(tableMetadata.getName(), COLUMN_2)));
         // basic table
         assertEquals("The table must have 2 columns", 2, tableSimpleProvided.getColumns().size());
-        columnNameId = tableSimpleProvided.getColumns().get(new ColumnName(tableMetadataSecondary.getName(), "_id"))
-                        .getName().getName();
-        assertEquals("_id", columnNameId);
-        columnNameProvided_1 = tableSimpleProvided.getColumns()
-                        .get(new ColumnName(tableMetadataSecondary.getName(), SECOND_TABLE_COLUMN)).getName().getName();
-        assertEquals(SECOND_TABLE_COLUMN, columnNameProvided_1);
+        assertTrue("The column " + COLUMN_1 + " has not been found",
+                        tableWithIndexProvided.getColumns().containsKey(
+                                        new ColumnName(tableMetadata.getName(), COLUMN_1)));
+
+        assertTrue("The column _id has not been found",
+                        tableSimpleProvided.getColumns().containsKey(
+                                        new ColumnName(tableMetadataSecondary.getName(), "_id")));
+
+        assertTrue("The column _id has not been found",
+                        tableSimpleProvided.getColumns().containsKey(
+                                        new ColumnName(tableMetadataSecondary.getName(), SECOND_TABLE_COLUMN)));
 
     }
 
@@ -131,11 +137,15 @@ public class DiscoverCatalogMetadataFT extends GenericDiscoverCatalogMetadataFT 
         TableMetadata tableSimpleProvided = catalogMetadataProvided.getTables().get(tableMetadataSecondary.getName());
 
         // Results verification
-        assertTrue(tableWithIndexProvided.getName().getName().equals(tableMetadata.getName().getName()));
-        assertTrue(tableWithIndexProvided.getClusterRef().getName().equals(getClusterName().getName()));
+        assertTrue("The table " + tableMetadata.getName() + " should be retrieved", tableWithIndexProvided.getName()
+                        .getName().equals(tableMetadata.getName().getName()));
+        assertTrue("The cluster name is not the expected",
+                        tableWithIndexProvided.getClusterRef().getName().equals(getClusterName().getName()));
 
-        assertTrue(tableSimpleProvided.getName().getName().equals(tableMetadataSecondary.getName().getName()));
-        assertTrue(tableSimpleProvided.getClusterRef().getName().equals(getClusterName().getName()));
+        assertTrue("The table " + tableMetadataSecondary.getName() + " should be retrieved", tableSimpleProvided
+                        .getName().getName().equals(tableMetadataSecondary.getName().getName()));
+        assertTrue("The cluster name is not the expected",
+                        tableSimpleProvided.getClusterRef().getName().equals(getClusterName().getName()));
 
     }
 

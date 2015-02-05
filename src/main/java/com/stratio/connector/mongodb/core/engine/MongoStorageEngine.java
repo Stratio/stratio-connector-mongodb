@@ -173,7 +173,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     @Override
     protected void delete(TableName tableName, Collection<Filter> whereClauses, Connection<MongoClient> connection)
-                    throws MongoValidationException, ExecutionException, UnsupportedException {
+                    throws ExecutionException, UnsupportedException {
 
         DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
         if (db.collectionExists(tableName.getName())) {
@@ -192,8 +192,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     @Override
     protected void update(TableName tableName, Collection<Relation> assignments, Collection<Filter> whereClauses,
-                    Connection<MongoClient> connection) throws MongoValidationException, ExecutionException,
-                    UnsupportedException {
+                    Connection<MongoClient> connection) throws ExecutionException, UnsupportedException {
 
         DB db = connection.getNativeConnection().getDB(tableName.getCatalogName().getName());
         DBCollection coll = db.getCollection(tableName.getName());

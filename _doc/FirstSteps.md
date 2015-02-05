@@ -46,7 +46,7 @@ Prerequisites
 -------------
 
 -   Basic knowledge of SQL like language.
--   First of all [Stratio Crossdata 0.1.1](https://github.com/Stratio/crossdata) is needed and must be installed. The server and the shell must be running.
+-   First of all [Stratio Crossdata 0.2.0](https://github.com/Stratio/crossdata) is needed and must be installed. The server and the shell must be running.
 -   An installation of [MongoDB](http://docs.mongodb.org/manual/installation/). 
 -   Build an MongoConnector executable and run it following this [guide](https://github.com/Stratio/stratio-connector-mongodb#build-an-executable-connector-mongo). 
 
@@ -162,6 +162,12 @@ Connector: connector.mongoconnector	ONLINE	[]	[datastore.mongo]	akka.tcp://Cross
 
 Creating the database and collection
 ===============================
+
+If schema metadata has not been imported from MongoDB, Crossdata cannot work with databases previously created. So, before inserting new data it is possible discover the existing databases and collections with an asynchronous operation running this command:
+```
+    > DISCOVER METADATA ON CLUSTER mongoCluster;
+```
+The existing schemas will be displayed when the operation finishes. 
 
 Step 1: Create the database
 ---------------------------
@@ -630,5 +636,5 @@ Step 11: Drop database
 Where to go from here
 =====================
 
-To learn more about Stratio Crossdata, we recommend to visit the [Crossdata Reference](https://github.com/Stratio/crossdata/blob/0.1.1/_doc/meta-reference.md "Meta Reference").
+To learn more about Stratio Crossdata, we recommend to visit the [Crossdata Reference](https://github.com/Stratio/crossdata/tree/master/_doc/meta-reference.md "Meta Reference").
 

@@ -99,7 +99,7 @@ public class DriverConnection extends Connection<MongoClient> {
      * @see com.stratio.connector.commons.connection.Connection#isConnect()
      */
     @Override
-    public boolean isConnected() {
+    public final boolean isConnected() {
 
         boolean isConnected = false;
 
@@ -108,7 +108,7 @@ public class DriverConnection extends Connection<MongoClient> {
                 mongoClient.getConnectPoint();
                 isConnected = true;
             } catch (Exception error) {
-                logger.error(error.getMessage());
+                logger.error("Error connecting with Mongo :" + error.getMessage(), error);
             }
         }
         return isConnected;

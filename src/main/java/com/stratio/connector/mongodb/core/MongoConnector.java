@@ -153,7 +153,7 @@ public class MongoConnector extends CommonsConnector {
                 try {
                     shutdown();
                 } catch (ExecutionException e) {
-                    logger.error("Fail ShutDown");
+                    logger.error("Shutdown connector: " + e.getMessage(), e);
                 }
             }
         });

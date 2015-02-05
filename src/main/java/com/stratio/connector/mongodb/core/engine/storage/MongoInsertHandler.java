@@ -64,7 +64,6 @@ public class MongoInsertHandler {
      */
     public void startBatch() {
         bulkWriteOperation = collection.initializeUnorderedBulkOperation();
-        // TODO with ordered operations an exception is thrown when the first operation fails
 
     }
 

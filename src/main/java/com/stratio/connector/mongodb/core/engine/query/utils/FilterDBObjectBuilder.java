@@ -191,7 +191,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         case ASTERISK:
         case FUNCTION:
         default:
-            throw new MongoValidationException("Not yet supported");
+            throw new MongoValidationException("Right selector type not supported: " + rightSelector.getType());
 
         }
         return value;
