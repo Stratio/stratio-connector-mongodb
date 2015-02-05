@@ -16,23 +16,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.stratio.connector</groupId>
 	<artifactId>stratio-connector-mongodb</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 	<description>Connector for MongoDB</description>
 	<url>http://www.stratio.com</url>
 	<name>MongoDB Connector</name>
-	<packaging>pom</packaging>
 
 	<properties>
-		<mongo.connector.version>0.2.0</mongo.connector.version>
-		<crossdata.version>0.1.1</crossdata.version>
-		<commons.connector.version>0.2.0</commons.connector.version>
+		<crossdata.version>0.2.0</crossdata.version>
+		<commons.connector.version>0.4.0</commons.connector.version>
 		<mongo.driver.version>2.12.4</mongo.driver.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-
-
-	<modules>
-		<module>connector-mongodb-core</module>
-	</modules>
 
 
 	<licenses>
@@ -45,11 +40,34 @@
 
 	<profiles>
 		<profile>
-			<id>functional</id>
-			<modules>
-				<module>connector-mongodb-core</module>
-				<module>connector-mongodb-ftest</module>
-			</modules>
+			<id>FT</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.18</version>
+						<configuration>
+							<includes>
+								<include>**/*FT.java</include>
+							</includes>
+							<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*FT.class</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 
@@ -86,6 +104,65 @@
 
 	</distributionManagement>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>${mongo.driver.version}</version>
+		</dependency>
+		<dependency>
+			<artifactId>crossdata-common</artifactId>
+			<groupId>com.stratio.crossdata</groupId>
+			<version>${crossdata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.stratio.connector</groupId>
+			<artifactId>stratio-connector-commons</artifactId>
+			<version>${commons.connector.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.stratio.crossdata</groupId>
+			<artifactId>crossdata-connector</artifactId>
+			<version>${crossdata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.stratio.connector</groupId>
+			<artifactId>stratio-connector-commons</artifactId>
+			<classifier>tests</classifier>
+			<version>${commons.connector.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>1.5.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>1.5.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.8.8</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -97,13 +174,45 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.17</version>
+				<version>2.18</version>
 				<configuration>
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+					<argLine>${jacocoUT-argline}</argLine>
 					<argLine>-noverify</argLine>
+					<skip></skip>
+					<testFailureIgnore>true</testFailureIgnore>
 				</configuration>
 			</plugin>
 
@@ -120,7 +229,48 @@
 						</manifestEntries>
 					</archive>
 				</configuration>
-				</plugin>
+			</plugin>
+
+			<plugin>
+				<artifactId>crossdata-connector-maven-plugin</artifactId>
+				<groupId>com.stratio.crossdata</groupId>
+				<version>${crossdata.version}</version>
+				<configuration>
+					<mainClass>com.stratio.connector.mongodb.core.MongoConnector</mainClass>
+					<jmxPort>7191</jmxPort>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.1.201405082137</version>
+				<configuration>
+					<destFile>${basedir}/target/jacoco.exec</destFile>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<formats>
+						<format>xml</format>
+					</formats>
+				</configuration>
+			</plugin>
 
 
 		</plugins>
