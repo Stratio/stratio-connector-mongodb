@@ -22,8 +22,8 @@
 	<name>MongoDB Connector</name>
 
 	<properties>
-		<crossdata.version>0.2.0</crossdata.version>
-		<commons.connector.version>0.4.0</commons.connector.version>
+		<crossdata.version>0.2.0-001</crossdata.version>
+		<commons.connector.version>0.4.0-001</commons.connector.version>
 		<mongo.driver.version>2.12.4</mongo.driver.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
