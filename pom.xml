@@ -309,6 +309,69 @@
              </reportPlugins>
          </configuration>
      </plugin>
+ <plugin>
+                <groupId>com.stratio.mojo.unix</groupId>
+                <artifactId>unix-maven-plugin</artifactId>
+                <version>1.0-alpha-9</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <contact><![CDATA[Stratio <jmgomez@stratio.com>]]></contact>
+                    <contactEmail>jmgomez@stratio.com</contactEmail>
+                    <size>2048</size>
+                    <deb>
+                        <section>devel</section>
+                    </deb>
+                    <rpm>
+                        <group>stratio</group>
+                    </rpm>
+                    <assembly>
+                        <mkdirs>
+                            <paths>
+                                <path>etc/sds/stratio-connector-mongodb</path>
+                                <path>etc/default</path>
+                            </paths>
+                            <attributes>
+                                <user>stratio</user>
+                                <group>stratio</group>
+                                <mode>644</mode>
+                            </attributes>
+                        </mkdirs>
+                        <copyDirectory>
+                            <from>target/stratio-connector-mongodb-${project.version}/bin</from>
+                            <to>opt/sds/stratio-connector-mongodb/bin</to>
+                        </copyDirectory>
+                        <copyDirectory>
+                            <from>target/stratio-connector-mongodb-${project.version}/lib</from>
+                            <to>opt/sds/stratio-connector-mongodb/lib</to>
+                        </copyDirectory>
+                        <copyDirectory>
+                            <from>target/stratio-connector-mongodb-${project.version}/conf</from>
+                            <to>opt/sds/stratio-connector-mongodb/conf</to>
+                        </copyDirectory>
+                        <copyDirectory>
+                            <from>src/main/template</from>
+                            <to>opt/sds/stratio-connector-mongodb/template</to>
+                        </copyDirectory>
+                        <copyDirectory>
+                            <from>src/main/config</from>
+                            <to>etc/sds/stratio-connector-mongodb</to>
+                        </copyDirectory>
+                        <copyDirectory>
+                            <from>src/main/unix/files_and_dirs/etc/default</from>
+                            <to>etc/default</to>
+                        </copyDirectory>
+                        <copyFile>
+                            <path>src/main/include/LICENSE</path>
+                            <toFile>opt/sds/stratio-connector-mongodb/LICENSE</toFile>
+                        </copyFile>
+                        <copyFile>
+                            <path>src/main/include/NOTICE</path>
+                            <toFile>opt/sds/stratio-connector-mongodb/NOTICE</toFile>
+                        </copyFile>
+                    </assembly>
+                </configuration>
+            </plugin>
+
 
 
 

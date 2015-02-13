@@ -1,0 +1,4 @@
+/etc/default/stratio-connector-mongodb
+/etc/sds/stratio-connector-mongodb/connector-application.conf
+/etc/sds/stratio-connector-mongodb/log.properties
+/etc/sds/stratio-connector-mongodb/connector-reference.conf

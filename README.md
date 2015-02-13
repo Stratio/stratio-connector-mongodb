@@ -29,7 +29,7 @@ To generate the executable, execute the following command:
 The user and the group of the service are set up to root by default. It could be changed in the following file:
 
 ```
-   > target/stratio-connector-mongodb-0.3.0/bin/stratio-connector-mongodb-0.3.0
+   > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT
 ```
 
 
@@ -38,14 +38,41 @@ The user and the group of the service are set up to root by default. It could be
 To run Mongo Connector execute:
 
 ```
-   > target/stratio-connector-mongodb-0.3.0/bin/stratio-connector-mongodb-0.3.0 start
+   > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT start
 ```
 
 To stop the connector execute:
 
 ```
-   > target/stratio-connector-mongodb-0.3.0/bin/stratio-connector-mongodb-0.3.0 stop
+   > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT stop
 ```
+
+## Build a redistributable package ##
+
+It is possible too, to create a RPM or DEB redistributable package.
+
+RPM Package:
+
+    > mvn unix:package-rpm -N
+    
+DEB Package:
+
+    > mvn unix:package-deb -N
+
+Once the package it's created, execute this commands to install:
+
+RPM Package:
+    
+    > rpm -i target/stratio-connector-mongodb-0.4.0-SNAPSHOT.rpm
+     
+DEB Package:
+    
+    > dpkg -i target/stratio-connector-mongodb-0.4.0-SNAPSHOT.deb
+
+Now to start/stop the connector:
+    
+    > service stratio-connector-mongodb start
+    > service stratio-connector-mongodb stop
 
 
 ## How to use Mongo Connector ##
@@ -56,7 +83,7 @@ A complete tutorial is available [here](_doc/FirstSteps.md). The basic commands 
  2. Start Mongo Connector as it is explained before.
  3. In crossdata-shell:
     
-    Add a data store with this command.  We need to specified the XML manifest that defines the data store. The XML manifest can be found in the path of the Mongo Connector in target/stratio-connector-mongodb-0.3.0/conf/MongoDataStore.xml
+    Add a data store with this command.  We need to specified the XML manifest that defines the data store. The XML manifest can be found in the path of the Mongo Connector in target/stratio-connector-mongodb-0.4.0-SNAPSHOT/conf/MongoDataStore.xml
       
       ```
          xdsh:user>  ADD DATASTORE <Absolute path to MongoDB Datastore manifest>;
@@ -68,7 +95,7 @@ A complete tutorial is available [here](_doc/FirstSteps.md). The basic commands 
          xdsh:user>  ATTACH CLUSTER <cluster_name> ON DATASTORE <datastore_name> WITH OPTIONS {'Hosts': '[<IPHost_1,IPHost_2,...,IPHost_n>]', 'Port': '[<PortHost_1,PortHost_2,...,PortHost_n>]'};
       ```
 
-    Add the connector manifest. The XML with the manifest can be found in the path of the Mongo Connector in target/stratio-connector-mongodb-0.3.0/conf/MongoConnector.xml
+    Add the connector manifest. The XML with the manifest can be found in the path of the Mongo Connector in target/stratio-connector-mongodb-0.4.0-SNAPSHOT/conf/MongoConnector.xml
 
        ```
          xdsh:user>  ADD CONNECTOR <Path to MongoDB Connector Manifest>

@@ -33,7 +33,7 @@ could be changed in the following file:
 
 ::
 
-       > target/stratio-connector-mongodb-0.3.0/bin/stratio-connector-mongodb-0.3.0
+       > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT
 
 Running the Stratio Connector Mongo
 -----------------------------------
@@ -42,13 +42,50 @@ To run Mongo Connector execute:
 
 ::
 
-       > target/stratio-connector-mongodb-0.3.0/bin/stratio-connector-mongodb-0.3.0 start
+       > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT start
 
 To stop the connector execute:
 
 ::
 
-       > target/stratio-connector-mongodb-0.3.0/bin/stratio-connector-mongodb-0.3.0 stop
+       > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT stop
+
+Build a redistributable package
+-------------------------------
+It is possible too, to create a RPM or DEB redistributable package.
+
+RPM Package:
+
+::
+
+       > mvn unix:package-rpm -N
+    
+DEB Package:
+
+::
+   
+       > mvn unix:package-deb -N
+
+Once the package it's created, execute this commands to install:
+
+RPM Package:
+ 
+::   
+    
+       > rpm -i target/stratio-connector-mongodb-0.4.0-SNAPSHOT.rpm
+     
+DEB Package:
+
+::   
+    
+       > dpkg -i target/stratio-connector-mongodb-0.4.0-SNAPSHOT.deb
+
+Now to start/stop the connector:
+ 
+::   
+    
+       > service stratio-connector-mongodb start
+       > service stratio-connector-mongodb stop
 
 How to use Mongo Connector
 --------------------------
@@ -64,7 +101,7 @@ basic commands are described below.
    Add a data store with this command. We need to specified the XML
    manifest that defines the data store. The XML manifest can be found
    in the path of the Mongo Connector in
-   target/stratio-connector-mongodb-0.3.0/conf/MongoDataStore.xml
+   target/stratio-connector-mongodb-0.4.0-SNAPSHOT/conf/MongoDataStore.xml
 
    ``xdsh:user>  ADD DATASTORE <Absolute path to MongoDB Datastore manifest>;``
 
@@ -75,7 +112,7 @@ basic commands are described below.
 
    Add the connector manifest. The XML with the manifest can be found in
    the path of the Mongo Connector in
-   target/stratio-connector-mongodb-0.3.0/conf/MongoConnector.xml
+   target/stratio-connector-mongodb-0.4.0-SNAPSHOT/conf/MongoConnector.xml
 
    ``xdsh:user>  ADD CONNECTOR <Path to MongoDB Connector Manifest>``
 
