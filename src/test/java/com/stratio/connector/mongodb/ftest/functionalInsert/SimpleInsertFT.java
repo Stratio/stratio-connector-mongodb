@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.stratio.crossdata.common.metadata.DataType;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -56,9 +57,9 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
                         + clusterName.getName() + " ***********************************");
         Object value4 = new Float(25.32);
-        insertRow(clusterName, value4, ColumnType.FLOAT, VALUE_1, true);
+        insertRow(clusterName, value4, new ColumnType(DataType.FLOAT), VALUE_1, true);
 
-        ResultSet resultIterator = createResultSetTyped(clusterName, ColumnType.FLOAT);
+        ResultSet resultIterator = createResultSetTyped(clusterName, new ColumnType(DataType.FLOAT));
         assertEquals("It has only one result", 1, resultIterator.size());
         for (Row recoveredRow : resultIterator) {
 
@@ -81,8 +82,8 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         valueSet.add(8);
         Object value4 = valueSet;
 
-        ColumnType colType = ColumnType.SET;
-        colType.setDBCollectionType(ColumnType.INT);
+        ColumnType colType = new ColumnType(DataType.SET);
+        colType.setDBCollectionType(new ColumnType(DataType.INT));
 
         insertRow(clusterName, value4, colType, VALUE_1, true);
 
@@ -107,8 +108,8 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         List<Integer> al = Arrays.asList(1, 2, 3, 4);
         Object value4 = al;
 
-        ColumnType colType = ColumnType.LIST;
-        colType.setDBCollectionType(ColumnType.INT);
+        ColumnType colType = new ColumnType(DataType.LIST);
+        colType.setDBCollectionType(new ColumnType(DataType.INT));
 
         insertRow(clusterName, value4, colType, VALUE_1, true);
 
@@ -136,8 +137,8 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
 
         Object value4 = map;
 
-        ColumnType colType = ColumnType.MAP;
-        colType.setDBMapType(ColumnType.VARCHAR, ColumnType.INT);
+        ColumnType colType = new ColumnType(DataType.MAP);
+        colType.setDBMapType(new ColumnType(DataType.VARCHAR), new ColumnType(DataType.INT));
 
         insertRow(clusterName, value4, colType, VALUE_1, true);
 
@@ -162,9 +163,9 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
                         + clusterName.getName() + " ***********************************");
         Object value4 = new Date();
-        ColumnType colType = ColumnType.NATIVE;
+        ColumnType colType = new ColumnType(DataType.NATIVE);
 
-        insertRow(clusterName, value4, colType.NATIVE, VALUE_1, true);
+        insertRow(clusterName, value4, colType, VALUE_1, true);
 
         ResultSet resultIterator = createResultSet(clusterName);
         assertEquals("It has only one result", 1, resultIterator.size());
@@ -181,7 +182,7 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
                         + clusterName.getName() + " ***********************************");
         Object value4 = null;
-        ColumnType colType = ColumnType.INT;
+        ColumnType colType = new ColumnType(DataType.INT);
 
         insertRow(clusterName, value4, colType, VALUE_1, true);
 
@@ -199,7 +200,7 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         System.out.println("*********************************** INIT FUNCTIONAL TEST testInsertSamePK "
                         + clusterName.getName() + " ***********************************");
         Object value4 = null;
-        ColumnType colType = ColumnType.INT;
+        ColumnType colType = new ColumnType(DataType.INT);
 
         insertRowWithoutColumn4(clusterName, value4, colType, VALUE_1, true);
 
@@ -210,7 +211,7 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         }
     }
 
-    protected void insertRowWithoutColumn4(ClusterName cluesterName, Object value_4, ColumnType colType_4,
+    protected void insertRowWithoutColumn4(ClusterName clusterName, Object value_4, ColumnType colType_4,
                     String PK_VALUE, boolean withPK) throws ConnectorException {
         Row row = new Row();
         Map<String, Cell> cells = new HashMap<>();
@@ -222,9 +223,9 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
 
         row.setCells(cells);
 
-        TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(CATALOG, TABLE);
-        tableMetadataBuilder.addColumn(COLUMN_1, ColumnType.VARCHAR).addColumn(COLUMN_2, ColumnType.VARCHAR)
-                        .addColumn(COLUMN_3, ColumnType.VARCHAR).addColumn(COLUMN_4, colType_4);
+        TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(CATALOG, TABLE, clusterName.toString());
+        tableMetadataBuilder.addColumn(COLUMN_1, new ColumnType(DataType.VARCHAR)).addColumn(COLUMN_2, new ColumnType(DataType.VARCHAR))
+                .addColumn(COLUMN_3, new ColumnType(DataType.VARCHAR)).addColumn(COLUMN_4, colType_4);
         if (withPK) {
             tableMetadataBuilder.withPartitionKey(COLUMN_1);
         }
@@ -233,7 +234,7 @@ public class SimpleInsertFT extends GenericSimpleInsertFT {
         if (getConnectorHelper().isTableMandatory()) {
             connector.getMetadataEngine().createTable(getClusterName(), targetTable);
         }
-        connector.getStorageEngine().insert(cluesterName, targetTable, row, false);
+        connector.getStorageEngine().insert(clusterName, targetTable, row, false);
         refresh(CATALOG);
     }
 

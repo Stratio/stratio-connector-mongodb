@@ -17,10 +17,7 @@
  */
 package com.stratio.connector.mongodb.core.engine.query.utils;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,6 +34,7 @@ import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.logicalplan.Select;
 import com.stratio.crossdata.common.metadata.ColumnMetadata;
 import com.stratio.crossdata.common.metadata.ColumnType;
+import com.stratio.crossdata.common.metadata.DataType;
 import com.stratio.crossdata.common.metadata.Operations;
 import com.stratio.crossdata.common.statements.structures.ColumnSelector;
 import com.stratio.crossdata.common.statements.structures.Selector;
@@ -57,9 +55,9 @@ public class MetaResultUtilTest {
     @Test
     public void createRowWithAliasTest() throws ExecutionException {
         List<ConnectorField> columns;
-        columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, ColumnType.VARCHAR), new ConnectorField(
-                        COLUMN_2, ALIAS_COLUMN_2, ColumnType.VARCHAR), new ConnectorField(COLUMN_3, ALIAS_COLUMN_3,
-                        ColumnType.VARCHAR));
+        columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, new ColumnType(DataType.VARCHAR)), new ConnectorField(
+                        COLUMN_2, ALIAS_COLUMN_2, new ColumnType(DataType.VARCHAR)), new ConnectorField(COLUMN_3, ALIAS_COLUMN_3,
+                        new ColumnType(DataType.VARCHAR)));
         Select select = getSelect(columns);
 
         DBObject rowDBObject = new BasicDBObject(COLUMN_1, COLUMNS_VALUE);
@@ -82,9 +80,9 @@ public class MetaResultUtilTest {
     @Test
     public void createMetadataTest() throws MongoValidationException {
         List<ConnectorField> columns;
-        columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, ColumnType.VARCHAR), new ConnectorField(
-                        COLUMN_2, ALIAS_COLUMN_2, ColumnType.VARCHAR), new ConnectorField(COLUMN_3, ALIAS_COLUMN_3,
-                        ColumnType.VARCHAR));
+        columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, new ColumnType(DataType.VARCHAR)), new ConnectorField(
+                        COLUMN_2, ALIAS_COLUMN_2, new ColumnType(DataType.VARCHAR)), new ConnectorField(COLUMN_3, ALIAS_COLUMN_3,
+                new ColumnType(DataType.VARCHAR)));
         Select select = getSelect(columns);
 
         Project project = Mockito.mock(Project.class);
@@ -97,7 +95,7 @@ public class MetaResultUtilTest {
                         .getColumnMap().size(), columnsMetadata.size());
 
         Assert.assertEquals("The name is not the expected", COLUMN_1, columnsMetadata.get(0).getName().getName());
-        Assert.assertEquals("The type is not the expected", ColumnType.VARCHAR, columnsMetadata.get(0).getColumnType());
+        Assert.assertEquals("The type is not the expected", new ColumnType(DataType.VARCHAR), columnsMetadata.get(0).getColumnType());
         Assert.assertEquals("The alias is not the expected", ALIAS_COLUMN_1, columnsMetadata.get(0).getName()
                         .getAlias());
 
@@ -116,7 +114,10 @@ public class MetaResultUtilTest {
             typeMapFormColumnName.put(columnSelector, connectorField.columnType);
         }
 
-        select = new Select(Operations.PROJECT, mapping, types, typeMapFormColumnName);
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.PROJECT);
+
+        select = new Select(operations, mapping, types, typeMapFormColumnName);
 
         return select;
 

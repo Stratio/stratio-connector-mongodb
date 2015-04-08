@@ -89,7 +89,7 @@ public final class MetaResultUtils {
      */
     private static Object castValue(Object value, ColumnType columnType) {
         Object castedValue = value;
-        switch (columnType) {
+        switch (columnType.getDataType()) {
         case FLOAT:
             castedValue = ((Double) value).floatValue();
             break;
@@ -145,7 +145,7 @@ public final class MetaResultUtils {
      */
     private static ColumnType updateColumnType(ColumnType colType) {
         String dbType;
-        switch (colType) {
+        switch (colType.getDataType()) {
         case FLOAT:
             break;
         case SET:

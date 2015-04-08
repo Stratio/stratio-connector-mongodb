@@ -26,7 +26,10 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.stratio.crossdata.common.metadata.DataType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,9 +74,10 @@ import com.stratio.crossdata.common.statements.structures.RelationSelector;
 import com.stratio.crossdata.common.statements.structures.Selector;
 import com.stratio.crossdata.common.statements.structures.StringSelector;
 
+
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ DB.class, MongoClient.class, BasicDBObject.class, StorageUtils.class, MongoStorageEngine.class,
-                FilterDBObjectBuilder.class })
+        FilterDBObjectBuilder.class })
 public class MongoStorageEngineTest {
 
     private static final String CLUSTER_NAME = "clustername";
@@ -83,8 +87,8 @@ public class MongoStorageEngineTest {
     private static final String OTHER_COLUMN_NAME = "OTHER_ROW_NAME";
     private static final String CELL_VALUE = "cell_value";
     private static final Object OTHER_CELL_VALUE = "othercellvalue";
-    private static final ColumnType VARCHAR_COLUMN_TYPE = ColumnType.VARCHAR;
-    private static final ColumnType INT_COLUMN_TYPE = ColumnType.INT;
+    private static final ColumnType VARCHAR_COLUMN_TYPE = new ColumnType(DataType.VARCHAR);
+    private static final ColumnType INT_COLUMN_TYPE = new ColumnType(DataType.INT);
 
     @Mock
     private MongoConnectionHandler connectionHandler;
@@ -118,7 +122,7 @@ public class MongoStorageEngineTest {
     public void testInsertWithoutPK() throws Exception {
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
-        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
         TableMetadata tableMetadata = tableMetaBuilder.build();
         Row row = new Row();
@@ -146,7 +150,7 @@ public class MongoStorageEngineTest {
     public void testBatchInsertWithoutPK() throws Exception {
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
-        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
         TableMetadata tableMetadata = tableMetaBuilder.build();
         Row row = new Row();
@@ -172,7 +176,7 @@ public class MongoStorageEngineTest {
     public void testInsertWithPK() throws Exception {
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
-        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
         tableMetaBuilder.withPartitionKey(COLUMN_NAME);
         TableMetadata tableMetadata = tableMetaBuilder.build();
@@ -198,7 +202,7 @@ public class MongoStorageEngineTest {
     public void testBatchInsertWithPK() throws Exception {
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
-        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
         tableMetaBuilder.withPartitionKey(COLUMN_NAME);
         TableMetadata tableMetadata = tableMetaBuilder.build();
@@ -234,7 +238,7 @@ public class MongoStorageEngineTest {
     public void testInsertIfNotExist() throws Exception {
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
-        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
         tableMetaBuilder.withPartitionKey(COLUMN_NAME);
         TableMetadata tableMetadata = tableMetaBuilder.build();
@@ -269,9 +273,9 @@ public class MongoStorageEngineTest {
     public void testBatchInsertIfNotExist() throws Exception {
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
-        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE)
-                        .withPartitionKey(COLUMN_NAME);
+                .withPartitionKey(COLUMN_NAME);
 
         TableMetadata tableMetadata = tableMetaBuilder.build();
         Row row = new Row();
@@ -316,8 +320,11 @@ public class MongoStorageEngineTest {
         Relation rel2 = getBasicRelation(OTHER_COLUMN_NAME, Operator.ASSIGN, OTHER_CELL_VALUE);
         Collection<Relation> assignments = Arrays.asList(rel1, rel2);
 
-        Collection<Filter> whereClauses = Arrays.asList(new Filter(Operations.FILTER_INDEXED_GT, getBasicRelation(
-                        COLUMN_NAME, Operator.GET, 20)));
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.FILTER_INDEXED_GT);
+
+        Collection<Filter> whereClauses = Arrays.asList(new Filter(operations, getBasicRelation(
+                COLUMN_NAME, Operator.GET, 20)));
 
         UpdateDBObjectBuilder updateDBObjectBuilder = mock(UpdateDBObjectBuilder.class);
         PowerMockito.whenNew(UpdateDBObjectBuilder.class).withNoArguments().thenReturn(updateDBObjectBuilder);
@@ -325,14 +332,14 @@ public class MongoStorageEngineTest {
         mongoStorageEngine.update(tableName, assignments, whereClauses, connection);
 
         verify(updateDBObjectBuilder, times(2)).addUpdateRelation(Matchers.any(Selector.class),
-                        Matchers.any(Operator.class), Matchers.any(Selector.class));
+                Matchers.any(Operator.class), Matchers.any(Selector.class));
         verify(updateDBObjectBuilder, times(1)).addUpdateRelation(rel1.getLeftTerm(), rel1.getOperator(),
-                        rel1.getRightTerm());
+                rel1.getRightTerm());
         verify(updateDBObjectBuilder, times(1)).addUpdateRelation(rel2.getLeftTerm(), rel2.getOperator(),
-                        rel2.getRightTerm());
+                rel2.getRightTerm());
 
         verify(collection, times(1)).update(Matchers.any(BasicDBObject.class), Matchers.any(BasicDBObject.class),
-                        Matchers.eq(false), Matchers.eq(true));
+                Matchers.eq(false), Matchers.eq(true));
 
         PowerMockito.verifyPrivate(mongoStorageEngine, times(1)).invoke("buildFilter", whereClauses);
 
@@ -353,8 +360,11 @@ public class MongoStorageEngineTest {
         Relation rel2 = getBasicRelation(OTHER_COLUMN_NAME, Operator.ASSIGN, OTHER_CELL_VALUE);
         Collection<Relation> assignments = Arrays.asList(rel1, rel2);
 
-        Collection<Filter> whereClauses = Arrays.asList(new Filter(Operations.FILTER_INDEXED_GT, getBasicRelation(
-                        COLUMN_NAME, Operator.GET, 20)));
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.FILTER_INDEXED_GT);
+
+        Collection<Filter> whereClauses = Arrays.asList(new Filter(operations, getBasicRelation(
+                COLUMN_NAME, Operator.GET, 20)));
 
         UpdateDBObjectBuilder updateDBObjectBuilder = mock(UpdateDBObjectBuilder.class);
         PowerMockito.whenNew(UpdateDBObjectBuilder.class).withNoArguments().thenReturn(updateDBObjectBuilder);
@@ -370,14 +380,14 @@ public class MongoStorageEngineTest {
         mongoStorageEngine.update(tableName, assignments, whereClauses, connection);
 
         verify(updateDBObjectBuilder, times(2)).addUpdateRelation(Matchers.any(Selector.class),
-                        Matchers.any(Operator.class), Matchers.any(Selector.class));
+                Matchers.any(Operator.class), Matchers.any(Selector.class));
         verify(updateDBObjectBuilder, times(1)).addUpdateRelation(rel1.getLeftTerm(), rel1.getOperator(),
-                        rel1.getRightTerm());
+                rel1.getRightTerm());
         verify(updateDBObjectBuilder, times(1)).addUpdateRelation(rel2.getLeftTerm(), rel2.getOperator(),
-                        rel2.getRightTerm());
+                rel2.getRightTerm());
 
         verify(collection, times(1)).update(Matchers.any(BasicDBObject.class), Matchers.any(BasicDBObject.class),
-                        Matchers.eq(false), Matchers.eq(true));
+                Matchers.eq(false), Matchers.eq(true));
 
         PowerMockito.verifyPrivate(mongoStorageEngine, times(1)).invoke("buildFilter", whereClauses);
 
@@ -397,7 +407,7 @@ public class MongoStorageEngineTest {
         // Verify the object is build properly even although the command should fail when executing
         Relation rel1 = getBasicRelation(COLUMN_NAME, Operator.ASSIGN, CELL_VALUE);
         Relation rel2 = getBasicRelation(COLUMN_NAME, Operator.ASSIGN,
-                        getBasicRelation(COLUMN_NAME, Operator.SUBTRACT, 20l));
+                getBasicRelation(COLUMN_NAME, Operator.SUBTRACT, 20l));
         Collection<Relation> assignments = Arrays.asList(rel1, rel2);
 
         mongoStorageEngine.update(tableName, assignments, null, connection);
@@ -422,9 +432,6 @@ public class MongoStorageEngineTest {
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
 
-        Collection<Filter> whereClauses = Arrays.asList(new Filter(Operations.FILTER_INDEXED_GT, getBasicRelation(
-                        COLUMN_NAME, Operator.GET, 20)));
-
         Method method = mongoStorageEngine.getClass().getDeclaredMethod("buildFilter", Collection.class);
         method.setAccessible(true);
 
@@ -445,8 +452,11 @@ public class MongoStorageEngineTest {
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
 
-        Collection<Filter> whereClauses = Arrays.asList(new Filter(Operations.FILTER_INDEXED_GT, getBasicRelation(
-                        COLUMN_NAME, Operator.GET, 20)));
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.FILTER_INDEXED_GT);
+
+        Collection<Filter> whereClauses = Arrays.asList(new Filter(operations, getBasicRelation(
+                COLUMN_NAME, Operator.GET, 20)));
 
         Method method = mongoStorageEngine.getClass().getDeclaredMethod("buildFilter", Collection.class);
         method.setAccessible(true);
@@ -506,8 +516,11 @@ public class MongoStorageEngineTest {
         TableName tableName = new TableName(DB_NAME, COLLECTION_NAME);
         when(database.collectionExists(COLLECTION_NAME)).thenReturn(true);
 
-        Collection<Filter> whereClauses = Arrays.asList(new Filter(Operations.FILTER_INDEXED_EQ, getBasicRelation(
-                        COLUMN_NAME, Operator.DISTINCT, 20)));
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.FILTER_INDEXED_EQ);
+
+        Collection<Filter> whereClauses = Arrays.asList(new Filter(operations, getBasicRelation(
+                COLUMN_NAME, Operator.DISTINCT, 20)));
 
         mongoStorageEngine.delete(tableName, whereClauses, connection);
 
@@ -526,16 +539,22 @@ public class MongoStorageEngineTest {
         TableName tableName = new TableName(DB_NAME, COLLECTION_NAME);
         when(database.collectionExists(COLLECTION_NAME)).thenReturn(true);
 
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.FILTER_INDEXED_EQ);
+
+        Set<Operations> operations2 = new HashSet<>();
+        operations2.add(Operations.FILTER_NON_INDEXED_LET);
+
         Collection<Filter> whereClauses = Arrays.asList(
-                        new Filter(Operations.FILTER_INDEXED_EQ, getBasicRelation(COLUMN_NAME, Operator.DISTINCT, 20)),
-                        new Filter(Operations.FILTER_NON_INDEXED_LET, getBasicRelation(OTHER_COLUMN_NAME, Operator.LET,
-                                        "b")));
+                new Filter(operations, getBasicRelation(COLUMN_NAME, Operator.DISTINCT, 20)),
+                new Filter(operations2, getBasicRelation(OTHER_COLUMN_NAME, Operator.LET,
+                        "b")));
 
         mongoStorageEngine.delete(tableName, whereClauses, connection);
 
         BasicDBObject filterA = new BasicDBObject(COLUMN_NAME, new BasicDBObject("$ne", 20l));
         BasicDBObject filterB = new BasicDBObject(new ColumnName(tableName, OTHER_COLUMN_NAME).getName(),
-                        new BasicDBObject("$lte", "b"));
+                new BasicDBObject("$lte", "b"));
         BasicDBList filterList = new BasicDBList();
         filterList.add(filterA);
         filterList.add(filterB);

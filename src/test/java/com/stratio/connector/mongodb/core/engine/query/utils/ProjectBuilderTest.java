@@ -20,10 +20,7 @@ package com.stratio.connector.mongodb.core.engine.query.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,6 +35,7 @@ import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.logicalplan.Select;
 import com.stratio.crossdata.common.metadata.ColumnType;
+import com.stratio.crossdata.common.metadata.DataType;
 import com.stratio.crossdata.common.metadata.Operations;
 import com.stratio.crossdata.common.statements.structures.ColumnSelector;
 import com.stratio.crossdata.common.statements.structures.Selector;
@@ -57,7 +55,7 @@ public class ProjectBuilderTest {
 
         // Project without aggregation => expected the select columns
         List<ConnectorField> columns;
-        columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, ColumnType.VARCHAR));
+        columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, new ColumnType(DataType.VARCHAR)));
         Select select = getSelect(columns);
         Project project = getProject(COLUMN_1, COLUMN_2);
         ProjectDBObjectBuilder projectBuilder = new ProjectDBObjectBuilder(false, project, select);
@@ -79,7 +77,9 @@ public class ProjectBuilderTest {
     }
 
     private Project getProject(String... columnName) {
-        Project project = new Project(Operations.PROJECT, new TableName(CATALOG, TABLE), new ClusterName(CLUSTER_NAME));
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.PROJECT);
+        Project project = new Project(operations, new TableName(CATALOG, TABLE), new ClusterName(CLUSTER_NAME));
         for (String col : columnName) {
             project.addColumn(new ColumnName(CATALOG, TABLE, col));
         }
@@ -90,7 +90,7 @@ public class ProjectBuilderTest {
     @Test
     public void buildTest() throws Exception {
         List<ConnectorField> columns;
-        columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, ColumnType.VARCHAR));
+        columns = Arrays.asList(new ConnectorField(COLUMN_1, ALIAS_COLUMN_1, new ColumnType(DataType.VARCHAR)));
         Select select = getSelect(columns);
         Project project = getProject(COLUMN_1);
         ProjectDBObjectBuilder projectBuilder = new ProjectDBObjectBuilder(false, project, select);
@@ -127,7 +127,10 @@ public class ProjectBuilderTest {
             typeMapFormColumnName.put(columnSelector, connectorField.columnType);
         }
 
-        select = new Select(Operations.SELECT_OPERATOR, mapping, types, typeMapFormColumnName);
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.SELECT_OPERATOR);
+
+        select = new Select(operations, mapping, types, typeMapFormColumnName);
 
         return select;
 

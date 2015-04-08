@@ -31,27 +31,26 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.Cell;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.metadata.ColumnType;
+import com.stratio.crossdata.common.metadata.DataType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
 
-/**
- * @author david
- */
 public class StorageUtilsTest {
 
     private static final String COLLECTION_NAME = "coll_name";
     private static final String DB_NAME = "db_name";
+    private static final String CLUSTER_NAME = "cluster_name";
     private static final String ROW_NAME = "row_name";
     private static final String OTHER_ROW_NAME = "other_row_name";
     private static final String CELL_VALUE = "cell_value";
     private static final Object OTHER_CELL_VALUE = "othercellvalue";
     private static final Integer INTEGER_CELL_VALUE = new Integer(5);
-    private static final ColumnType VARCHAR_COLUMN_TYPE = ColumnType.VARCHAR;
-    private static final ColumnType INT_COLUMN_TYPE = ColumnType.INT;
+    private static final ColumnType VARCHAR_COLUMN_TYPE = new ColumnType(DataType.VARCHAR);
+    private static final ColumnType INT_COLUMN_TYPE = new ColumnType(DataType.INT);
 
     @Test
     public void buildPKTest() throws MongoValidationException {
 
-        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(ROW_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_ROW_NAME, INT_COLUMN_TYPE);
         tableMetaBuilder.withPartitionKey(ROW_NAME);
         TableMetadata tableMetadata = tableMetaBuilder.build();
@@ -68,7 +67,7 @@ public class StorageUtilsTest {
     @Test
     public void buildCompoundPKTest() throws MongoValidationException {
 
-        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(ROW_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_ROW_NAME, INT_COLUMN_TYPE);
         tableMetaBuilder.withPartitionKey(ROW_NAME);
         tableMetaBuilder.withClusterKey(OTHER_ROW_NAME);
@@ -89,8 +88,8 @@ public class StorageUtilsTest {
     @Test(expected = MongoValidationException.class)
     public void buildMalformedPKTest() throws MongoValidationException {
 
-        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
-        tableMetaBuilder.addColumn(ROW_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_ROW_NAME, ColumnType.SET);
+        TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
+        tableMetaBuilder.addColumn(ROW_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_ROW_NAME, new ColumnType(DataType.SET));
         tableMetaBuilder.withPartitionKey(OTHER_ROW_NAME);
         TableMetadata tableMetadata = tableMetaBuilder.build();
 

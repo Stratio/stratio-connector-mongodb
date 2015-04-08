@@ -25,6 +25,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bson.types.BasicBSONList;
 import org.junit.Test;
@@ -44,9 +46,6 @@ import com.stratio.crossdata.common.statements.structures.Relation;
 import com.stratio.crossdata.common.statements.structures.Selector;
 import com.stratio.crossdata.common.statements.structures.StringSelector;
 
-/**
- * @author david
- */
 public class FilterDBObjectBuilderTest {
 
     public static final String COLUMN_1 = "column1";
@@ -201,7 +200,9 @@ public class FilterDBObjectBuilderTest {
                     Operator operator, Object value) {
         Relation relation = new Relation(new ColumnSelector(new ColumnName(catalog, table, columnName)), operator,
                         returnSelector(value));
-        return new Filter(operation, relation);
+        Set<Operations> operations = new HashSet<>();
+        operations.add(operation);
+        return new Filter(operations, relation);
     }
 
     private Selector returnSelector(Object value) {

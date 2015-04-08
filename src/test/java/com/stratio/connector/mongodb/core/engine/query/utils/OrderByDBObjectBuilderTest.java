@@ -22,14 +22,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.logicalplan.OrderBy;
@@ -46,7 +47,7 @@ public class OrderByDBObjectBuilderTest {
     private static String COLUMN_SECONDARY = "column_sec";
 
     @Test
-    public void basicOrderByDBObjectBuilderTest() throws MongoValidationException, ExecutionException {
+    public void basicOrderByDBObjectBuilderTest() throws ExecutionException {
 
         OrderByDBObjectBuilder orderByDBObjectBuilder = new OrderByDBObjectBuilder(false, getOrderBy(COLUMN_PRIMARY));
 
@@ -60,7 +61,7 @@ public class OrderByDBObjectBuilderTest {
     }
 
     @Test
-    public void combinedOrderByDBObjectBuilderTest() throws MongoValidationException, ExecutionException {
+    public void combinedOrderByDBObjectBuilderTest() throws ExecutionException {
 
         OrderBy orderBy = getOrderBy(new String[] { COLUMN_PRIMARY, COLUMN_SECONDARY }, new OrderDirection[] {
                         OrderDirection.DESC, OrderDirection.ASC });
@@ -108,11 +109,15 @@ public class OrderByDBObjectBuilderTest {
     }
 
     private OrderBy getOrderBy(String[] fields, OrderDirection[] direction) {
-        List<OrderByClause> ids = new ArrayList<OrderByClause>();
+        List<OrderByClause> ids = new ArrayList<>();
         for (int i = 0; i < fields.length; i++) {
             ids.add(new OrderByClause(direction[i], new ColumnSelector(new ColumnName(CATALOG, TABLE, fields[i]))));
         }
-        return new OrderBy(Operations.SELECT_GROUP_BY, ids);
+
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.SELECT_GROUP_BY);
+
+        return new OrderBy(operations, ids);
     }
 
     private OrderBy getOrderBy(String... fields) {

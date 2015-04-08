@@ -72,7 +72,7 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
                         .getLogicalWorkflowExecutor(logicalWorkfloParsed);
         ResultSet resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
 
-        return QueryResult.createQueryResult(resultSet);
+        return QueryResult.createQueryResult(resultSet, 0, true);
 
     }
 
@@ -86,6 +86,12 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
     public void asyncExecute(String queryId, LogicalWorkflow workflow, IResultHandler resultHandler)
                     throws UnsupportedException {
         throw new UnsupportedException("Not supported");
+    }
+
+    @Override
+    public void pagedExecute(String s, LogicalWorkflow logicalWorkflow, IResultHandler iResultHandler, int i) throws ConnectorException {
+        throw new UnsupportedException("Not supported");
+
     }
 
     /*

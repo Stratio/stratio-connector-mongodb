@@ -2,7 +2,9 @@ package com.stratio.connector.mongodb.core.engine.query;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,8 +78,10 @@ public class MongoLogicalWorkflowValidatorTest {
         LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
 
         // removing the select. Adding a limit instead of the select
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.SELECT_LIMIT);
         for (LogicalStep logElement : logicalWorkflow.getLastStep().getPreviousSteps()) {
-            logElement.setNextStep(new Limit(Operations.SELECT_LIMIT, 5));
+            logElement.setNextStep(new Limit(operations, 5));
         }
 
         new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0), new MongoLogicalWorkflowValidator());

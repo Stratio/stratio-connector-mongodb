@@ -49,6 +49,8 @@ public class ShardUtilsTest {
 
     private static final String DB_NAME = "catalog_name";
     private static final String COLLECTION_NAME = "tablename";
+    private static final String CLUSTER_NAME = "clustername";
+
     private final String COLUMN_NAME = "colname";
     private final String COLUMN_NAME2 = "colname";
 
@@ -75,7 +77,7 @@ public class ShardUtilsTest {
     @Test
     public void shardCollectionDefaultTest() throws ExecutionException, UnsupportedException {
         //
-        TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         Mockito.when(client.getDB("admin")).thenReturn(database);
         CommandResult commandRes = Mockito.mock(CommandResult.class);
         Mockito.when(commandRes.ok()).thenReturn(true);
@@ -95,7 +97,7 @@ public class ShardUtilsTest {
     @Test
     public void shardCollectionHashedTest() throws ExecutionException, UnsupportedException {
         //
-        TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         Mockito.when(client.getDB("admin")).thenReturn(database);
         CommandResult commandRes = Mockito.mock(CommandResult.class);
         Mockito.when(commandRes.ok()).thenReturn(true);
@@ -118,7 +120,7 @@ public class ShardUtilsTest {
     @Test
     public void shardCollectionMultiFieldsTest() throws ExecutionException, UnsupportedException {
         //
-        TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME);
+        TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         Mockito.when(client.getDB("admin")).thenReturn(database);
         CommandResult commandRes = Mockito.mock(CommandResult.class);
         Mockito.when(commandRes.ok()).thenReturn(true);

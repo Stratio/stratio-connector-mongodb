@@ -82,14 +82,14 @@ public class MongoQueryEngineTest {
         when(logicalWorkflowExecutor.executeQuery(mongoClient)).thenReturn(resultSet);
         QueryResult queryResult = mock(QueryResult.class);
         PowerMockito.mockStatic(QueryResult.class);
-        PowerMockito.when(QueryResult.createQueryResult(resultSet)).thenReturn(queryResult);
+        PowerMockito.when(QueryResult.createQueryResult(resultSet, 0, true)).thenReturn(queryResult);
 
         QueryResult returnQueryResult = mongoQueryEngine.execute(project, connection);
 
         verify(logicalWorkflowExecutor, times(1)).executeQuery(mongoClient);
 
         PowerMockito.verifyStatic(times(1));
-        QueryResult.createQueryResult(resultSet);
+        QueryResult.createQueryResult(resultSet, 0, true);
 
         assertEquals("The query result is wrong", queryResult, returnQueryResult);
     }

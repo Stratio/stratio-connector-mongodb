@@ -114,6 +114,9 @@ public class GroupByDBObjectBuilderTest {
         for (String field : fields) {
             ids.add(new ColumnSelector(new ColumnName(CATALOG, TABLE, field)));
         }
-        return new GroupBy(Operations.SELECT_GROUP_BY, ids);
+        Set<Operations> operations = new HashSet<>();
+        operations.add(Operations.SELECT_GROUP_BY);
+
+        return new GroupBy(operations, ids);
     }
 }

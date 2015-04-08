@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.stratio.crossdata.common.metadata.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,12 +64,6 @@ import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
-import com.stratio.crossdata.common.metadata.CatalogMetadata;
-import com.stratio.crossdata.common.metadata.ColumnMetadata;
-import com.stratio.crossdata.common.metadata.ColumnType;
-import com.stratio.crossdata.common.metadata.IndexMetadata;
-import com.stratio.crossdata.common.metadata.IndexType;
-import com.stratio.crossdata.common.metadata.TableMetadata;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(value = { MongoClient.class, Connection.class, IndexUtils.class, AlterOptionsUtils.class,
@@ -199,8 +194,8 @@ public class MongoMetadataEngineTest {
 
         IndexMetadataBuilder indexMetadataBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
                         IndexType.DEFAULT);
-        indexMetadataBuilder.addColumn(COLUMN_NAME, ColumnType.VARCHAR);
-        indexMetadataBuilder.addColumn(COLUMN_NAME2, ColumnType.INT);
+        indexMetadataBuilder.addColumn(COLUMN_NAME, new ColumnType(DataType.VARCHAR));
+        indexMetadataBuilder.addColumn(COLUMN_NAME2, new ColumnType(DataType.INT));
         IndexMetadata indexMetadata = indexMetadataBuilder.build();
 
         DBCollection collection = mock(DBCollection.class);
@@ -226,8 +221,8 @@ public class MongoMetadataEngineTest {
 
         IndexMetadataBuilder indexMetadataBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME,
                         IndexType.DEFAULT);
-        indexMetadataBuilder.addColumn(COLUMN_NAME, ColumnType.VARCHAR);
-        indexMetadataBuilder.addColumn(COLUMN_NAME2, ColumnType.INT);
+        indexMetadataBuilder.addColumn(COLUMN_NAME, new ColumnType(DataType.VARCHAR));
+        indexMetadataBuilder.addColumn(COLUMN_NAME2, new ColumnType(DataType.INT));
         IndexMetadata indexMetadata = indexMetadataBuilder.build();
 
         DBCollection collection = mock(DBCollection.class);
@@ -280,7 +275,7 @@ public class MongoMetadataEngineTest {
 
         TableName tableName = new TableName(DB_NAME, TABLE_NAME);
         ColumnMetadata columnMetadata = new ColumnMetadata(new ColumnName(DB_NAME, TABLE_NAME, COLUMN_NAME),
-                        new Object[0], ColumnType.INT);
+                        new Object[0], new ColumnType(DataType.INT));
 
         AlterOptions alterOptions = new AlterOptions(AlterOperation.DROP_COLUMN, null, columnMetadata);
         DBCollection collection = mock(DBCollection.class);
@@ -410,7 +405,7 @@ public class MongoMetadataEngineTest {
 
     private List<IndexMetadata> getIndexMetadata(String columnName, IndexType indexType) {
         IndexMetadataBuilder indexMetadataBuilder = new IndexMetadataBuilder(DB_NAME, TABLE_NAME, INDEX_NAME, indexType);
-        return Arrays.asList(indexMetadataBuilder.addColumn(columnName, ColumnType.INT).build());
+        return Arrays.asList(indexMetadataBuilder.addColumn(columnName, new ColumnType(DataType.INT)).build());
     }
 
     // TODO Options => IndexUtils

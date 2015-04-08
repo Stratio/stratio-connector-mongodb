@@ -86,14 +86,12 @@ public final class StorageUtils {
      *
      * @param columnType
      *            the columnType type
-     * @param cellValue
-     *            the cell value
      * @throws MongoValidationException
      *             if the type is not supported
      */
     private static void validatePKDataType(ColumnType columnType) throws MongoValidationException {
 
-        switch (columnType) {
+        switch (columnType.getDataType()) {
         case BIGINT:
         case INT:
         case TEXT:

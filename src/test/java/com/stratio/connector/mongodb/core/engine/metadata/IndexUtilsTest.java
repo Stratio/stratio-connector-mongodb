@@ -28,6 +28,7 @@ import com.stratio.connector.mongodb.core.configuration.CustomMongoIndexType;
 import com.stratio.connector.mongodb.core.configuration.IndexOptions;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.metadata.ColumnType;
+import com.stratio.crossdata.common.metadata.DataType;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.IndexType;
 
@@ -40,7 +41,7 @@ public class IndexUtilsTest {
     private static final String TABLE_NAME = "tablename";
     private final String INDEX_NAME = "indexname";
     private final IndexType INDEX_DEFAULT = IndexType.DEFAULT;
-    private final ColumnType COLUMN_VARCHAR = ColumnType.VARCHAR;
+    private final ColumnType COLUMN_VARCHAR = new ColumnType(DataType.VARCHAR);
     private final String COLUMN_NAME = "colname";
     private final String COLUMN_NAME2 = "colname2";
 

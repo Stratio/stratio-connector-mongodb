@@ -212,14 +212,12 @@ public class MongoInsertHandler {
      *
      * @param colType
      *            the column type
-     * @param cellValue
-     *            the cell value
      * @throws MongoValidationException
      *             if the type is not supported
      */
     private void validateDataType(ColumnType columnType) throws MongoValidationException {
 
-        switch (columnType) {
+        switch (columnType.getDataType()) {
         case BIGINT:
         case BOOLEAN:
         case INT:
