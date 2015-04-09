@@ -210,7 +210,7 @@ public class MongoInsertHandler {
     /**
      * Validates the data type.
      *
-     * @param colType
+     * @param columnType
      *            the column type
      * @throws MongoValidationException
      *             if the type is not supported
