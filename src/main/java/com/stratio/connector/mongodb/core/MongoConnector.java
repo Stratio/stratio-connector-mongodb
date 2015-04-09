@@ -82,8 +82,7 @@ public class MongoConnector extends CommonsConnector {
      */
     @Override
     public IStorageEngine getStorageEngine() {
-        return new MongoStorageEngine((MongoConnectionHandler) connectionHandler);
-
+        return MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
     }
 
     /**
@@ -93,8 +92,9 @@ public class MongoConnector extends CommonsConnector {
      */
     @Override
     public IQueryEngine getQueryEngine() {
-        return new MongoQueryEngine((MongoConnectionHandler) connectionHandler);
-    }
+        return MongoQueryEngine.getInstance((MongoConnectionHandler) connectionHandler);
+
+   }
 
     /**
      * Return the MetadataEngine.
@@ -104,7 +104,8 @@ public class MongoConnector extends CommonsConnector {
      */
     @Override
     public IMetadataEngine getMetadataEngine() {
-        return new MongoMetadataEngine((MongoConnectionHandler) connectionHandler);
+        return MongoMetadataEngine.getInstance((MongoConnectionHandler) connectionHandler);
+
     }
 
     /**

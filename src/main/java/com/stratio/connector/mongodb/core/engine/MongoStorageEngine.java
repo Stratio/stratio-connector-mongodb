@@ -57,14 +57,23 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     /** The logger. */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private static MongoStorageEngine instance = null;
+
     /**
      * Instantiates a new MongoDB storage engine.
      *
      * @param connectionHandler
      *            the connection handler
      */
-    public MongoStorageEngine(MongoConnectionHandler connectionHandler) {
+    private MongoStorageEngine(MongoConnectionHandler connectionHandler) {
         super(connectionHandler);
+    }
+
+    public static MongoStorageEngine getInstance(MongoConnectionHandler connectionHandler){
+        if(instance == null){
+            instance = new MongoStorageEngine(connectionHandler);
+        }
+        return instance;
     }
 
     /**
@@ -138,7 +147,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
      *            target table metadata including fully qualified including catalog.
      * @param row
      *            the row to be inserted.
-     * @param isNotExists
+     * @param isNotExist
      *            insert only if primary key doesn't exist yet.
      * @throws MongoValidationException
      *             if the operation is not supported by the connector.
@@ -218,7 +227,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
             if (whereClauses instanceof List) {
                 filters = (List<Filter>) whereClauses;
             } else {
-                filters = new ArrayList<Filter>(whereClauses);
+                filters = new ArrayList<>(whereClauses);
             }
             FilterDBObjectBuilder filterBuilder = new FilterDBObjectBuilder(false, filters);
             return filterBuilder.build();

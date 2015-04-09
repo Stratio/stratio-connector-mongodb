@@ -29,7 +29,7 @@ public class LogicalWorkflowExecutorFactoryTest {
     public void logicalWorkflowExecutorFactoryTest() throws Exception {
 
         LogicalWorkFlowCreator logWorkFlowCreator = new LogicalWorkFlowCreator(CATALOG, TABLE, CLUSTER_NAME);
-        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.addColumnName(COLUMN_1).getLogicalWorkflow();
+        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.addColumnName(COLUMN_1).build();
         ProjectParsed logWorkflowData = new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0),
                         new MongoLogicalWorkflowValidator());
         LogicalWorkflowExecutor lwExecutor = LogicalWorkflowExecutorFactory.getLogicalWorkflowExecutor(logWorkflowData);
@@ -37,7 +37,7 @@ public class LogicalWorkflowExecutorFactoryTest {
                         lwExecutor instanceof BasicLogicalWorkflowExecutor);
 
         logWorkFlowCreator.addGroupBy(COLUMN_1);
-        logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
+        logicalWorkflow = logWorkFlowCreator.build();
         logWorkflowData = new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0),
                         new MongoLogicalWorkflowValidator());
         lwExecutor = LogicalWorkflowExecutorFactory.getLogicalWorkflowExecutor(logWorkflowData);

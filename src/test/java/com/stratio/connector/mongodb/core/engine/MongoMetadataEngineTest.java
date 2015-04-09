@@ -93,7 +93,7 @@ public class MongoMetadataEngineTest {
     public void before() throws Exception {
         when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
         when(connection.getNativeConnection()).thenReturn(client);
-        mongoMetadataEngine = new MongoMetadataEngine(connectionHandler);
+        mongoMetadataEngine = MongoMetadataEngine.getInstance(connectionHandler);
 
     }
 
@@ -304,7 +304,7 @@ public class MongoMetadataEngineTest {
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
 
-        MongoMetadataEngine spyMetadataEngine = PowerMockito.spy(new MongoMetadataEngine(connectionHandler));
+        MongoMetadataEngine spyMetadataEngine = PowerMockito.spy(MongoMetadataEngine.getInstance(connectionHandler));
         CatalogMetadata catalogMetadata1 = mock(CatalogMetadata.class);
         CatalogMetadata catalogMetadata2 = mock(CatalogMetadata.class);
 
@@ -328,7 +328,7 @@ public class MongoMetadataEngineTest {
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
 
-        MongoMetadataEngine spyMetadataEngine = PowerMockito.spy(new MongoMetadataEngine(connectionHandler));
+        MongoMetadataEngine spyMetadataEngine = PowerMockito.spy(MongoMetadataEngine.getInstance(connectionHandler));
 
         TableMetadata tableMetadata1 = mock(TableMetadata.class);
         TableMetadata tableMetadata2 = mock(TableMetadata.class);

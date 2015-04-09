@@ -50,7 +50,7 @@ public class MongoLogicalWorkflowValidatorTest {
         logWorkFlowCreator.addColumnName(COLUMN_2);
         logWorkFlowCreator.addGroupBy(COLUMN_MONEY, COLUMN_3);
         logWorkFlowCreator.addLimit(5);
-        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
+        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.build();
 
         ProjectParsed logWorkflowData = new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0),
                         new MongoLogicalWorkflowValidator());
@@ -75,7 +75,7 @@ public class MongoLogicalWorkflowValidatorTest {
     public void logicalWorkflowExecutorNoSelectTest() throws Exception {
 
         LogicalWorkFlowCreator logWorkFlowCreator = new LogicalWorkFlowCreator(CATALOG, TABLE, CLUSTER_NAME);
-        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
+        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.build();
 
         // removing the select. Adding a limit instead of the select
         Set<Operations> operations = new HashSet<>();
@@ -93,7 +93,7 @@ public class MongoLogicalWorkflowValidatorTest {
 
         LogicalWorkFlowCreator logWorkFlowCreator = new LogicalWorkFlowCreator(CATALOG, TABLE, CLUSTER_NAME);
         logWorkFlowCreator.addMatchFilter(COLUMN_1, "any");
-        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
+        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.build();
 
         new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0), new MongoLogicalWorkflowValidator());
     }
@@ -113,7 +113,7 @@ public class MongoLogicalWorkflowValidatorTest {
         logWorkFlowCreator.addGreaterFilter(COLUMN_2, 1, false);
         logWorkFlowCreator.addColumnName(COLUMN_1);
         logWorkFlowCreator.addColumnName(COLUMN_2);
-        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
+        LogicalWorkflow logicalWorkflow = logWorkFlowCreator.build();
 
         ProjectParsed logWorkflowData = new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0),
                         new MongoLogicalWorkflowValidator());
@@ -128,7 +128,7 @@ public class MongoLogicalWorkflowValidatorTest {
         logWorkFlowCreator.addOrderByClause(COLUMN_3, OrderDirection.ASC);
         logWorkFlowCreator.addGroupBy(COLUMN_AGE);
 
-        logicalWorkflow = logWorkFlowCreator.getLogicalWorkflow();
+        logicalWorkflow = logWorkFlowCreator.build();
 
         logWorkflowData = new ProjectParsed((Project) logicalWorkflow.getInitialSteps().get(0),
                         new MongoLogicalWorkflowValidator());

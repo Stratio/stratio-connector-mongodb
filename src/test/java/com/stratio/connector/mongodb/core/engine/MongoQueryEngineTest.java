@@ -24,6 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.stratio.crossdata.common.exceptions.ConnectorException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +51,7 @@ import com.stratio.crossdata.common.result.QueryResult;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ MongoQueryEngine.class, LogicalWorkflowExecutor.class, LogicalWorkflowExecutorFactory.class,
-                QueryResult.class, ResultSet.class })
+        QueryResult.class, ResultSet.class })
 public class MongoQueryEngineTest {
 
     private MongoQueryEngine mongoQueryEngine;
@@ -59,7 +60,9 @@ public class MongoQueryEngineTest {
 
     @Before
     public void before() throws Exception {
-        mongoQueryEngine = new MongoQueryEngine(connectionHandler);
+
+        mongoQueryEngine = MongoQueryEngine.getInstance(connectionHandler);
+
     }
 
     /**
@@ -77,7 +80,7 @@ public class MongoQueryEngineTest {
         PowerMockito.whenNew(ProjectParsed.class).withAnyArguments().thenReturn(projectParsed);
         PowerMockito.mockStatic(LogicalWorkflowExecutorFactory.class);
         PowerMockito.when(LogicalWorkflowExecutorFactory.getLogicalWorkflowExecutor(Matchers.any(ProjectParsed.class)))
-                        .thenReturn(logicalWorkflowExecutor);
+                .thenReturn(logicalWorkflowExecutor);
         ResultSet resultSet = mock(ResultSet.class);
         when(logicalWorkflowExecutor.executeQuery(mongoClient)).thenReturn(resultSet);
         QueryResult queryResult = mock(QueryResult.class);
@@ -98,8 +101,10 @@ public class MongoQueryEngineTest {
      * Method: asyncExecute(String queryId, LogicalWorkflow workflow, IResultHandler resultHandler)
      */
     @Test(expected = UnsupportedException.class)
-    public void asyncExecuteTest() throws UnsupportedException, ExecutionException {
-        mongoQueryEngine.asyncExecute("", Mockito.mock(LogicalWorkflow.class), Mockito.mock(IResultHandler.class));
+    public void asyncExecuteTest() throws ConnectorException {
+
+        mongoQueryEngine.asyncExecute("", Mockito.mock(Project.class), null,Mockito.mock(IResultHandler.class));
+
     }
 
     /**

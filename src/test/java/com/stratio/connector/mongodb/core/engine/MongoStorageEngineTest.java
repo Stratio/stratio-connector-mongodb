@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -90,28 +91,28 @@ public class MongoStorageEngineTest {
     private static final ColumnType VARCHAR_COLUMN_TYPE = new ColumnType(DataType.VARCHAR);
     private static final ColumnType INT_COLUMN_TYPE = new ColumnType(DataType.INT);
 
-    @Mock
-    private MongoConnectionHandler connectionHandler;
-    @Mock
-    private Connection<MongoClient> connection;
-    @Mock
-    private MongoClient client;
-    @Mock
-    private DB database;
-    @Mock
-    private DBCollection collection;
+//    @Mock
+//    private MongoConnectionHandler connectionHandler;
+//    @Mock
+//    private Connection<MongoClient> connection;
+//    @Mock
+//    private MongoClient client;
+//    @Mock
+//    private DB database;
+//    @Mock
+//    private DBCollection collection;
+//
+//    private MongoStorageEngine mongoStorageEngine;
 
-    private MongoStorageEngine mongoStorageEngine;
-
-    @Before
-    public void before() throws ExecutionException {
-        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
-        when(connection.getNativeConnection()).thenReturn(client);
-        mongoStorageEngine = new MongoStorageEngine(connectionHandler);
-
-        when(client.getDB(DB_NAME)).thenReturn(database);
-
-    }
+//    @Before
+//    public void before() throws ExecutionException {
+//        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+//        when(connection.getNativeConnection()).thenReturn(client);
+//        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+//
+//        when(client.getDB(DB_NAME)).thenReturn(database);
+//
+//    }
 
     /**
      * Method: insert(ClusterName targetCluster, TableMetadata targetTable, Row row)
@@ -121,6 +122,12 @@ public class MongoStorageEngineTest {
     @Test
     public void testInsertWithoutPK() throws Exception {
 
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
         TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);

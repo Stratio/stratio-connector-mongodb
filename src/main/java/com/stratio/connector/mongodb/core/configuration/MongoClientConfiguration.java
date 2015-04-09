@@ -92,7 +92,7 @@ public class MongoClientConfiguration {
      *
      * @return the seeds
      * @throws ConnectionException
-     * @throws CreateNativeConnectionException
+     * @throws ConnectionException
      *             if the list of server address cannot be retrieved
      */
     public List<ServerAddress> getSeeds() throws ConnectionException {

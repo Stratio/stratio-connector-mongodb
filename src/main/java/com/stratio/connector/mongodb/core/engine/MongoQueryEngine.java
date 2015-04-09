@@ -40,14 +40,23 @@ import com.stratio.crossdata.common.result.QueryResult;
  */
 public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
 
+
+    private static MongoQueryEngine instance = null;
     /**
      * Instantiates a new Mongo query engine.
      *
      * @param connectionHandler
      *            the connection handler
      */
-    public MongoQueryEngine(MongoConnectionHandler connectionHandler) {
+    private MongoQueryEngine(MongoConnectionHandler connectionHandler) {
         super(connectionHandler);
+    }
+
+    public static MongoQueryEngine getInstance(MongoConnectionHandler connectionHandler){
+        if(instance == null){
+            instance = new MongoQueryEngine(connectionHandler);
+        }
+        return instance;
     }
 
     /**
@@ -76,23 +85,17 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.meta.common.connector.IQueryEngine#asyncExecute(java.lang.String,
-     * com.stratio.meta.common.logicalplan.LogicalWorkflow, com.stratio.meta.common.connector.IResultHandler)
-     */
     @Override
-    public void asyncExecute(String queryId, LogicalWorkflow workflow, IResultHandler resultHandler)
-                    throws UnsupportedException {
-        throw new UnsupportedException("Not supported");
+    protected void asyncExecute(String s, Project project, Connection connection, IResultHandler iResultHandler) throws ConnectorException {
+        throw new UnsupportedException("The method asyncExecute is not supported");
     }
 
     @Override
-    public void pagedExecute(String s, LogicalWorkflow logicalWorkflow, IResultHandler iResultHandler, int i) throws ConnectorException {
-        throw new UnsupportedException("Not supported");
+    protected void pagedExecute(String s, Project project, Connection connection, IResultHandler iResultHandler) throws ConnectorException {
+        throw new UnsupportedException("The method pagedExecute is ot supported");
 
     }
+
 
     /*
      * (non-Javadoc)

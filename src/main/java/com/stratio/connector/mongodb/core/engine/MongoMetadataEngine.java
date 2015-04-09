@@ -67,14 +67,24 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private static MongoMetadataEngine instance = null;
+
     /**
      * Instantiates a new mongo metadata engine.
      *
      * @param connectionHandler
      *            the connection handler
      */
-    public MongoMetadataEngine(MongoConnectionHandler connectionHandler) {
+
+    private MongoMetadataEngine(MongoConnectionHandler connectionHandler) {
         super(connectionHandler);
+    }
+
+    public static MongoMetadataEngine getInstance(MongoConnectionHandler connectionHandler){
+        if(instance == null){
+            instance = new MongoMetadataEngine(connectionHandler);
+        }
+        return instance;
     }
 
     /**
