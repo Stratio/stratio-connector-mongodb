@@ -127,7 +127,13 @@ public class MongoStorageEngineTest {
         MongoClient client = Mockito.mock(MongoClient.class);
         DB database = Mockito.mock(DB.class);
         DBCollection collection = Mockito.mock(DBCollection.class);
-        MongoStorageEngine mongoStorageEngine 
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
         TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
@@ -156,6 +162,18 @@ public class MongoStorageEngineTest {
     @Test
     public void testBatchInsertWithoutPK() throws Exception {
 
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
         TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
@@ -182,6 +200,18 @@ public class MongoStorageEngineTest {
     @Test
     public void testInsertWithPK() throws Exception {
 
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
         TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
         tableMetaBuilder.addColumn(COLUMN_NAME, VARCHAR_COLUMN_TYPE).addColumn(OTHER_COLUMN_NAME, INT_COLUMN_TYPE);
@@ -207,6 +237,17 @@ public class MongoStorageEngineTest {
 
     @Test
     public void testBatchInsertWithPK() throws Exception {
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
         TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
@@ -243,6 +284,17 @@ public class MongoStorageEngineTest {
 
     @Test
     public void testInsertIfNotExist() throws Exception {
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
         TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
@@ -278,6 +330,17 @@ public class MongoStorageEngineTest {
 
     @Test
     public void testBatchInsertIfNotExist() throws Exception {
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
 
         ClusterName clusterName = new ClusterName(CLUSTER_NAME);
         TableMetadataBuilder tableMetaBuilder = new TableMetadataBuilder(DB_NAME, COLLECTION_NAME, CLUSTER_NAME);
@@ -315,10 +378,21 @@ public class MongoStorageEngineTest {
 
     @Test
     public void updateTest() throws Exception {
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
 
         TableName tableName = new TableName(DB_NAME, COLLECTION_NAME);
 
-        DBCollection collection = mock(DBCollection.class);
+        //DBCollection collection = mock(DBCollection.class);
 
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
@@ -356,9 +430,21 @@ public class MongoStorageEngineTest {
     @Test
     public void updateInnerRelationTest() throws Exception {
 
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+
         TableName tableName = new TableName(DB_NAME, COLLECTION_NAME);
 
-        DBCollection collection = mock(DBCollection.class);
+        //DBCollection collection = mock(DBCollection.class);
 
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
@@ -403,10 +489,21 @@ public class MongoStorageEngineTest {
     // TODO allow different order
     @Test
     public void updateDecreaseTest() throws Exception {
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
 
         TableName tableName = new TableName(DB_NAME, COLLECTION_NAME);
 
-        DBCollection collection = mock(DBCollection.class);
+        //DBCollection collection = mock(DBCollection.class);
 
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
@@ -433,8 +530,19 @@ public class MongoStorageEngineTest {
      */
     @Test
     public void buildNullFilterTest() throws Exception {
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
 
-        DBCollection collection = mock(DBCollection.class);
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+
+//        DBCollection collection = mock(DBCollection.class);
 
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
@@ -453,8 +561,19 @@ public class MongoStorageEngineTest {
      */
     @Test
     public void buildListFilterTest() throws Exception {
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
 
-        DBCollection collection = mock(DBCollection.class);
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+
+        //DBCollection collection = mock(DBCollection.class);
 
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
@@ -500,7 +619,19 @@ public class MongoStorageEngineTest {
      */
     @Test
     public void truncateTest() throws Exception {
-        DBCollection collection = mock(DBCollection.class);
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+
+        //DBCollection collection = mock(DBCollection.class);
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
         TableName tableName = new TableName(DB_NAME, COLLECTION_NAME);
@@ -517,7 +648,19 @@ public class MongoStorageEngineTest {
      */
     @Test
     public void deleteBasicFilterTest() throws Exception {
-        DBCollection collection = mock(DBCollection.class);
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+
+        //DBCollection collection = mock(DBCollection.class);
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
         TableName tableName = new TableName(DB_NAME, COLLECTION_NAME);
@@ -540,7 +683,19 @@ public class MongoStorageEngineTest {
      */
     @Test
     public void deleteCompoundFilterTest() throws Exception {
-        DBCollection collection = mock(DBCollection.class);
+        MongoConnectionHandler connectionHandler = Mockito.mock(MongoConnectionHandler.class);
+        Connection<MongoClient> connection = Mockito.mock(Connection.class);
+        MongoClient client = Mockito.mock(MongoClient.class);
+        DB database = Mockito.mock(DB.class);
+        DBCollection collection = Mockito.mock(DBCollection.class);
+        MongoStorageEngine mongoStorageEngine;
+
+        when(connectionHandler.getConnection(CLUSTER_NAME)).thenReturn(connection);
+        when(connection.getNativeConnection()).thenReturn(client);
+        mongoStorageEngine = MongoStorageEngine.getInstance((MongoConnectionHandler) connectionHandler);
+        when(client.getDB(DB_NAME)).thenReturn(database);
+
+        //DBCollection collection = mock(DBCollection.class);
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
         TableName tableName = new TableName(DB_NAME, COLLECTION_NAME);
