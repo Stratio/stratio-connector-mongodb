@@ -18,30 +18,13 @@
 
 package com.stratio.connector.mongodb.core.engine;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoException;
+import com.mongodb.*;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsMetadataEngine;
 import com.stratio.connector.commons.metadata.CatalogMetadataBuilder;
 import com.stratio.connector.commons.metadata.TableMetadataBuilder;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
-import com.stratio.connector.mongodb.core.engine.metadata.AlterOptionsUtils;
-import com.stratio.connector.mongodb.core.engine.metadata.DiscoverMetadataUtils;
-import com.stratio.connector.mongodb.core.engine.metadata.IndexUtils;
-import com.stratio.connector.mongodb.core.engine.metadata.SelectorOptionsUtils;
-import com.stratio.connector.mongodb.core.engine.metadata.ShardUtils;
+import com.stratio.connector.mongodb.core.engine.metadata.*;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.AlterOptions;
 import com.stratio.crossdata.common.data.CatalogName;
@@ -50,11 +33,12 @@ import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
-import com.stratio.crossdata.common.metadata.CatalogMetadata;
-import com.stratio.crossdata.common.metadata.ColumnMetadata;
-import com.stratio.crossdata.common.metadata.IndexMetadata;
-import com.stratio.crossdata.common.metadata.TableMetadata;
+import com.stratio.crossdata.common.metadata.*;
 import com.stratio.crossdata.common.statements.structures.Selector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * The Class MongoMetadataEngine.
@@ -308,8 +292,21 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
                         tableName.getName(), clusterName.getName());
 
         // Add columns
-        for (String field : DiscoverMetadataUtils.discoverField(collection)) {
-            tableMetadataBuilder.addColumn(field, null);
+        for (Map.Entry<String, String> entry : DiscoverMetadataUtils.discoverFieldsWithType(collection).entrySet()) {
+            if (entry.getValue() == null) {
+                tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.TEXT));
+                continue;
+            }
+
+            if (entry.getValue().equals("string")) {
+                tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.TEXT));
+            } else if (entry.getValue().equals("boolean")) {
+                tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.BOOLEAN));
+            } else if (entry.getValue().equals("number")) {
+                tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.INT));
+            } else {
+                tableMetadataBuilder.addColumn(entry.getKey(), null);
+            }
         }
         // Add indexes and column with indexes
         for (IndexMetadata indexMetadata : DiscoverMetadataUtils.discoverIndexes(collection)) {
