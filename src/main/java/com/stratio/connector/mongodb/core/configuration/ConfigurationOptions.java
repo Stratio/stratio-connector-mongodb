@@ -41,7 +41,9 @@ public enum ConfigurationOptions {
     /** The host. */
     HOST("Hosts", new String[] { "localhost" }),
     /** The port. */
-    PORT("Port", new String[] { "27017" });
+    PORT("Port", new String[] { "27017" }),
+    /** Number of samples to deduce fields. */
+    SAMPLE_PROBABILITY("sample_probability", "1");
 
     /** The option name. */
     private final String optionName;

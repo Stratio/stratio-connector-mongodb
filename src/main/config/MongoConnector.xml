@@ -23,6 +23,13 @@
         <DataStoreName>Mongo</DataStoreName>
     </DataStores>
     <Version>0.3.0</Version>
+    <OptionalProperties>
+        <Property>
+            <PropertyName>sample_probability</PropertyName>
+            <Description>Number between 0 and 1 with the probability of take part of the import process .
+            </Description>
+        </Property>
+    </OptionalProperties>
     <SupportedOperations>
         <operation>DROP_CATALOG</operation>
         <operation>CREATE_TABLE</operation>

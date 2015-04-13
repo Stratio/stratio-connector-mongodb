@@ -55,7 +55,7 @@ public class DriverConnection extends Connection<MongoClient> {
     public DriverConnection(ICredentials credentials, ConnectorClusterConfig connectorClusterConfig)
                     throws ConnectionException, MongoValidationException {
         MongoClientConfiguration mongoClientConfiguration = new MongoClientConfiguration(connectorClusterConfig);
-
+        addObjectToSession("sample_probability",connectorClusterConfig.getConnectorOptions().get("sample_probability"));
         if (credentials == null) {
             mongoClient = new MongoClient(mongoClientConfiguration.getSeeds(),
                             mongoClientConfiguration.getMongoClientOptions());

@@ -23,6 +23,7 @@ import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.CommonsMetadataEngine;
 import com.stratio.connector.commons.metadata.CatalogMetadataBuilder;
 import com.stratio.connector.commons.metadata.TableMetadataBuilder;
+import com.stratio.connector.mongodb.core.configuration.ConfigurationOptions;
 import com.stratio.connector.mongodb.core.connection.MongoConnectionHandler;
 import com.stratio.connector.mongodb.core.engine.metadata.*;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
@@ -290,9 +291,9 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 
         TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(tableName.getCatalogName().getName(),
                         tableName.getName(), clusterName.getName());
-
+        String sampleNumber = (connection.getSessionObject(String.class, "sample_probability")!= null)?connection.getSessionObject(String.class, "sample_probability"): ConfigurationOptions.SAMPLE_PROBABILITY.getDefaultValue()[0];
         // Add columns
-        for (Map.Entry<String, String> entry : DiscoverMetadataUtils.discoverFieldsWithType(collection).entrySet()) {
+        for (Map.Entry<String, String> entry : DiscoverMetadataUtils.discoverFieldsWithType(collection, sampleNumber).entrySet()) {
             if (entry.getValue() == null) {
                 tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.TEXT));
                 continue;

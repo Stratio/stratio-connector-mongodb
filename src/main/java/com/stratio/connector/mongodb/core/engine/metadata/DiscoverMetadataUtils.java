@@ -26,7 +26,9 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MapReduceCommand;
 import com.mongodb.MapReduceCommand.OutputType;
+import com.mongodb.util.Hash;
 import com.stratio.connector.commons.metadata.IndexMetadataBuilder;
+import com.stratio.connector.mongodb.core.configuration.ConfigurationOptions;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.IndexType;
 
@@ -70,10 +72,14 @@ public final class DiscoverMetadataUtils {
      *            the collection
      * @return the list of fields including the _id
      */
-    public static HashMap<String, String> discoverFieldsWithType(DBCollection collection) {
-        String map = "function() { for (var key in this) { var type = typeof(this[key]); if(type == \"object\"){type = \"string\";};emit(key, type);} } ";
+    public static HashMap<String, String> discoverFieldsWithType(DBCollection collection, String sample_probability) {
+        String map = "function() {  if(Math.random() <= sample_number) {for (var key in this) {var type = typeof(this[key]); if(type == \"object\"){type = \"string\";};emit(key, type);}} } ";
         String reduce = "function(key, values) { var result = \"\"; for (var i = 0; i < values.length; i++){ var v = values[i];if(v == \"string\"){result = \"string\"; break;} if(v == \"number\"){result = \"number\"} if(v == \"boolean\" && result == \"number\"){result = \"string\"; break;}if(v == \"number\" && result == \"boolean\"){result = \"string\"; break;} if(v==\"boolean\"){result = \"boolean\"}};return result; }";
         MapReduceCommand mapReduceCommand = new MapReduceCommand(collection, map, reduce, null, OutputType.INLINE, null);
+        HashMap<String, Object> scope = new HashMap<>();
+//        connection
+        scope.put("sample_number", sample_probability);
+        mapReduceCommand.setScope(scope);
 
         DBObject getFieldsCommand = mapReduceCommand.toDBObject();
         CommandResult command = collection.getDB().command(getFieldsCommand);
@@ -84,10 +90,6 @@ public final class DiscoverMetadataUtils {
             for (Object object : results) {
                 DBObject bson = (DBObject) object;
                 String nameField = (String) bson.get("_id");
-                // ignore _id field
-                if(nameField.equals("_id")){
-                    continue;
-                }
                 String type = (String) bson.get("value");
                 fields.put(nameField, type);
             }
