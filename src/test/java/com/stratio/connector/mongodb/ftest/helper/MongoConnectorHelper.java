@@ -43,8 +43,8 @@ import com.stratio.crossdata.common.security.ICredentials;
 
 public abstract class MongoConnectorHelper implements IConnectorHelper {
 
-    protected String SERVER_IP = "10.200.0.58";// "10.200.0.58,10.200.0.59,10.200.0.60";
-    protected String SERVER_PORT = "27100";// TODO config test "9300,9300,9300";
+    protected String SERVER_IP = "127.0.0.1";// "10.200.0.58,10.200.0.59,10.200.0.60";
+    protected String SERVER_PORT = "27017";// TODO config test "9300,9300,9300";
     private MongoClient mongoClient;
 
     protected ClusterName clusterName = new ClusterName("deafult_test_cluster");
