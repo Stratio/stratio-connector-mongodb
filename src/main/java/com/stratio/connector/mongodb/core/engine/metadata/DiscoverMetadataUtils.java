@@ -29,8 +29,11 @@ import com.mongodb.MapReduceCommand.OutputType;
 import com.mongodb.util.Hash;
 import com.stratio.connector.commons.metadata.IndexMetadataBuilder;
 import com.stratio.connector.mongodb.core.configuration.ConfigurationOptions;
+import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.IndexType;
+
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.SAMPLE_PROBABILITY;
 
 /**
  * Utilities to discover MongoDB schemas.
@@ -151,5 +154,20 @@ public final class DiscoverMetadataUtils {
             indexType = IndexType.CUSTOM;
         }
         return indexType;
+    }
+
+    /**
+     * Recover the sample property.
+     * @param connectorClusterConfig the connector config send from crossdata.
+     * @return the sample property if exists, else the default value.
+     */
+    public static String recoveredSampleProperty(ConnectorClusterConfig connectorClusterConfig) {
+        String sampleProperty;
+        if(connectorClusterConfig.getConnectorOptions() == null ||  !connectorClusterConfig.getConnectorOptions().containsKey(SAMPLE_PROBABILITY.getOptionName()) || connectorClusterConfig.getConnectorOptions().get(SAMPLE_PROBABILITY.getOptionName()) == null) {
+            sampleProperty = SAMPLE_PROBABILITY.getDefaultValue()[0];
+        }else{
+            sampleProperty = connectorClusterConfig.getConnectorOptions().get(SAMPLE_PROBABILITY.getOptionName());
+        }
+        return sampleProperty;
     }
 }

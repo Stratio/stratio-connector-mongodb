@@ -19,6 +19,7 @@
 package com.stratio.connector.mongodb.core.connection;
 
 import com.stratio.connector.mongodb.core.configuration.ConfigurationOptions;
+import com.stratio.connector.mongodb.core.engine.metadata.DiscoverMetadataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +59,7 @@ public class DriverConnection extends Connection<MongoClient> {
     public DriverConnection(ICredentials credentials, ConnectorClusterConfig connectorClusterConfig)
                     throws ConnectionException, MongoValidationException {
         MongoClientConfiguration mongoClientConfiguration = new MongoClientConfiguration(connectorClusterConfig);
-        String sampleProperty = recoveredSampleProperty(connectorClusterConfig);
+        String sampleProperty = DiscoverMetadataUtils.recoveredSampleProperty(connectorClusterConfig);
 
         addObjectToSession(SAMPLE_PROBABILITY.getOptionName(), sampleProperty);
         if (credentials == null) {
@@ -121,19 +122,6 @@ public class DriverConnection extends Connection<MongoClient> {
         return isConnected;
     }
 
-    /**
-     * Recover the sample property.
-     * @param connectorClusterConfig the connector config send from crossdata.
-     * @return the sample property if exists, else the default value.
-     */
-    private String recoveredSampleProperty(ConnectorClusterConfig connectorClusterConfig) {
-        String sampleProperty;
-        if(connectorClusterConfig.getConnectorOptions() == null ||  !connectorClusterConfig.getConnectorOptions().containsKey(SAMPLE_PROBABILITY.getOptionName())) {
-            sampleProperty = SAMPLE_PROBABILITY.getDefaultValue()[0];
-        }else{
-            sampleProperty = connectorClusterConfig.getConnectorOptions().get(SAMPLE_PROBABILITY.getOptionName());
-        }
-        return sampleProperty;
-    }
+
 
 }

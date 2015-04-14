@@ -30,6 +30,8 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.stratio.connector.mongodb.core.configuration.ConfigurationOptions;
+import com.stratio.connector.mongodb.core.engine.metadata.DiscoverMetadataUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +47,8 @@ import com.stratio.crossdata.common.connector.IConfiguration;
 import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.security.ICredentials;
+
+import javax.security.auth.login.Configuration;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(value = { MongoConnectionHandler.class })
@@ -81,6 +85,29 @@ public class ConnectionHandlerTest {
 
         assertNotNull("The connection does not exist", recoveredConnection);
         assertEquals("The recovered connection is not the expected", connection, recoveredConnection);
+
+    }
+
+    public ConnectorClusterConfig initConnectorOptionsWithSampleProbability(String probability){
+        Map<String, String> options = new HashMap<>();
+        Map<String, String> connectorOptions = new HashMap<>();
+        connectorOptions.put(ConfigurationOptions.SAMPLE_PROBABILITY.getOptionName(), probability);
+        ConnectorClusterConfig config = new ConnectorClusterConfig(new ClusterName(CLUSTER_NAME), connectorOptions, null);
+        return config;
+    }
+
+    @Test
+    public void recoveredSamplePropertyTest() throws Exception {
+        String result = "";
+        ConnectorClusterConfig config = initConnectorOptionsWithSampleProbability("0.5");
+        result = DiscoverMetadataUtils.recoveredSampleProperty(config);
+        assertEquals( "0.5",result);
+        config = initConnectorOptionsWithSampleProbability(null);
+        result = DiscoverMetadataUtils.recoveredSampleProperty(config);
+        assertEquals("1", result);
+        config = new ConnectorClusterConfig(new ClusterName(CLUSTER_NAME), null, null);
+        result = DiscoverMetadataUtils.recoveredSampleProperty(config);
+        assertEquals("1", result);
 
     }
 
