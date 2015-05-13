@@ -21,13 +21,11 @@
 	<url>http://www.stratio.com</url>
 	<name>MongoDB Connector</name>
 	<packaging>pom</packaging>
-
 	<parent>
 		<groupId>com.stratio</groupId>
 		<artifactId>parent</artifactId>
 		<version>0.1.0</version>
 	</parent>
-
 	<properties>
 		<crossdata.version>0.3.0-RC1</crossdata.version>
 		<commons.connector.version>0.5.0-RC1</commons.connector.version>
@@ -35,8 +33,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-
-
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
@@ -44,7 +40,6 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
 	<scm>
 		<connection>scm:git:git@github.com:Stratio/stratio-connector-mongodb.git</connection>
 		<developerConnection>scm:git:git@github.com:Stratio/stratio-connector-mongodb.git</developerConnection>
@@ -54,8 +49,6 @@
 		<module>doc</module>
 		<module>connector-mongodb</module>
 	</modules>
-
-
 	<developers>
 		<developer>
 			<id>darroyo</id>
@@ -68,9 +61,6 @@
 			</roles>
 		</developer>
 	</developers>
-
-
-
 	<build>
 		<plugins>
 			<plugin>
@@ -95,7 +85,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -121,7 +110,6 @@
 					<skipTests>${skipUTs}</skipTests>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
