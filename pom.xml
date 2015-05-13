@@ -12,14 +12,21 @@
 	License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.stratio.connector</groupId>
-	<artifactId>stratio-connector-mongodb</artifactId>
+	<artifactId>stratio-connector-mongodb-parent</artifactId>
 	<version>0.4.0-SNAPSHOT</version>
-	<description>Connector for MongoDB</description>
+	<description>The MongoDB-Crossdata connector parent</description>
 	<url>http://www.stratio.com</url>
 	<name>MongoDB Connector</name>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>com.stratio</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.1.0</version>
+	</parent>
 
 	<properties>
 		<crossdata.version>0.3.0-SNAPSHOT</crossdata.version>
@@ -38,44 +45,16 @@
 		</license>
 	</licenses>
 
-	<profiles>
-		<profile>
-			<id>FT</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<version>2.18</version>
-						<configuration>
-							<includes>
-								<include>**/*FT.java</include>
-							</includes>
-							<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
-						</configuration>
-						<executions>
-							<execution>
-								<goals>
-									<goal>integration-test</goal>
-								</goals>
-								<configuration>
-									<includes>
-										<include>**/*FT.class</include>
-									</includes>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
 	<scm>
 		<connection>scm:git:git@github.com:Stratio/stratio-connector-mongodb.git</connection>
 		<developerConnection>scm:git:git@github.com:Stratio/stratio-connector-mongodb.git</developerConnection>
 		<url>https://github.com/Stratio/stratio-connector-mongodb</url>
 	</scm>
+	<modules>
+		<module>doc</module>
+		<module>connector-mongodb</module>
+	</modules>
+
 
 	<developers>
 		<developer>
@@ -90,78 +69,7 @@
 		</developer>
 	</developers>
 
-	<distributionManagement>
 
-		<repository>
-			<id>sonatype-nexus-staging</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-		</repository>
-
-		<snapshotRepository>
-			<id>sonatype-nexus-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-
-	</distributionManagement>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<version>${mongo.driver.version}</version>
-		</dependency>
-		<dependency>
-			<artifactId>crossdata-common</artifactId>
-			<groupId>com.stratio.crossdata</groupId>
-			<version>${crossdata.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.stratio.connector</groupId>
-			<artifactId>stratio-connector-commons</artifactId>
-			<version>${commons.connector.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.stratio.crossdata</groupId>
-			<artifactId>crossdata-connector</artifactId>
-			<version>${crossdata.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.stratio.connector</groupId>
-			<artifactId>stratio-connector-commons</artifactId>
-			<classifier>tests</classifier>
-			<version>${commons.connector.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
-			<version>1.5.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>1.5.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>6.8.8</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
@@ -230,151 +138,23 @@
 					</archive>
 				</configuration>
 			</plugin>
-
-			<plugin>
-				<artifactId>crossdata-connector-maven-plugin</artifactId>
-				<groupId>com.stratio.crossdata</groupId>
-				<version>${crossdata.version}</version>
-				<configuration>
-					<mainClass>com.stratio.connector.mongodb.core.MongoConnector</mainClass>
-					<jmxPort>7191</jmxPort>
-				</configuration>
-			</plugin>
-
-
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.7.1.201405082137</version>
-				<configuration>
-					<destFile>${basedir}/target/jacoco.exec</destFile>
-				</configuration>
 				<executions>
 					<execution>
-						<id>jacoco-initialize</id>
+						<id>pre-test</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
+						<configuration>
+							<destFile>${project.build.directory}/jacocoUT.exec</destFile>
+							<propertyName>jacoco-UT-argline</propertyName>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-
-			
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<aggregate>true</aggregate>
-					<formats>
-						<format>xml</format>
-					</formats>
-				</configuration>
-			</plugin>
-<plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-site-plugin</artifactId>
-         <version>3.4</version>
-         <configuration>
-             <reportPlugins>
-                 <plugin>
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-project-info-reports-plugin</artifactId>
-                     <version>2.8</version>
-                     <reportSets>
-                         <reportSet>
-                             <reports></reports>
-                         </reportSet>
-                     </reportSets>
-                 </plugin>
-                 <plugin>
-                     <groupId>com.stratio.maven</groupId>
-                     <artifactId>sphinx-maven-plugin</artifactId>
-                     <version>2.0.0</version>
-                     <configuration>
-                         <builders>
-                             <entry>html</entry>
-                         </builders>
-                         <resources>
-                             <resource>
-                                 <directory>src/site/sphinx</directory>
-                                 <filtering>true</filtering>
-                                 <includes>
-                                     <include>conf.py</include>
-                                 </includes>
-                             </resource>
-                         </resources>
-                     </configuration>
-                 </plugin>
-             </reportPlugins>
-         </configuration>
-     </plugin>
- <plugin>
-                <groupId>com.stratio.mojo.unix</groupId>
-                <artifactId>unix-maven-plugin</artifactId>
-                <version>1.0-alpha-9</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <contact><![CDATA[Stratio <jmgomez@stratio.com>]]></contact>
-                    <contactEmail>jmgomez@stratio.com</contactEmail>
-                    <size>2048</size>
-                    <deb>
-                        <section>devel</section>
-                    </deb>
-                    <rpm>
-                        <group>stratio</group>
-                    </rpm>
-                    <assembly>
-                        <mkdirs>
-                            <paths>
-                                <path>etc/sds/stratio-connector-mongodb</path>
-                                <path>etc/default</path>
-                            </paths>
-                            <attributes>
-                                <user>stratio</user>
-                                <group>stratio</group>
-                                <mode>644</mode>
-                            </attributes>
-                        </mkdirs>
-                        <copyDirectory>
-                            <from>target/stratio-connector-mongodb-${project.version}/bin</from>
-                            <to>opt/sds/stratio-connector-mongodb/bin</to>
-                        </copyDirectory>
-                        <copyDirectory>
-                            <from>target/stratio-connector-mongodb-${project.version}/lib</from>
-                            <to>opt/sds/stratio-connector-mongodb/lib</to>
-                        </copyDirectory>
-                        <copyDirectory>
-                            <from>target/stratio-connector-mongodb-${project.version}/conf</from>
-                            <to>opt/sds/stratio-connector-mongodb/conf</to>
-                        </copyDirectory>
-                        <copyDirectory>
-                            <from>src/main/template</from>
-                            <to>opt/sds/stratio-connector-mongodb/template</to>
-                        </copyDirectory>
-                        <copyDirectory>
-                            <from>src/main/config</from>
-                            <to>etc/sds/stratio-connector-mongodb</to>
-                        </copyDirectory>
-                        <copyDirectory>
-                            <from>src/main/unix/files_and_dirs/etc/default</from>
-                            <to>etc/default</to>
-                        </copyDirectory>
-                        <copyFile>
-                            <path>src/main/include/LICENSE</path>
-                            <toFile>opt/sds/stratio-connector-mongodb/LICENSE</toFile>
-                        </copyFile>
-                        <copyFile>
-                            <path>src/main/include/NOTICE</path>
-                            <toFile>opt/sds/stratio-connector-mongodb/NOTICE</toFile>
-                        </copyFile>
-                    </assembly>
-                </configuration>
-            </plugin>
-
-
-
-
 		</plugins>
 	</build>
 </project>
