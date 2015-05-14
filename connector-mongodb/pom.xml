@@ -91,7 +91,7 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4-rule-agent</artifactId>
-            <version>1.6.2</version>
+            <version>1.5.5</version>
             <scope>test</scope>
         </dependency>
 
@@ -106,7 +106,7 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
-                    <argLine>-javaagent:${settings.localRepository}/org/powermock/powermock-module-javaagent/1.6.2/powermock-module-javaagent-1.6.2.jar -noverify ${jacoco-UT-argline}</argLine>
+                    <argLine>-javaagent:${settings.localRepository}/org/powermock/powermock-module-javaagent/1.5.5/powermock-module-javaagent-1.5.5.jar -noverify ${jacoco-UT-argline}</argLine>
                     <skipTests>${skipUTs}</skipTests>
                 </configuration>
             </plugin>
