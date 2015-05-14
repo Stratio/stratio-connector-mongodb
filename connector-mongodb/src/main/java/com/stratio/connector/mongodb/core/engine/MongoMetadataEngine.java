@@ -291,7 +291,11 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 
         TableMetadataBuilder tableMetadataBuilder = new TableMetadataBuilder(tableName.getCatalogName().getName(),
                         tableName.getName(), clusterName.getName());
-        String sampleNumber = (connection.getSessionObject(String.class, "sample_probability")!= null)?connection.getSessionObject(String.class, "sample_probability"): ConfigurationOptions.SAMPLE_PROBABILITY.getDefaultValue()[0];
+        String sampleNumber = connection.getSessionObject(String.class, "sample_probability");
+        if (sampleNumber == null){
+            sampleNumber = ConfigurationOptions.SAMPLE_PROBABILITY.getDefaultValue()[0];
+        }
+
         // Add columns
         for (Map.Entry<String, String> entry : DiscoverMetadataUtils.discoverFieldsWithType(collection, sampleNumber).entrySet()) {
             if (entry.getValue() == null) {

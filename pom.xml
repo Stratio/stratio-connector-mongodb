@@ -106,7 +106,8 @@
 					<includes>
 						<include>**/*Test.java</include>
 					</includes>
-					<argLine>${jacocoUT-argline} -noverify</argLine>
+					<argLine>-noverify</argLine>
+
 					<skipTests>${skipUTs}</skipTests>
 				</configuration>
 			</plugin>

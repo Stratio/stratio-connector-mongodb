@@ -44,29 +44,7 @@ public final class DiscoverMetadataUtils {
 
     }
 
-    /**
-     * Discover the existing fields stored in the collection.
-     *
-     * @param collection
-     * the collection
-     * @return the list of fields including the _id
-     */
-    public static List<String> discoverField(DBCollection collection) {
-        String map = "function() { for (var field in this) { emit(field, null); }}";
-        String reduce = "function(field, stuff) { return null; }";
-        MapReduceCommand mapReduceCommand = new MapReduceCommand(collection, map, reduce, null, OutputType.INLINE, null);
-        DBObject getFieldsCommand = mapReduceCommand.toDBObject();
-        CommandResult command = collection.getDB().command(getFieldsCommand);
-        BasicDBList results = (BasicDBList) command.get("results");
-        Set<String> fields = new HashSet<>();
-        if (results != null) {
-            for (Object object : results) {
-                DBObject bson = (DBObject) object;
-                fields.add((String) bson.get("_id"));
-            }
-        }
-        return new ArrayList<String>(fields);
-    }
+
 
     /**
      * Discover the existing fields stored in the collection and their data types.
@@ -75,7 +53,7 @@ public final class DiscoverMetadataUtils {
      *            the collection
      * @return the list of fields including the _id
      */
-    public static HashMap<String, String> discoverFieldsWithType(DBCollection collection, String sample_probability) {
+    public static Map<String, String> discoverFieldsWithType(DBCollection collection, String sample_probability) {
         String map = "function() {  if(Math.random() <= sample_number) {for (var key in this) {var type = typeof(this[key]); if(type == \"object\"){type = \"string\";};emit(key, type);}} } ";
         String reduce = "function(key, values) { var result = \"\"; for (var i = 0; i < values.length; i++){ var v = values[i];if(v == \"string\"){result = \"string\"; break;} if(v == \"number\"){result = \"number\"} if(v == \"boolean\" && result == \"number\"){result = \"string\"; break;}if(v == \"number\" && result == \"boolean\"){result = \"string\"; break;} if(v==\"boolean\"){result = \"boolean\"}};return result; }";
         MapReduceCommand mapReduceCommand = new MapReduceCommand(collection, map, reduce, null, OutputType.INLINE, null);

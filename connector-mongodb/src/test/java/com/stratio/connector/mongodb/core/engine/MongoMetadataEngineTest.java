@@ -25,10 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import com.stratio.crossdata.common.metadata.*;
 import org.junit.Assert;
@@ -75,9 +72,13 @@ public class MongoMetadataEngineTest {
     private static final String DB_NAME_SEC = "catalog_sec";
     private static final String TABLE_NAME = "tablename";
     private static final String TABLE_NAME_SEC = "tablename_sec";
-    private final String INDEX_NAME = "indexname";
-    private final String COLUMN_NAME = "colname";
-    private final String COLUMN_NAME2 = "colname2";
+    private static final String INDEX_NAME = "indexname";
+    private static final String COLUMN_NAME = "colname";
+    private static final String COLUMN_NAME2 = "colname2";
+   private static Map fielddWithType= new HashMap<String,String>();
+    static {
+        fielddWithType.put(COLUMN_NAME, "string");
+    }
 
     MongoMetadataEngine mongoMetadataEngine;
     @Mock
@@ -366,9 +367,10 @@ public class MongoMetadataEngineTest {
         when(client.getDB(DB_NAME)).thenReturn(database);
         when(database.getCollection(TABLE_NAME)).thenReturn(collection);
         PowerMockito.mockStatic(DiscoverMetadataUtils.class);
-        when(DiscoverMetadataUtils.discoverField(collection)).thenReturn(Arrays.asList(COLUMN_NAME));
+
+        when(DiscoverMetadataUtils.discoverFieldsWithType(collection,"1")).thenReturn(fielddWithType);
         when(DiscoverMetadataUtils.discoverIndexes(collection)).thenReturn(
-                        getIndexMetadata(COLUMN_NAME2, IndexType.CUSTOM));
+                getIndexMetadata(COLUMN_NAME2, IndexType.CUSTOM));
 
         TableMetadata tableMetadataProvided = mongoMetadataEngine.provideTableMetadata(new TableName(DB_NAME,
                         TABLE_NAME), new ClusterName(CLUSTER_NAME), connection);
