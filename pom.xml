@@ -137,7 +137,7 @@
 						</goals>
 						<configuration>
 							<destFile>${project.build.directory}/jacocoUT.exec</destFile>
-							<propertyName>jacoco-UT-argline</propertyName>
+								<propertyName>jacoco-UT-argline</propertyName>
 						</configuration>
 					</execution>
 				</executions>
