@@ -81,7 +81,6 @@
             <version>1.5.5</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4-rule-agent</artifactId>
@@ -92,9 +91,8 @@
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-javaagent</artifactId>
             <version>1.5.5</version>
-         <!--    <scope>test</scope> -->
+            <!--    <scope>test</scope> -->
         </dependency>
-
     </dependencies>
     <build>
         <plugins>
@@ -110,8 +108,6 @@
                     <skipTests>${skipUTs}</skipTests>
                 </configuration>
             </plugin>
-
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
