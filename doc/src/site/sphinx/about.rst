@@ -26,6 +26,7 @@ To generate the executable, execute the following command:
 
 ::
 
+       > cd connector-mongodb
        > mvn crossdata-connector:install
 
 The user and the group of the service are set up to root by default. It
