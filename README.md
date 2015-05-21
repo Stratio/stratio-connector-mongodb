@@ -23,6 +23,7 @@ To automatically build execute the following command:
 To generate the executable, execute the following command:
 
 ```
+   > cd connector-mongodb
    > mvn crossdata-connector:install
 ```
 
