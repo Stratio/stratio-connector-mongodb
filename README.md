@@ -20,7 +20,7 @@ To automatically build execute the following command:
 
 ## Build an executable Connector Mongo ##
 
-To generate the executable, execute the following command:
+To generate the executable, run the following command:
 
 ```
    > mvn crossdata-connector:install
