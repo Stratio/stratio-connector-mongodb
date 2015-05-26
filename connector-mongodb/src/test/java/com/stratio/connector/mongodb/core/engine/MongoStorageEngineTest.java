@@ -146,7 +146,7 @@ public class MongoStorageEngineTest {
         when(StorageUtils.buildPK(tableMetadata, row)).thenReturn(null);
         when(database.getCollection(COLLECTION_NAME)).thenReturn(collection);
 
-        mongoStorageEngine.insert(clusterName, tableMetadata, row, false);
+        mongoStorageEngine.insert(tableMetadata, row, false, connection);
 
         BasicDBObject doc = new BasicDBObject(COLUMN_NAME, CELL_VALUE);
         doc.put(OTHER_COLUMN_NAME, OTHER_CELL_VALUE);
