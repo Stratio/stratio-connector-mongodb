@@ -73,8 +73,7 @@ Prerequisites
 -------------
 
 -  Basic knowledge of SQL like language.
--  First of all `Stratio Crossdata
-   0.2.0 <https://github.com/Stratio/crossdata>`__ is needed and must be
+-  First of all `Stratio Crossdata <https://github.com/Stratio/crossdata>`__ is needed and must be
    installed. The server and the shell must be running.
 -  An installation of
    `MongoDB <http://docs.mongodb.org/manual/installation/>`__.
