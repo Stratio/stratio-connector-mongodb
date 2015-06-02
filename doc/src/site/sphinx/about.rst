@@ -34,7 +34,7 @@ could be changed in the following file:
 
 ::
 
-       > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT
+       > target/stratio-connector-mongodb-<version>/bin/stratio-connector-mongodb-<version>
 
 Running the Stratio Connector Mongo
 -----------------------------------
@@ -43,13 +43,13 @@ To run Mongo Connector execute:
 
 ::
 
-       > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT start
+       > target/stratio-connector-mongodb-<version>/bin/stratio-connector-mongodb-<version> start
 
 To stop the connector execute:
 
 ::
 
-       > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT stop
+       > target/stratio-connector-mongodb-<version>/bin/stratio-connector-mongodb-<version> stop
 
 Build a redistributable package
 -------------------------------
@@ -73,13 +73,13 @@ RPM Package:
  
 ::   
     
-       > rpm -i target/stratio-connector-mongodb-0.4.0-SNAPSHOT.rpm
+       > rpm -i target/stratio-connector-mongodb-<version>.rpm
      
 DEB Package:
 
 ::   
     
-       > dpkg -i target/stratio-connector-mongodb-0.4.0-SNAPSHOT.deb
+       > dpkg -i target/stratio-connector-mongodb-<version>.deb
 
 Now to start/stop the connector:
  
@@ -102,7 +102,7 @@ basic commands are described below.
    Add a data store with this command. We need to specified the XML
    manifest that defines the data store. The XML manifest can be found
    in the path of the Mongo Connector in
-   target/stratio-connector-mongodb-0.4.0-SNAPSHOT/conf/MongoDataStore.xml
+   target/stratio-connector-mongodb-<version>/conf/MongoDataStore.xml
 
    ``xdsh:user>  ADD DATASTORE <Absolute path to MongoDB Datastore manifest>;``
 
@@ -113,7 +113,7 @@ basic commands are described below.
 
    Add the connector manifest. The XML with the manifest can be found in
    the path of the Mongo Connector in
-   target/stratio-connector-mongodb-0.4.0-SNAPSHOT/conf/MongoConnector.xml
+   target/stratio-connector-mongodb-<version>/conf/MongoConnector.xml
 
    ``xdsh:user>  ADD CONNECTOR <Path to MongoDB Connector Manifest>``
 
