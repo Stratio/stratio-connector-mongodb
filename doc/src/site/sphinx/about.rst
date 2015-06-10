@@ -22,33 +22,20 @@ To automatically build execute the following command:
 Build an executable Connector Mongo
 -----------------------------------
 
-To generate the executable, execute the following command:
+To generate the executable, run the following command:
 
-::
+```
+   > mvn package -Ppackage
+```
 
-       > mvn crossdata-connector:install
 
-The user and the group of the service are set up to root by default. It
-could be changed in the following file:
-
-::
-
-       > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT
-
-Running the Stratio Connector Mongo
------------------------------------
+## Running the Stratio Connector Mongo ##
 
 To run Mongo Connector execute:
 
-::
-
-       > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT start
-
-To stop the connector execute:
-
-::
-
-       > target/stratio-connector-mongodb-0.4.0-SNAPSHOT/bin/stratio-connector-mongodb-0.4.0-SNAPSHOT stop
+```
+   > target/stratio-connector-mongodb/bin/stratio-connector-mongodb
+```
 
 Build a redistributable package
 -------------------------------
