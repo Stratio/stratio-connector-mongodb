@@ -122,37 +122,6 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>appassembler-maven-plugin</artifactId>
-                <version>1.10</version>
-                <executions>
-                    <execution>
-                        <id>ppassembler</id>
-                        <goals>
-                            <goal>assemble</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <configurationDirectory>conf</configurationDirectory>
-                            <copyConfigurationDirectory>true</copyConfigurationDirectory>
-                            <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
-                            <assembleDirectory>${project.build.directory}/stratio-connector-mongodb</assembleDirectory>
-                            <extraJvmArguments>-Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote.port=${jmx.port} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false</extraJvmArguments>
-                            <platforms>
-                                <platform>windows</platform>
-                                <platform>unix</platform>
-                            </platforms>
-                            <programs>
-                                <program>
-                                    <mainClass>com.stratio.connector.mongodb.core.MongoConnector</mainClass>
-                                    <id>stratio-connector-mongodb</id>
-                                </program>
-                            </programs>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     <profiles>
@@ -160,6 +129,37 @@
             <id>package</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>appassembler-maven-plugin</artifactId>
+                        <version>1.10</version>
+                        <executions>
+                            <execution>
+                                <id>ppassembler</id>
+                                <goals>
+                                    <goal>assemble</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <configurationDirectory>conf</configurationDirectory>
+                                    <copyConfigurationDirectory>true</copyConfigurationDirectory>
+                                    <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+                                    <assembleDirectory>${project.build.directory}/stratio-connector-mongodb</assembleDirectory>
+                                    <extraJvmArguments>-Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote.port=${jmx.port} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false</extraJvmArguments>
+                                    <platforms>
+                                        <platform>windows</platform>
+                                        <platform>unix</platform>
+                                    </platforms>
+                                    <programs>
+                                        <program>
+                                            <mainClass>com.stratio.connector.mongodb.core.MongoConnector</mainClass>
+                                            <id>stratio-connector-mongodb</id>
+                                        </program>
+                                    </programs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>com.stratio.mojo.unix</groupId>
                         <artifactId>unix-maven-plugin</artifactId>
