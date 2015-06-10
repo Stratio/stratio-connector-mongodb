@@ -91,7 +91,7 @@
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-javaagent</artifactId>
             <version>1.5.5</version>
-             <scope>test</scope> 
+             <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -163,7 +163,7 @@
                     <plugin>
                         <groupId>com.stratio.mojo.unix</groupId>
                         <artifactId>unix-maven-plugin</artifactId>
-                        <version>1.1.2</version>
+                        <version>1.1.5</version>
                         <extensions>true</extensions>
                         <executions>
                             <execution>
