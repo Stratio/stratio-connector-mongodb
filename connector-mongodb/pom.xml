@@ -123,23 +123,35 @@
                 </configuration>
             </plugin>
             <plugin>
-                <artifactId>crossdata-connector-maven-plugin</artifactId>
-                <groupId>com.stratio.crossdata</groupId>
-                <version>${crossdata.version}</version>
-<!--                <executions>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.10</version>
+                <executions>
                     <execution>
-                        <id>crossdata</id>
+                        <id>ppassembler</id>
                         <goals>
-                            <goal>install</goal>
+                            <goal>assemble</goal>
                         </goals>
-                        <phase>package</phase> -->
+                        <phase>package</phase>
                         <configuration>
-                            <mainClass>com.stratio.connector.mongodb.core.MongoConnector</mainClass>
-                            <jmxPort>7191</jmxPort>
+                            <configurationDirectory>conf</configurationDirectory>
+                            <copyConfigurationDirectory>true</copyConfigurationDirectory>
+                            <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+                            <assembleDirectory>${project.build.directory}/stratio-connector-mongodb</assembleDirectory>
+                            <extraJvmArguments>-Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote.port=${jmx.port} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false</extraJvmArguments>
+                            <platforms>
+                                <platform>windows</platform>
+                                <platform>unix</platform>
+                            </platforms>
+                            <programs>
+                                <program>
+                                    <mainClass>com.stratio.connector.mongodb.core.MongoConnector</mainClass>
+                                    <id>stratio-connector-mongodb</id>
+                                </program>
+                            </programs>
                         </configuration>
-
-<!--                    </execution>
-	</executions> -->
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -184,15 +196,15 @@
                                             </attributes>
                                         </mkdirs>
                                         <copyDirectory>
-                                            <from>target/stratio-connector-mongodb-${project.version}/bin</from>
+                                            <from>target/stratio-connector-mongodb/bin</from>
                                             <to>opt/sds/stratio-connector-mongodb/bin</to>
                                         </copyDirectory>
                                         <copyDirectory>
-                                            <from>target/stratio-connector-mongodb-${project.version}/lib</from>
-                                            <to>opt/sds/stratio-connector-mongodb/lib</to>
+                                            <from>target/stratio-connector-mongodb/repo</from>
+                                            <to>opt/sds/stratio-connector-mongodb/repo</to>
                                         </copyDirectory>
                                         <copyDirectory>
-                                            <from>target/stratio-connector-mongodb-${project.version}/conf</from>
+                                            <from>target/stratio-connector-mongodb/conf</from>
                                             <to>opt/sds/stratio-connector-mongodb/conf</to>
                                         </copyDirectory>
                                         <copyDirectory>

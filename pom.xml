@@ -32,6 +32,7 @@
 		<mongo.driver.version>2.12.4</mongo.driver.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<jmx.port>7191</jmx.port>
 	</properties>
 	<licenses>
 		<license>
