@@ -236,11 +236,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             mongoOperator = "$regex";
             break;
         case BETWEEN:
-            new UnsupportedException("Waiting for Meta to implement between filters");
-            break;
         case IN:
-            new UnsupportedException("Waiting for Meta to implement in filters");
-            break;
         case ADD:
         case ASSIGN:
         case DIVISION:
