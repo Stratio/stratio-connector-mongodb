@@ -195,7 +195,7 @@
                         <inherited>false</inherited>
                         <configuration>
                             <size>2048</size>
-                            <outputFileName>connector-mongodb</outputFileName>
+                            <outputFileName>stratio-connector-mongodb</outputFileName>
                             <contact><![CDATA[Stratio <jmgomez@stratio.com>]]></contact>
                             <contactEmail>jmgomez@stratio.com</contactEmail>
                             <deb>
@@ -203,7 +203,7 @@
                             </deb>
                             <rpm>
                                 <group>stratio</group>
-                              <requires>bash</requires> 
+                              <requires>bash</requires>
                             </rpm>
                             <name>connector-mongodb</name>
                             <excludeDirectoryAttributes>
@@ -317,13 +317,6 @@
                                 <configuration>
                                     <architecture>noarch</architecture>
                                 </configuration>
-                            </execution>
-                            <execution>
-                                <id>zip</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>package-zip</goal>
-                                </goals>
                             </execution>
                         </executions>
                     </plugin>
