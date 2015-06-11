@@ -1,0 +1,1 @@
+exec /opt/sds/stratio-connector-mongodb/bin/stratio-connector-mongodb
