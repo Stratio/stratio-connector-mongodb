@@ -226,7 +226,7 @@
                                     </attributes>
                                 </copyFile>
                                 <mkdirs>
-                                    <path>/opt/sds/datavis</path>
+                                    <path>/opt/sds/connector-mongodb</path>
                                     <attributes>
                                         <user>stratio</user>
                                         <group>stratio</group>
