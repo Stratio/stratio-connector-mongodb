@@ -40,6 +40,9 @@ import static com.stratio.connector.mongodb.core.configuration.ConfigurationOpti
  */
 public final class DiscoverMetadataUtils {
 
+    /**
+     * Constructor.
+     */
     private DiscoverMetadataUtils() {
 
     }
@@ -49,8 +52,8 @@ public final class DiscoverMetadataUtils {
     /**
      * Discover the existing fields stored in the collection and their data types.
      *
-     * @param collection
-     *            the collection
+     * @param collection  the collection
+     * @param sample_probability the sample per cent.
      * @return the list of fields including the _id
      */
     public static Map<String, String> discoverFieldsWithType(DBCollection collection, String sample_probability) {
@@ -111,9 +114,7 @@ public final class DiscoverMetadataUtils {
 
     /**
      * Gets the index type.
-     *
-     * @param key
-     *            the key
+     * @param key   the key
      * @return DEFAULT when involved fields have ascending index. CUSTOM otherwise
      */
     private static IndexType getIndexType(BasicDBObject key) {

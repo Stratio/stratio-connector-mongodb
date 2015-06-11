@@ -52,7 +52,10 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
      */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static MongoMetadataEngine instance = null;
+    /**
+     * The mongo metadataEngine.
+     */
+    private static MongoMetadataEngine singleMongoMetadataEngine = null;
 
     /**
      * Instantiates a new mongo metadata engine.
@@ -65,11 +68,16 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
         super(connectionHandler);
     }
 
+    /**
+     * Recovered a intance of mongometadata engine.
+     * @param connectionHandler the connection handler.
+     * @return a mongo metadataEngine.
+     */
     public static MongoMetadataEngine getInstance(MongoConnectionHandler connectionHandler){
-        if(instance == null){
-            instance = new MongoMetadataEngine(connectionHandler);
+        if(singleMongoMetadataEngine == null){
+            singleMongoMetadataEngine = new MongoMetadataEngine(connectionHandler);
         }
-        return instance;
+        return singleMongoMetadataEngine;
     }
 
     /**
@@ -93,12 +101,9 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
     /**
      * Create a collection in MongoDB.
      *
-     * @param tableMetadata
-     *            the tableMetadata
-     * @param connection
-     *            the connection which contains the native connector
-     * @throws ExecutionException
-     *             if an error exist when running the database command or the specified operation is not supported
+     * @param tableMetadata the tableMetadata
+     * @param connection the connection which contains the native connector
+     * @throws ExecutionException  if an error exist when running the database command or the specified operation is not supported
      */
     @Override
     protected void createTable(TableMetadata tableMetadata, Connection<MongoClient> connection)

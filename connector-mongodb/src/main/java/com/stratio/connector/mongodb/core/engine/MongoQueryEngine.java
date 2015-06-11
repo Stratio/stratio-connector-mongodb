@@ -85,22 +85,38 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
 
     }
 
+    /**
+     * Execute a async query.
+     * @param queryId the query ID.
+     * @param project the query to be executed.
+     * @param connection the conection.
+     * @param iResultHandler the resylt handler.
+     * @throws ConnectorException if any error happens.
+     */
     @Override
-    protected void asyncExecute(String s, Project project, Connection connection, IResultHandler iResultHandler) throws ConnectorException {
+    protected void asyncExecute(String queryId, Project project, Connection connection, IResultHandler iResultHandler) throws ConnectorException {
         throw new UnsupportedException("The method asyncExecute is not supported");
     }
 
+    /**
+     * Execute a paged query.
+     * @param queryId the query ID.
+     * @param project the query to be executed.
+     * @param connection the conection.
+     * @param iResultHandler the resylt handler.
+     * @throws ConnectorException if any error happens.
+     */
     @Override
-    protected void pagedExecute(String s, Project project, Connection connection, IResultHandler iResultHandler) throws ConnectorException {
+    protected void pagedExecute(String queryId, Project project, Connection connection, IResultHandler iResultHandler) throws ConnectorException {
         throw new UnsupportedException("The method pagedExecute is ot supported");
 
     }
 
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.stratio.meta.common.connector.IQueryEngine#stop(java.lang.String)
+    /**
+     * Stiop a query.
+     * @param queryId the queryID.
+     * @throws UnsupportedException if any error happens.
      */
     @Override
     public void stop(String queryId) throws UnsupportedException {

@@ -69,6 +69,11 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         super(connectionHandler);
     }
 
+    /**
+     * Recovered a mongoStorageEngine.
+     * @param connectionHandler the connection handler.
+     * @return the mongo storage engine.
+     */
     public static MongoStorageEngine getInstance(MongoConnectionHandler connectionHandler){
         if(instance == null){
             instance = new MongoStorageEngine(connectionHandler);
@@ -173,13 +178,27 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         }
     }
 
+    /**
+     * Truncate a table.
+     * @param tableName the table name.
+     * @param connection the connection.
+     * @throws ExecutionException ig a exception happens.
+     * @throws UnsupportedException if the operation is not support.
+     */
     @Override
     protected void truncate(TableName tableName, Connection<MongoClient> connection) throws ExecutionException,
                     UnsupportedException {
         delete(tableName, null, connection);
-
     }
 
+    /**
+     * delete a set of rows from a table.
+     * @param tableName the table name.
+     * @param whereClauses fe filter.
+     * @param connection the connection.
+     * @throws ExecutionException ig a exception happens.
+     * @throws UnsupportedException if the operation is not support.
+     */
     @Override
     protected void delete(TableName tableName, Collection<Filter> whereClauses, Connection<MongoClient> connection)
                     throws ExecutionException, UnsupportedException {
@@ -199,6 +218,15 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     }
 
+    /**
+     * Update a set of rows from a table.
+     * @param tableName the table name.
+     * @param assignments the new values.
+     * @param whereClauses fe filter.
+     * @param connection the connection.
+     * @throws ExecutionException ig a exception happens.
+     * @throws UnsupportedException if the operation is not support.
+     */
     @Override
     protected void update(TableName tableName, Collection<Relation> assignments, Collection<Filter> whereClauses,
                     Connection<MongoClient> connection) throws ExecutionException, UnsupportedException {
@@ -219,6 +247,13 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
 
     }
 
+    /**
+     * Build a Mongo Filter from CrossdataFilter.
+     * @param whereClauses the crossdataFilter.
+     * @return a MongoFilter
+     * @throws MongoValidationException if the filter is not mongo compatible.
+     * @throws UnsupportedException if the operation is not supported.
+     */
     private DBObject buildFilter(Collection<Filter> whereClauses) throws MongoValidationException, UnsupportedException {
         List<Filter> filters;
         if (whereClauses == null) {
@@ -234,6 +269,12 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
         }
     }
 
+    /**
+     * Validate the data to insert.
+     * @param targetTable the table.
+     * @param row the row.
+     * @throws MongoValidationException if data is not compatible.
+     */
     private void validateInsert(TableMetadata targetTable, Row row) throws MongoValidationException {
         if (isEmpty(targetTable.getName().getCatalogName().getName()) || isEmpty(targetTable.getName().getName())
                         || row == null) {
