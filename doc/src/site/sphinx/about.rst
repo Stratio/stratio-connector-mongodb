@@ -1,41 +1,38 @@
 About
 =====
 
-Native connector for Mongo using Crossdata.
+The Stratio Connector-MongoDB allows [Stratio Crossdata] (<https://github.com/Stratio/crossdata>) to interact with MongoDB.
 
 Requirements
 ------------
 
-[MongoDB] (http://www.mongodb.org/downloads) 2.0 version or later
-[Crossdata] (https://github.com/Stratio/crossdata) is needed to interact
-with this connector.
+`MongoDB <http://www.mongodb.org/downloads>`_ 2.0 version or later.
+`Crossdata <https://github.com/Stratio/crossdata>`__ is needed to interact with this connector.
 
-Compiling Stratio Connector Mongo
----------------------------------
 
+Compiling Stratio Connector-MongoDB
+-----------------------------------
 To automatically build execute the following command:
 
 ::
+   > mvn clean compile install
 
-       > mvn clean compile install
+Build an executable Stratio Connector-MongoDB
+---------------------------------------------
 
-Build an executable Connector Mongo
------------------------------------
+To generate the executable, run the following commands:
 
-To generate the executable, run the following command:
-
-```
+::
    > mvn package -Ppackage
-```
 
+Running the Stratio Connector-MongoDB
+-------------------------------------
 
-## Running the Stratio Connector Mongo ##
+To run Stratio Connector-MongoDB execute:
 
-To run Mongo Connector execute:
+::
+   > target/stratio-connector-mongodb-[VERSION]/bin/stratio-connector-mongodb-core[VERSION] start
 
-```
-   > target/stratio-connector-mongodb/bin/stratio-connector-mongodb
-```
 
 Build a redistributable package
 -------------------------------
@@ -45,104 +42,87 @@ RPM Package:
 
 ::
 
-       > mvn unix:package-rpm -N
-    
+    > mvn unix:package-rpm -N
+
 DEB Package:
 
 ::
-   
-       > mvn unix:package-deb -N
+    > mvn unix:package-deb -N
 
 Once the package it's created, execute this commands to install:
 
 RPM Package:
- 
-::   
-    
-       > rpm -i target/stratio-connector-mongodb-0.4.0-SNAPSHOT.rpm
-     
+
+::
+    > rpm -i target/stratio-connector-mongodb-<version>.rpm
+
 DEB Package:
 
-::   
-    
-       > dpkg -i target/stratio-connector-mongodb-0.4.0-SNAPSHOT.deb
+::
+    > dpkg -i target/stratio-connector-mongodb-<version>.deb
 
 Now to start/stop the connector:
- 
-::   
-    
-       > service stratio-connector-mongodb start
-       > service stratio-connector-mongodb stop
 
-How to use Mongo Connector
---------------------------
+::
+    > service stratio-connector-mongodb start
+    > service stratio-connector-mongodb stop
 
-A complete tutorial is available `here <_doc/FirstSteps.md>`__. The
-basic commands are described below.
 
-1. Start `crossdata-server and then
-   crossdata-shell <https://github.com/Stratio/crossdata>`__.
-2. Start Mongo Connector as it is explained before.
-3. In crossdata-shell:
+How to use Stratio Connector-MongoDB
+------------------------------------
 
-   Add a data store with this command. We need to specified the XML
+A complete tutorial is available `here <https://github.com/Stratio/stratio-connector-mongodb/blob/master/doc/src/site/sphinx/First_Steps.rst>`__. The basic commands are described below.
+
+1. Start `Stratio Crossdata Server and then Stratio Crossdata Shell <http://docs.stratio.com/crossdata>`__.
+
+ 2. Start Stratio Connector-MongoDB as it is explained before.
+
+3. In the Stratio Crossdata Shell:
+
+   Add a datastore. We need to specified the XML
    manifest that defines the data store. The XML manifest can be found
-   in the path of the Mongo Connector in
-   target/stratio-connector-mongodb-0.4.0-SNAPSHOT/conf/MongoDataStore.xml
+   in the path of the Stratio Connector-MongoDB in
+   target/stratio-connector-mongo-core-[VERSION]/conf/MongoDataStore.xml
 
-   ``xdsh:user>  ADD DATASTORE <Absolute path to MongoDB Datastore manifest>;``
+   ``xdsh:user>  ADD DATASTORE <Absolute path to MongoDatastore manifest>;``
 
-   Attach cluster on that data store. The data store name must be the
-   same as the defined in the data store manifest.
+   Attach a cluster on that datastore. The datastore name must be the same
+   as the defined in the Datastore manifest.
 
-   ``xdsh:user>  ATTACH CLUSTER <cluster_name> ON DATASTORE <datastore_name> WITH OPTIONS {'Hosts': '[<IPHost_1,IPHost_2,...,IPHost_n>]', 'Port': '[<PortHost_1,PortHost_2,...,PortHost_n>]'};``
+      ```
+         xdsh:user>  ATTACH CLUSTER <cluster_name> ON DATASTORE <datastore_name> WITH OPTIONS {'Hosts': '[<IPHost_1,IPHost_2,...,IPHost_n>]', 'Port': '[<PortHost_1,PortHost_2,...,PortHost_n>]'};
+      ```
 
-   Add the connector manifest. The XML with the manifest can be found in
-   the path of the Mongo Connector in
-   target/stratio-connector-mongodb-0.4.0-SNAPSHOT/conf/MongoConnector.xml
-
-   ``xdsh:user>  ADD CONNECTOR <Path to MongoDB Connector Manifest>``
-
-   Attach the connector to the previously defined cluster. The connector
-   name must match the one defined in the Connector Manifest.
-
-   ::
+    Add the connector manifest. The XML with the manifest can be found in the path of the Mongo Connector in target/stratio-connector-mongodb-core-[VERSION]/conf/MongoConnector.xml
 
        ```
-           xdsh:user>  ATTACH CONNECTOR <connector name> TO <cluster name> WITH OPTIONS {};
+         xdsh:user>  ADD CONNECTOR <Path to MongoDB Connector Manifest>
        ```
 
-   At this point, we can start to send queries.
+    Attach the connector to the previously defined cluster. The connector name must match the one defined in the
+    Connector Manifest.
 
-   ::
+        ```
+            xdsh:user>  ATTACH CONNECTOR <connector name> TO <cluster name> WITH OPTIONS {};
+        ```
 
-       ...
-           xdsh:user> CREATE CATALOG catalogTest;
-
-           xdsh:user> USE catalogTest;
-
-           xdsh:user> CREATE TABLE tableTest ON CLUSTER <cluster_name> (id int PRIMARY KEY, name text);
-
-           xdsh:user> INSERT INTO tableTest(id, name) VALUES (1, 'stratio');
-
-           xdsh:user> SELECT * FROM tableTest;
-       ...
+At this point, we can start to send queries in the Stratio Crossdata Shell.
 
 License
 =======
 
-Licensed to STRATIO (C) under one or more contributor license
-agreements. See the NOTICE file distributed with this work for
-additional information regarding copyright ownership. The STRATIO (C)
-licenses this file to you under the Apache License, Version 2.0 (the
-"License"); you may not use this file except in compliance with the
-License. You may obtain a copy of the License at
+Licensed to STRATIO (C) under one or more contributor license agreements.
+See the NOTICE file distributed with this work for additional information
+regarding copyright ownership.  The STRATIO (C) licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+  http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.

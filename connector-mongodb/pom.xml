@@ -18,16 +18,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.stratio.connector</groupId>
-    <artifactId>stratio-connector-mongodb</artifactId>
+    <artifactId>stratio-connector-mongodb-core</artifactId>
     <version>0.5.0-SNAPSHOT</version>
     <description>The MongoDB-Crossdata connector core</description>
     <url>http://www.stratio.com</url>
     <name>The MongoDB Connector core</name>
     <packaging>jar</packaging>
-
     <parent>
         <groupId>com.stratio.connector</groupId>
-        <artifactId>stratio-connector-mongodb-parent</artifactId>
+        <artifactId>stratio-connector-mongodb</artifactId>
         <version>0.5.0-SNAPSHOT</version>
     </parent>
     <dependencies>
@@ -43,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>com.stratio.connector</groupId>
-            <artifactId>stratio-connector-commons</artifactId>
+            <artifactId>stratio-connector-commons-core</artifactId>
             <version>${commons.connector.version}</version>
         </dependency>
         <dependency>
@@ -58,7 +57,7 @@
         </dependency>
         <dependency>
             <groupId>com.stratio.connector</groupId>
-            <artifactId>stratio-connector-commons</artifactId>
+            <artifactId>stratio-connector-commons-core</artifactId>
             <classifier>tests</classifier>
             <version>${commons.connector.version}</version>
             <scope>test</scope>

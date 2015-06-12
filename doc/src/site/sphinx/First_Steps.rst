@@ -1,11 +1,5 @@
 First Steps
-===========
-
-Mongo Crossdata connector allows the integration between Crossdata and
-MongoDB. Crossdata provides an easy and common language as well as the
-integration with several other databases. More information about
-Crossdata can be found at
-`Crossdata <https://github.com/Stratio/crossdata>`__
+***********
 
 Table of Contents
 =================
@@ -15,15 +9,15 @@ Table of Contents
    -  `Prerequisites <#prerequisites>`__
    -  `Configuration <#configuration>`__
 
--  `Creating the database and
-   collection <#creating-the-database-and-collection>`__
+-  `Creating the catalog and the
+   collection <#creating-the-catalog-and-the-collection>`__
 
-   -  `Step 1: Create the database <#step-1-create-the-database>`__
-   -  `Step 2: Create the collection <#step-2-create-the-collection>`__
-   -  `Step 3: Create indexes <#step-3-create-indexes>`__
+   -  `Step 1: Creating the catalog <#step-1-creating-the-catalog>`__
+   -  `Step 2: Creating the collection <#step-2-creating-the-collection>`__
+   -  `Step 3: Creating indexes <#step-3-creating-indexes>`__
 
-      -  `Create a default index <#create-a-default-index>`__
-      -  `Create a custom index <#create-a-custom-index>`__
+      -  `Creating a default index <#creating-a-default-index>`__
+      -  `Creating a custom index <#creating-a-custom-index>`__
 
 -  `Inserting Data <#inserting-data>`__
 
@@ -72,9 +66,7 @@ Before you start
 Prerequisites
 -------------
 
--  Basic knowledge of SQL like language.
--  First of all `Stratio Crossdata
-   0.2.0 <https://github.com/Stratio/crossdata>`__ is needed and must be
+-  First of all `Stratio Crossdata <https://github.com/Stratio/crossdata>`__ is needed and must be
    installed. The server and the shell must be running.
 -  An installation of
    `MongoDB <http://docs.mongodb.org/manual/installation/>`__.
@@ -88,63 +80,13 @@ In the Crossdata Shell we need to add the Datastore Manifest.
 
 ::
 
-       > add datastore "<path_to_manifest_folder>/MongoDataStore.xml";
-
-The output must be:
-
-::
-
-       [INFO|Shell] CrossdataManifest added 
-        DATASTORE
-        Name: Mongo
-        Version: 0.3.0
-        Required properties: 
-        Property: 
-            PropertyName: Hosts
-            Description: The list of hosts ips (csv). Example: host1,host2,host3
-        Property: 
-            PropertyName: Port
-            Description: The list of ports (csv).
-    Optional properties: 
-        Property: 
-            PropertyName: mongo.readPreference
-            Description: primary, primarypreferred(default), secondary, secondarypreferred or nearest
-        Property: 
-            PropertyName: mongo.writeConcern
-            Description: acknowledged(default), unacknowledged, replica_acknowledged or journaled
-        Property: 
-            PropertyName: mongo.acceptableLatencyDifference
-            Description: the acceptable latency difference(ms)
-        Property: 
-            PropertyName: mongo.maxConnectionsPerHost
-            Description: the maximum number of connections allowed per host
-        Property: 
-            PropertyName: mongo.maxConnectionIdleTime
-            Description: The maximum idle time of a pooled connection(ms). A zero value indicates no limit
-        Property: 
-            PropertyName: mongo.connectTimeout
-            Description: the connection timeout(ms). A zero value indicates no timeout
+       > ADD DATASTORE "<path_to_manifest_folder>/MongoDataStore.xml";
 
 Now we need to add the ConnectorManifest.
 
 ::
 
-       > add connector "<path_to_manifest_folder>/MongoConnector.xml";  
-
-The output must be:
-
-::
-
-       [INFO|Shell] CrossdataManifest added 
-        CONNECTOR
-        ConnectorName: MongoConnector
-       DataStores: 
-        DataStoreName: Mongo
-        Version: 0.3.0
-        Supported operations:
-                                .
-                                .
-                                .
+       > ADD CONNECTOR "<path_to_manifest_folder>/MongoConnector.xml";
 
 At this point we have reported to Crossdata the connector options and
 operations. Now we configure the datastore cluster.
@@ -165,7 +107,7 @@ It is possible to add options like the read preference, write concern,
 etc... All options available are described in the MongoDataStore.xml
 (e.g. 'mongo.readPreference' : 'secondaryPreferred')
 
-Now we must run the connector.
+Now we run the connector.
 
 The last step is to attach the connector to the cluster created before.
 
@@ -197,7 +139,7 @@ Creating the database and collection
 
 If schema metadata has not been imported from MongoDB, Crossdata cannot
 work with databases previously created. So, before inserting new data it
-is possible discover the existing databases and collections with an
+is possible to discover the existing databases and collections with an
 asynchronous operation running this command:
 
 ::
@@ -206,7 +148,7 @@ asynchronous operation running this command:
 
 The existing schemas will be displayed when the operation finishes.
 
-Step 1: Create the database
+Step 1: Creating the catalog
 ---------------------------
 
 Now we will create the catalog and the table which we will use later in
@@ -224,7 +166,7 @@ The output must be:
 
     CATALOG created successfully;
 
-Step 2: Create the collection
+Step 2: Creating the collection
 -----------------------------
 
 We switch to the database we have just created.
@@ -246,10 +188,10 @@ And the output must show:
 
     TABLE created successfully
 
-Step 3: Create Indexes
+Step 3: Creating Indexes
 ----------------------
 
-Create a default index
+Creating a default index
 ~~~~~~~~~~~~~~~~~~~~~~
 
 ::
@@ -266,7 +208,7 @@ It is possible to specify some MongoDB index options. e.g. => CREATE
 DEFAULT INDEX uniqueindex ON students (id) WITH {'sparse': true,
 'unique' : true};
 
-Create a custom index
+Creating a custom index
 ~~~~~~~~~~~~~~~~~~~~~
 
 ::
@@ -692,7 +634,6 @@ Step 11: Drop database
 Where to go from here
 =====================
 
-To learn more about Stratio Crossdata, we recommend to visit the
-`Crossdata
-Reference <https://github.com/Stratio/crossdata/tree/master/_doc/meta-reference.md>`__.
-
+To learn more about Stratio Crossdata, we recommend you to visit the
+`Stratio Crossdata
+Reference <https://github.com/Stratio/crossdata/tree/master/doc/src/site/sphinx>`__.
