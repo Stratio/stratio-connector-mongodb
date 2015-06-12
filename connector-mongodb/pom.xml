@@ -19,9 +19,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.stratio.connector</groupId>
     <artifactId>stratio-connector-mongodb-core</artifactId>
-    <description>The MongoDB-Crossdata connector core</description>
+    <description>Stratio MongoDB-Crossdata connector core</description>
     <url>http://www.stratio.com</url>
-    <name>The MongoDB Connector core</name>
+    <name>Stratio MongoDB Connector core</name>
     <packaging>jar</packaging>
     <parent>
         <groupId>com.stratio.connector</groupId>

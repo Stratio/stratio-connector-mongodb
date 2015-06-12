@@ -18,9 +18,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.stratio.connector</groupId>
     <artifactId>stratio-connector-mongodb-doc</artifactId>
-    <description>The MongoDB-Crossdata connector documentation</description>
+    <description>Stratio MongoDB-Crossdata connector documentation</description>
     <url>http://www.stratio.com</url>
-    <name>The MongoDB Connector Documentation</name>
+    <name>Stratio MongoDB Connector Documentation</name>
     <packaging>pom</packaging>
     <parent>
         <groupId>com.stratio.connector</groupId>
