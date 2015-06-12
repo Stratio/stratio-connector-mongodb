@@ -76,30 +76,7 @@ public class MongoConnectorTest {
         verify(connectionHandler, times(1)).createConnection(iCredentials, configCluster2);
     }
 
-    @Test
-    public void connectorNameTest() throws InitializationException {
-        MongoConnector mongoConnector = new MongoConnector();
-        if (isEmpty(mongoConnector.getConnectorName())) {
-            Assert.fail("Connector name is empty");
-        }
-    }
 
-    @Test
-    public void connectorDatastoreNameTest() throws InitializationException {
-        MongoConnector mongoConnector = new MongoConnector();
-        if (isEmpty(mongoConnector.getDatastoreName())) {
-            Assert.fail("Datastore name is empty");
-        }
-    }
 
-    private boolean isEmpty(String... strings) {
-        boolean empty = false;
-        int length = strings.length;
-        int i = 0;
-        do {
-            empty = (strings[i] == null || strings[i].trim().isEmpty());
-        } while (!empty && ++i < length);
-        return empty;
-    }
 
 }

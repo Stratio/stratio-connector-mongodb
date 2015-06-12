@@ -8,7 +8,6 @@ DIR_INSTALL='/opt/sds/stratio-connector-mongodb'
 DIR_CONF='/etc/sds/stratio-connector-mongodb'
 DIR_LOG='/var/log/sds/stratio-connector-mongodb'
 
-cp /opt/sds/stratio-connector-mongodb/bin/stratio-connector-mongodb-* /opt/sds/stratio-connector-mongodb/bin/stratio-connector-mongodb
 cp /opt/sds/stratio-connector-mongodb/template/MongoDBConnector /etc/init.d/stratio-connector-mongodb
 chmod 755 /etc/init.d/stratio-connector-mongodb
 chmod 755 /opt/sds/stratio-connector-mongodb/bin
@@ -44,10 +43,10 @@ echo "SALE"
   chown root:root /etc/init.d/stratio-connector-mongodb
  
   chown -R ${USER}:${GROUP} $DIR_INSTALL
+  ln -s $DIR_INSTALL/conf $DIR_CONF
   chown -R ${USER}:${GROUP} $DIR_CONF
   chown -R ${USER}:${GROUP} $DIR_LOG
-  chmod 775 $DIR_INSTALL
-  chmod 775 $DIR_CONF
+  chmod -R 775 $DIR_INSTALL
   chmod 775 $DIR_LOG
   
   update-rc.d stratio-connector-mongodb defaults

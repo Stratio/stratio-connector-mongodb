@@ -44,14 +44,7 @@ public class MongoConnector extends CommonsConnector {
      * The Log.
      */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    /**
-     * The connector name.
-     */
-    private String connectorName;
-    /**
-     * The datastore name.
-     */
-    private String[] datastoreName;
+
 
     /**
      * Instantiates a new mongo connector.
@@ -60,8 +53,8 @@ public class MongoConnector extends CommonsConnector {
      *             if any error exists during the initialization
      */
     public MongoConnector() throws InitializationException {
-        connectorName = ManifestUtil.getConectorName("MongoConnector.xml");
-        datastoreName = ManifestUtil.getDatastoreName("MongoConnector.xml");
+        super("/MongoConnector.xml", "/MongoDataStore.xml");
+
     }
 
     /**
@@ -73,6 +66,15 @@ public class MongoConnector extends CommonsConnector {
     @Override
     public void init(IConfiguration configuration) {
         connectionHandler = new MongoConnectionHandler(configuration);
+    }
+
+    /**
+     * REstar the connector.
+     * @throws ExecutionException if an exception happens.
+     */
+    @Override
+    public void restart() throws ExecutionException {
+
     }
 
     /**
@@ -108,25 +110,6 @@ public class MongoConnector extends CommonsConnector {
 
     }
 
-    /**
-     * Return the Connector Name.
-     *
-     * @return Connector Name
-     */
-    @Override
-    public String getConnectorName() {
-        return connectorName;
-    }
-
-    /**
-     * Return the DataStore Name.
-     *
-     * @return DataStore Name
-     */
-    @Override
-    public String[] getDatastoreName() {
-        return datastoreName.clone();
-    }
 
     /**
      * The main method.

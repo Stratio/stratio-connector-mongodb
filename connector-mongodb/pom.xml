@@ -18,7 +18,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.stratio.connector</groupId>
-    <artifactId>stratio-connector-mongodb</artifactId>
+    <artifactId>stratio-connector-mongodb-core</artifactId>
     <version>0.5.0-SNAPSHOT</version>
     <description>The MongoDB-Crossdata connector core</description>
     <url>http://www.stratio.com</url>
@@ -27,7 +27,7 @@
 
     <parent>
         <groupId>com.stratio.connector</groupId>
-        <artifactId>stratio-connector-mongodb-parent</artifactId>
+        <artifactId>stratio-connector-mongodb</artifactId>
         <version>0.5.0-SNAPSHOT</version>
     </parent>
     <dependencies>
@@ -37,19 +37,9 @@
             <version>${mongo.driver.version}</version>
         </dependency>
         <dependency>
-            <artifactId>crossdata-common</artifactId>
-            <groupId>com.stratio.crossdata</groupId>
-            <version>${crossdata.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.stratio.connector</groupId>
-            <artifactId>stratio-connector-commons</artifactId>
+            <artifactId>stratio-connector-commons-core</artifactId>
             <version>${commons.connector.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.stratio.crossdata</groupId>
-            <artifactId>crossdata-connector</artifactId>
-            <version>${crossdata.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -58,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>com.stratio.connector</groupId>
-            <artifactId>stratio-connector-commons</artifactId>
+            <artifactId>stratio-connector-commons-core</artifactId>
             <classifier>tests</classifier>
             <version>${commons.connector.version}</version>
             <scope>test</scope>
@@ -160,14 +150,14 @@
                         <version>1.10</version>
                         <executions>
                             <execution>
-                                <id>ppassembler</id>
+                                <id>appassembler</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>assemble</goal>
                                 </goals>
                                 <configuration>
                                     <configurationSourceDirectory>src/main/config</configurationSourceDirectory>
-                                    <configurationDirectory>:/etc/sds/stratio-connector-mongodb/conf</configurationDirectory>
+                                    <configurationDirectory>conf</configurationDirectory>
                                     <copyConfigurationDirectory>true</copyConfigurationDirectory>
                                     <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
                                     <assembleDirectory>${project.build.directory}/stratio-connector-mongodb</assembleDirectory>
@@ -256,8 +246,8 @@
                                     </directoryAttributes>
                                 </copyDirectory>
                                 <copyDirectory>
-                                    <from>target/stratio-connector-mongodb/:/etc/sds/stratio-connector-mongodb/conf</from>
-                                    <to>/etc/sds/stratio-connector-mongodb/conf</to>
+                                    <from>target/stratio-connector-mongodb/conf</from>
+                                    <to>/opt/sds/stratio-connector-mongodb/conf</to>
                                     <directoryAttributes>
                                         <user>stratio</user>
                                         <group>stratio</group>
