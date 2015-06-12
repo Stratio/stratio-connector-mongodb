@@ -24,7 +24,6 @@
     <url>http://www.stratio.com</url>
     <name>The MongoDB Connector core</name>
     <packaging>jar</packaging>
-
     <parent>
         <groupId>com.stratio.connector</groupId>
         <artifactId>stratio-connector-mongodb</artifactId>
