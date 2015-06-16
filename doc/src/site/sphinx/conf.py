@@ -37,7 +37,7 @@ source_suffix = '.rst'
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'about'
+master_doc = 'index'
 
 # General information about the project.
 project = u'MongoDB Connector'
@@ -100,15 +100,20 @@ highlight_language = 'scala'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'stratio'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+html_theme_options = {
+    'versions' : ['0.5.0'],
+    'github' : 'https://github.com/Stratio/stratio-connector-mongodb',
+    'jira': 'https://github.com/Stratio/stratio-connector-mongodb',
+    'module_name' : 'stratio-connector-mongodb'
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+html_theme_path = ['_themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -192,7 +197,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'index'
+htmlhelp_basename = 'StreamingCEPdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
