@@ -18,7 +18,7 @@
 
 package com.stratio.connector.mongodb.core.configuration;
 
-import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.ACCEPTABLE_LATENCY;
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.LOCAL_THREADSHOLD;
 import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.CONNECTION_TIMEOUT;
 import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.HOST;
 import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.MAX_CONNECTIONS_PER_HOST;
@@ -36,16 +36,30 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
-import com.stratio.connector.commons.util.ConnectorParser;
+import com.stratio.connector.commons.util.PropertyValueRecovered;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains the configuration for Mongo connector.
  */
 
 public class MongoClientConfiguration {
+
+
+    /**
+     * The Log.
+     */
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /**
+     * The configuration Manager.
+     */
+    private ConfigurationManager configurationManager;
 
     /** The connector cluster configuration. */
     private ConnectorClusterConfig configuration;
@@ -58,6 +72,7 @@ public class MongoClientConfiguration {
      */
     public MongoClientConfiguration(ConnectorClusterConfig connectorClusterConfig) {
         this.configuration = connectorClusterConfig;
+        configurationManager = new ConfigurationManager(configuration);
     }
 
     /**
@@ -69,7 +84,7 @@ public class MongoClientConfiguration {
      */
     public MongoClientOptions getMongoClientOptions() throws MongoValidationException {
 
-        int acceptableLatencyDifference = getIntegerSetting(ACCEPTABLE_LATENCY);
+        int localThreashold = getIntegerSetting(LOCAL_THREADSHOLD);
         int maxConnectionsPerHost = getIntegerSetting(MAX_CONNECTIONS_PER_HOST);
         int connectTimeout = getIntegerSetting(CONNECTION_TIMEOUT);
         int maxConnectionIdleTime = getIntegerSetting(MAX_IDLE_TIME);
@@ -79,7 +94,7 @@ public class MongoClientConfiguration {
         WriteConcern writeConcern = getWriteConcern();
 
         MongoClientOptions clientOptions = new MongoClientOptions.Builder()
-                        .acceptableLatencyDifference(acceptableLatencyDifference)
+                        .localThreshold(localThreashold)
                         .connectionsPerHost(maxConnectionsPerHost).connectTimeout(connectTimeout)
                         .maxConnectionIdleTime(maxConnectionIdleTime).readPreference(readPreference)
                         .writeConcern(writeConcern).build();
@@ -98,30 +113,8 @@ public class MongoClientConfiguration {
     public List<ServerAddress> getSeeds() throws ConnectionException {
 
         ArrayList<ServerAddress> seeds = new ArrayList<ServerAddress>();
-
-        Map<String, String> config = configuration.getClusterOptions();
-        String[] hosts;
-        String[] ports;
-        if (config != null) {
-
-            String strHosts = config.get(HOST.getOptionName());
-            if (strHosts != null) {
-                hosts = (String[]) ConnectorParser.hosts(strHosts);
-            } else {
-                hosts = HOST.getDefaultValue();
-            }
-
-            String strPorts = config.get(PORT.getOptionName());
-            if (strPorts != null) {
-                ports = (String[]) ConnectorParser.ports(strPorts);
-            } else {
-                ports = PORT.getDefaultValue();
-            }
-
-        } else {
-            hosts = HOST.getDefaultValue();
-            ports = PORT.getDefaultValue();
-        }
+        String[] hosts = configurationManager.recoverConfigurationValue(HOST);
+        String[] ports = configurationManager.recoverConfigurationValue(PORT);
 
         // TODO
         if (hosts.length < 1 || (hosts.length != ports.length)) {
@@ -143,6 +136,34 @@ public class MongoClientConfiguration {
 
         return seeds;
 
+    }
+
+    /**
+     * Recovered the option value or the default value if the property is not set.
+     * @param configurationOption the configuration option.
+     * @return the configuration option value.
+     * @throws ConnectionException if the property is not set.
+     */
+    private String[] recoverConfigurationOption(ConfigurationOptions configurationOption) throws ConnectionException {
+        String[] optionValue = {};
+        try {
+            Map<String, String> config = configuration.getClusterOptions();
+            if (config != null) {
+                String strPorts = config.get(configurationOption.getOptionName());
+                if (strPorts != null) {
+                    optionValue = PropertyValueRecovered.recoveredValueASArray(String.class, strPorts);
+                } else {
+                    optionValue = configurationOption.getDefaultValue();
+                }
+            } else {
+                optionValue = configurationOption.getDefaultValue();
+            }
+        }catch(ExecutionException e){
+            String msg = String.format("Error recovering [%s] option ",configurationOption.getOptionName());
+            logger.error(msg);
+            throw new ConnectionException(msg,e);
+        }
+        return optionValue;
     }
 
     /**

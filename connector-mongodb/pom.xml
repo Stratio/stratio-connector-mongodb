@@ -30,14 +30,14 @@
     </parent>
     <dependencies>
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>${mongo.driver.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.stratio.connector</groupId>
             <artifactId>stratio-connector-commons-core</artifactId>
             <version>${commons.connector.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>${mongo.driver.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

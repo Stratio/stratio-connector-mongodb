@@ -40,8 +40,8 @@
             <Description>acknowledged(default), unacknowledged, replica_acknowledged or journaled</Description>
         </Property>
         <Property>
-            <PropertyName>mongo.acceptableLatencyDifference</PropertyName>
-            <Description>the acceptable latency difference(ms)</Description>
+            <PropertyName>mongo.threshold</PropertyName>
+            <Description>the acceptable threshold in milliseconds</Description>
         </Property>
         <Property>
             <PropertyName>mongo.maxConnectionsPerHost</PropertyName>

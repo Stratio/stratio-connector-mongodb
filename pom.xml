@@ -28,7 +28,7 @@
 	</parent>
 	<properties>
 		<commons.connector.version>0.6.0-SNAPSHOT</commons.connector.version>
-		<mongo.driver.version>2.12.4</mongo.driver.version>
+		<mongo.driver.version>2.13.2</mongo.driver.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<jmx.port>7191</jmx.port>

@@ -18,6 +18,15 @@
 
 package com.stratio.connector.mongodb.core.configuration;
 
+import com.stratio.connector.commons.util.PropertyValueRecovered;
+import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
+import com.stratio.crossdata.common.exceptions.ConnectionException;
+import com.stratio.crossdata.common.exceptions.ExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+
 /**
  * The ConfigurationOptions. They could be set in the ConnectorClusterConfiguration Set of options for the Mongo
  * Connector. A default value is provided.
@@ -27,7 +36,7 @@ package com.stratio.connector.mongodb.core.configuration;
 public enum ConfigurationOptions {
 
     /** The acceptable latency. */
-    ACCEPTABLE_LATENCY("mongo.acceptableLatencyDifference", "15"),
+    LOCAL_THREADSHOLD("mongo.threshold", "15"),
     /** The max connections per host. */
     MAX_CONNECTIONS_PER_HOST("mongo.maxConnectionsPerHost", "10000"),
     /** The max idle time. */
@@ -44,6 +53,8 @@ public enum ConfigurationOptions {
     PORT("Port", new String[] { "27017" }),
     /** Number of samples to deduce fields. */
     SAMPLE_PROBABILITY("sample_probability", "1");
+
+
 
     /** The option name. */
     private final String optionName;
@@ -81,5 +92,8 @@ public enum ConfigurationOptions {
         this.optionName = optionName;
         this.defaultValue = defaultValue;
     }
+
+
+
 
 }
