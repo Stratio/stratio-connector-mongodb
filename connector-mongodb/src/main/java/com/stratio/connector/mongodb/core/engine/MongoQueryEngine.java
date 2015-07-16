@@ -19,6 +19,7 @@
 package com.stratio.connector.mongodb.core.engine;
 
 import com.mongodb.MongoClient;
+import com.stratio.connector.commons.TimerJ;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.SingleProjectQueryEngine;
 import com.stratio.connector.commons.engine.query.ProjectParsed;
@@ -73,6 +74,7 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
      *             if the execution fails
      */
     @Override
+    @TimerJ
     public QueryResult execute(Project project, Connection<MongoClient> connection) throws MongoValidationException,
                     ConnectorException {
 
@@ -80,7 +82,6 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
         LogicalWorkflowExecutor executor = LogicalWorkflowExecutorFactory
                         .getLogicalWorkflowExecutor(logicalWorkfloParsed);
         ResultSet resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
-
         return QueryResult.createQueryResult(resultSet, 0, true);
 
     }

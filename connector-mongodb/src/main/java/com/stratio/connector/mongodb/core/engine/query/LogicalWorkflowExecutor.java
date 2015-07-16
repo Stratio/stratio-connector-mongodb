@@ -20,6 +20,7 @@ package com.stratio.connector.mongodb.core.engine.query;
 
 import java.util.List;
 
+import com.stratio.connector.commons.TimerJ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +74,7 @@ public abstract class LogicalWorkflowExecutor {
      * @throws UnsupportedException
      *             if the specified operation is not supported.
      */
+    @TimerJ
     protected abstract void buildQuery() throws ExecutionException, UnsupportedException;
 
     /**

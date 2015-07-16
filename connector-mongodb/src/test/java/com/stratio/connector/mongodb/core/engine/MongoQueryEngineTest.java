@@ -32,6 +32,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -49,6 +50,7 @@ import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
 import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.result.QueryResult;
 
+@PowerMockIgnore( {"javax.management.*"})
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ MongoQueryEngine.class, LogicalWorkflowExecutor.class, LogicalWorkflowExecutorFactory.class,
         QueryResult.class, ResultSet.class })

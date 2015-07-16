@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.stratio.connector.commons.engine.query.ProjectParsed;
@@ -11,7 +12,7 @@ import com.stratio.connector.commons.test.util.LogicalWorkFlowCreator;
 import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.logicalplan.LogicalWorkflow;
 import com.stratio.crossdata.common.logicalplan.Project;
-
+@PowerMockIgnore( {"javax.management.*"})
 @RunWith(PowerMockRunner.class)
 public class LogicalWorkflowExecutorFactoryTest {
 

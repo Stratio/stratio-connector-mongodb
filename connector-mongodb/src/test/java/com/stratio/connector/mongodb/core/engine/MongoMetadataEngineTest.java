@@ -36,6 +36,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -61,7 +62,7 @@ import com.stratio.crossdata.common.data.TableName;
 import com.stratio.crossdata.common.exceptions.ConnectorException;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
-
+@PowerMockIgnore( {"javax.management.*"})
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(value = { MongoClient.class, Connection.class, IndexUtils.class, AlterOptionsUtils.class,
                 MongoMetadataEngine.class, DiscoverMetadataUtils.class })

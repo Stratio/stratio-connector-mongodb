@@ -29,6 +29,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.Whitebox;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -39,6 +40,7 @@ import com.stratio.crossdata.common.data.ClusterName;
 import com.stratio.crossdata.common.exceptions.InitializationException;
 import com.stratio.crossdata.common.security.ICredentials;
 
+@PowerMockIgnore( {"javax.management.*"})
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(value = { DriverConnection.class, MongoConnector.class })
 public class MongoConnectorTest {

@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -50,6 +51,7 @@ import com.stratio.crossdata.common.security.ICredentials;
 
 import javax.security.auth.login.Configuration;
 
+@PowerMockIgnore( {"javax.management.*"})
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(value = { MongoConnectionHandler.class })
 public class ConnectionHandlerTest {
