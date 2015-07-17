@@ -30,10 +30,12 @@ import com.stratio.crossdata.common.statements.structures.BooleanSelector;
 import com.stratio.crossdata.common.statements.structures.IntegerSelector;
 import com.stratio.crossdata.common.statements.structures.Selector;
 import com.stratio.crossdata.common.statements.structures.StringSelector;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 /**
  * @author david
  */
+@PowerMockIgnore( {"javax.management.*"})
 public class SelectorOptionUtilsTest {
 
     private static final String OPTION_NAME = "option";

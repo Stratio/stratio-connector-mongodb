@@ -22,6 +22,7 @@ import com.mongodb.MongoClient;
 import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.connection.ConnectionHandler;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
+import com.stratio.connector.commons.TimerJ;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.connector.IConfiguration;
 import com.stratio.crossdata.common.exceptions.ConnectionException;
@@ -47,6 +48,7 @@ public class MongoConnectionHandler extends ConnectionHandler {
      * .ICredentials, com.stratio.meta.common.connector.ConnectorClusterConfig)
      */
     @Override
+    @TimerJ
     protected Connection<MongoClient> createNativeConnection(ICredentials credentials,
                     ConnectorClusterConfig connectorClusterConfig) throws ConnectionException {
         try {

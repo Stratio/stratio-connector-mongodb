@@ -9,6 +9,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.Whitebox;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.mongodb.DBObject;
@@ -24,7 +25,7 @@ import com.stratio.crossdata.common.logicalplan.Project;
 import com.stratio.crossdata.common.metadata.Operations;
 import com.stratio.crossdata.common.statements.structures.Operator;
 import com.stratio.crossdata.common.statements.structures.OrderDirection;
-
+@PowerMockIgnore( {"javax.management.*"})
 @RunWith(PowerMockRunner.class)
 public class MongoLogicalWorkflowValidatorTest {
     public static final String COLUMN_1 = "column1";
