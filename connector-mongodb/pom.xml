@@ -213,6 +213,10 @@
 									<path>src/main/unix/files_and_dirs/etc/init.d/connector-mongodb</path>
 									<toFile>/etc/init.d/connector-mongodb</toFile>
 								</copyFile>
+                                                                <copyFile>
+									<path>src/main/template/MongoDBConnector</path>
+                                                                        <toFile>/opt/sds/stratio-connector-mongodb/template/MongoDBConnector</toFile>
+								</copyFile>
 
 								<mkdirs>
 									<path>/etc/sds/connectors/mongodb</path>
