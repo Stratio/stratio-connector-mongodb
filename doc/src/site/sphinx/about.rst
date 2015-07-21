@@ -15,6 +15,7 @@ Compiling Stratio Connector-MongoDB
 To automatically build execute the following command:
 
 ::
+
    > mvn clean compile install
 
 Build an executable Stratio Connector-MongoDB
@@ -23,6 +24,7 @@ Build an executable Stratio Connector-MongoDB
 To generate the executable, run the following commands:
 
 ::
+
    > mvn package -Ppackage
 
 Running the Stratio Connector-MongoDB
@@ -31,7 +33,8 @@ Running the Stratio Connector-MongoDB
 To run Stratio Connector-MongoDB execute:
 
 ::
-   > target/stratio-connector-mongodb-[VERSION]/bin/stratio-connector-mongodb-core[VERSION] start
+
+   > connector-mongodb/target/stratio-connector-mongodb/bin/stratio-connector-mongodb 
 
 
 Build a redistributable package
