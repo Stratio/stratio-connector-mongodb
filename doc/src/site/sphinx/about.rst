@@ -17,7 +17,7 @@ To automatically build execute the following command:
 
 ::
 
-       > mvn clean compile install
+       > mvn clean install
 
 Build an executable Connector Mongo
 -----------------------------------
@@ -53,19 +53,14 @@ To stop the connector execute:
 
 Build a redistributable package
 -------------------------------
-It is possible too, to create a RPM or DEB redistributable package.
+To create a RPM or DEB redistributable package. You have to execute the next command after "Compiling Stratio Connector Mongo" and "Build an executable Connector Mongo" steps in project parent directory.
 
-RPM Package:
 
 ::
 
-       > mvn unix:package-rpm -N
+       > mvn package -Ppackage
     
-DEB Package:
 
-::
-   
-       > mvn unix:package-deb -N
 
 Once the package it's created, execute this commands to install:
 
