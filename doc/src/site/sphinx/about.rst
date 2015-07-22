@@ -24,7 +24,7 @@ To automatically build execute the following command:
 
 ::
 
-   > target/stratio-connector-mongodb/bin/stratio-connector-mongodb  
+   > target/stratio-connector-mongodb-[version]/bin/stratio-connector-mongodb-[version] start  
    
 
 Build an executable Stratio Connector-MongoDB
