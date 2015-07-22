@@ -5,4 +5,4 @@
 ## directory/to/be/created
 mkdir -p /var/sds/stratio-connector-mongodb/stratio-connector-mongodb-store
 mkdir -p /var/log/sds/stratio-connector-mongodb
-mkdir -p /opt/sds/stratio-connector-mongodb
+#mkdir -p /opt/sds/stratio-connector-mongodb/bin/stratio-connector-mongodb

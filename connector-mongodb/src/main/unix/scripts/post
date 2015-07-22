@@ -55,3 +55,4 @@ export MONGODB_CONNECTOR_CONF="/etc/sds/stratio-connector-mongodb"
 
 exit 0
 
+
