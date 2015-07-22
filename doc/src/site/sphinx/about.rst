@@ -36,6 +36,7 @@ To generate the executable, run the following commands:
 
    > mvn package -Ppackage
    
+   
    Now to start/stop the connector:
 
 ::
