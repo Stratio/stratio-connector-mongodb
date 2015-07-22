@@ -20,7 +20,7 @@ To automatically build execute the following command:
    > cd conector-mongodb
    > mvn crossdata-connector:install
 
-  To run Stratio Connector-MongoDB execute:
+To run Stratio Connector-MongoDB execute:
 
 ::
 
@@ -37,7 +37,7 @@ To generate the executable, run the following commands:
    > mvn package -Ppackage
    
    
-   Now to start/stop the connector:
+Now to start/stop the connector:
 
 ::
 
