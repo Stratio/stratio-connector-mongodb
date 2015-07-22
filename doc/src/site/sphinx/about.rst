@@ -17,6 +17,15 @@ To automatically build execute the following command:
 ::
 
    > mvn clean compile install
+   > cd conector-mongodb
+   > mvn crossdata-connector:install
+
+  To run Stratio Connector-MongoDB execute:
+
+::
+
+   > target/stratio-connector-mongodb/bin/stratio-connector-mongodb  
+   
 
 Build an executable Stratio Connector-MongoDB
 ---------------------------------------------
@@ -26,49 +35,13 @@ To generate the executable, run the following commands:
 ::
 
    > mvn package -Ppackage
-
-Running the Stratio Connector-MongoDB
--------------------------------------
-
-To run Stratio Connector-MongoDB execute:
-
-::
-
-   > connector-mongodb/target/stratio-connector-mongodb/bin/stratio-connector-mongodb 
-
-
-Build a redistributable package
--------------------------------
-It is possible too, to create a RPM or DEB redistributable package.
-
-RPM Package:
-
-::
-
-    > mvn unix:package-rpm -N
-
-DEB Package:
-
-::
-    > mvn unix:package-deb -N
-
-Once the package it's created, execute this commands to install:
-
-RPM Package:
-
-::
-    > rpm -i target/stratio-connector-mongodb-<version>.rpm
-
-DEB Package:
-
-::
-    > dpkg -i target/stratio-connector-mongodb-<version>.deb
-
-Now to start/stop the connector:
+   
+   Now to start/stop the connector:
 
 ::
     > service stratio-connector-mongodb start
     > service stratio-connector-mongodb stop
+
 
 
 How to use Stratio Connector-MongoDB
