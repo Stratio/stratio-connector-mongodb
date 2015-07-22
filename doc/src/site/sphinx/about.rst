@@ -39,6 +39,7 @@ To generate the executable, run the following commands:
    Now to start/stop the connector:
 
 ::
+
     > service stratio-connector-mongodb start
     > service stratio-connector-mongodb stop
 
