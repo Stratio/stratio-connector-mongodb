@@ -14,8 +14,14 @@ RUNAS=root
 PIDPATH=/var/run/sds/
 PIDNAME=stratio-connector-mongodb.pid
 PIDFILE=$PIDPATH$PIDNAME
-LOGFILE=/var/log/sds/stratio-connector-mongodb/stratio-connector-mongodb.log
+LOGPATH=/var/log/sds/connectors/mongodb/
+LOGFILE=/var/log/sds/connectors/mongodb/stratio-connector-mongodb.log
 start() {
+
+  if [ ! -d "$LOGPATH" ]; then
+    mkdir $LOGPATH
+  fi
+
   if [ ! -d "$PIDPATH" ]; then
     mkdir $PIDPATH
   fi
@@ -25,7 +31,7 @@ start() {
     return 1
   fi
   echo 'Starting service…' >&2
-  cd /opt/sds/stratio-connector-mongodb/
+  cd /opt/sds/connectors/mongodb/
 
     nohup bin/stratio-connector-mongodb start > $LOGFILE & echo $! $RUNAS > $PIDFILE
   echo 'Service started'
@@ -39,7 +45,7 @@ stop() {
 #  echo 'Stopping service…' >&2
 #  kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
 #  echo 'Service stopped' >&2
-    cd /opt/sds/stratio-connector-mongodb/
+    cd /opt/sds/connectors/mongodb/
     nohup bin/stratio-connector-mongodb stop > $LOGFILE
     echo 'Service stopped'
 }

@@ -2,13 +2,15 @@
 
 set -e
 
+#DEB
+
 GROUP='stratio'
 USER='stratio'
-DIR_INSTALL='/opt/sds/stratio-connector-mongodb'
-DIR_CONF='/etc/sds/stratio-connector-mongodb'
-DIR_LOG='/var/log/sds/stratio-connector-mongodb'
+DIR_INSTALL='/opt/sds/connectors/mongodb'
+DIR_CONF='/etc/sds/connectors/mongodb'
+DIR_LOG='/var/log/sds/connectors/mongodb'
 
-cp /opt/sds/stratio-connector-mongodb/template/MongoDBConnector /etc/init.d/stratio-connector-mongodb
+cp /opt/sds/connectors/mongodb/template/MongoDBConnector /etc/init.d/stratio-connector-mongodb
 chmod 755 /etc/init.d/stratio-connector-mongodb
 chmod 755 /opt/sds/stratio-connector-mongodb/bin
 chmod +x /opt/sds/stratio-connector-mongodb/bin/stratio-connector-mongodb

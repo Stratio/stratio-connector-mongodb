@@ -225,19 +225,12 @@
 
                                 <copyFile>
                                     <path>src/main/template/MongoDBConnector</path>
-                                    <toFile>/opt/sds/stratio-connector-mongodb/template/MongoDBConnector</toFile>
+                                    <toFile>/opt/sds/connectors/mongodb/template/MongoDBConnector</toFile>
                                 </copyFile>
                                 <copyFile>
                                     <path>target/stratio-connector-mongodb/bin/stratio-connector-mongodb</path>
-                                    <toFile>/opt/sds/stratio-connector-mongodb/bin/stratio-connector-mongodb</toFile>
+                                    <toFile>/opt/sds/connectors/mongodb/bin/stratio-connector-mongodb</toFile>
                                 </copyFile>
-                           <!--     <mkdirs>
-                                    <path>/etc/sds/connectors/mongodb</path>
-                                    <attributes>
-                                        <user>stratio</user>
-                                        <group>stratio</group>
-                                    </attributes>
-                                </mkdirs>-->
                                 <copyDirectory>
                                     <from>target/stratio-connector-mongodb/conf</from>
                                     <to>/etc/sds/connectors/mongodb/conf</to>

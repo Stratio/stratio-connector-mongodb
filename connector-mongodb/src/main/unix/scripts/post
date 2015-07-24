@@ -1,12 +1,16 @@
 #!/bin/sh
 
+#RPM
+
 set -e
 
 GROUP='stratio'
 USER='stratio'
-DIR_INSTALL='/opt/sds/stratio-connector-mongodb'
-DIR_CONF='/etc/sds/stratio-connector-mongodb'
-DIR_LOG='/var/log/sds/stratio-connector-mongodb'
+DIR_INSTALL='/opt/sds/connectors/mongodb'
+DIR_CONF='/etc/sds/connectors/mongodb'
+DIR_LOG='/var/log/sds/connectors/mongodb'
+
+ln -s /etc/sds/connectors/mongodb/conf/ /opt/sds/connectors/mongodb/conf
 
 case "$1" in
   configure)
@@ -29,7 +33,7 @@ case "$1" in
   fi
 
   chown -R ${USER}:${GROUP} /opt/sds /etc/sds
-  chown root:root /etc/init.d/stratio-connector-mongodb
+  chown root:root /etc/init.d/connector-mongodb
  
   chown -R ${USER}:${GROUP} $DIR_INSTALL
 
@@ -44,12 +48,12 @@ case "$1" in
   ;;
 esac
 
-cp /opt/sds/stratio-connector-mongodb/template/MongoDBConnector /etc/init.d/stratio-connector-mongodb
-chmod 755 /etc/init.d/stratio-connector-mongodb
-chmod 755 /opt/sds/stratio-connector-mongodb/bin/stratio-connector-mongodb
+cp /opt/sds/connectors/mongodb/template/MongoDBConnector /etc/init.d/stratio-connector-mongodb
+chmod 755 /etc/init.d/connector-mongodb
+chmod 755 /opt/sds/connectors/mongodb/bin/stratio-connector-mongodb
 chmod +x /etc/default/stratio-connector-mongodb
-export MONGODB_CONNECTOR_LIB=/opt/sds/stratio-connector-mongodb/
-export MONGODB_CONNECTOR_CONF="/etc/sds/stratio-connector-mongodb"
+export MONGODB_CONNECTOR_LIB=/opt/sds/connectors/mongodb/
+export MONGODB_CONNECTOR_CONF="/etc/sds/connectors/mongodb"
 
 /sbin/chkconfig --add stratio-connector-mongodb
 
