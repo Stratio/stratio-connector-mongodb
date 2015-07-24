@@ -114,7 +114,7 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
-	 		<plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.8</version>
@@ -182,16 +182,16 @@
                         <extensions>true</extensions>
                         <inherited>false</inherited>
                         <configuration>
-                            <size>2048</size>
                             <outputFileName>stratio-connector-mongodb</outputFileName>
                             <contact><![CDATA[Stratio <jmgomez@stratio.com>]]></contact>
                             <contactEmail>jmgomez@stratio.com</contactEmail>
+                            <size>2048</size>
                             <deb>
                                 <section>devel</section>
                             </deb>
                             <rpm>
                                 <group>stratio</group>
-                              <requires>bash</requires>
+                                <requires>bash</requires>
                             </rpm>
                             <name>connector-mongodb</name>
                             <excludeDirectoryAttributes>
@@ -204,85 +204,76 @@
                                 <dir>/bin</dir>
                             </excludeDirectoryAttributes>
                             <assembly>
-<copyFile>
-									<path>src/main/unix/files_and_dirs/etc/default/stratio-connector-mongodb</path>
-									<toFile>/etc/default/mongodb-connector</toFile>
-								</copyFile>
+                                <copyFile>
+                                    <path>src/main/unix/files_and_dirs/etc/init.d/connector-mongodb</path>
+                                    <toFile>/etc/init.d/connector-mongodb</toFile>
+                                    <attributes>
+                                        <user>root</user>
+                                        <group>root</group>
+                                        <mode>755</mode>
+                                    </attributes>
+                                </copyFile>
+                                <copyFile>
+                                    <path>src/main/unix/files_and_dirs/etc/default/stratio-connector-mongodb</path>
+                                    <toFile>/etc/default/stratio-connector-mongodb</toFile>
+                                    <attributes>
+                                        <user>root</user>
+                                        <group>root</group>
+                                        <mode>755</mode>
+                                    </attributes>
+                                </copyFile>
 
-								<copyFile>
-									<path>src/main/unix/files_and_dirs/etc/init.d/connector-mongodb</path>
-									<toFile>/etc/init.d/connector-mongodb</toFile>
-								</copyFile>
-                                                                <copyFile>
-									<path>src/main/template/MongoDBConnector</path>
-                                                                        <toFile>/opt/sds/stratio-connector-mongodb/template/MongoDBConnector</toFile>
-								</copyFile>
+                                <copyFile>
+                                    <path>src/main/template/MongoDBConnector</path>
+                                    <toFile>/opt/sds/connectors/mongodb/template/MongoDBConnector</toFile>
+                                </copyFile>
+                                <copyFile>
+                                    <path>target/stratio-connector-mongodb/bin/stratio-connector-mongodb</path>
+                                    <toFile>/opt/sds/connectors/mongodb/bin/stratio-connector-mongodb</toFile>
+                                </copyFile>
+                                <copyDirectory>
+                                    <from>target/stratio-connector-mongodb/conf</from>
+                                    <to>/etc/sds/connectors/mongodb/conf</to>
+                                    <directoryAttributes>
+                                        <user>stratio</user>
+                                        <group>stratio</group>
+                                    </directoryAttributes>
+                                </copyDirectory>
+                                <copyDirectory>
+                                    <from>target/stratio-connector-mongodb/bin</from>
+                                    <to>/opt/sds/connectors/mongodb/bin</to>
+                                    <directoryAttributes>
+                                        <user>stratio</user>
+                                        <group>stratio</group>
+                                    </directoryAttributes>
+                                </copyDirectory>
+                                <copyDirectory>
+                                    <from>target/stratio-connector-mongodb/repo</from>
+                                    <to>/opt/sds/connectors/mongodb/repo</to>
+                                    <directoryAttributes>
+                                        <user>stratio</user>
+                                        <group>stratio</group>
+                                    </directoryAttributes>
+                                </copyDirectory>
 
-								<mkdirs>
-									<path>/etc/sds/connectors/mongodb</path>
-									<attributes>
-										<user>stratio</user>
-										<group>stratio</group>
-									</attributes>
-								</mkdirs>
-								<copyDirectory>
-									<from>target/stratio-connector-mongodb/conf</from>
-									<to>/etc/sds/connectors/mongodb</to>
-									<directoryAttributes>
-										<user>stratio</user>
-										<group>stratio</group>
-									</directoryAttributes>
-								</copyDirectory>
+                                <copyFile>
+                                    <path>src/main/include/LICENSE</path>
+                                    <toFile>/opt/sds/connectors/mongodb/LICENSE</toFile>
+                                </copyFile>
+                                <copyFile>
+                                    <path>src/main/include/NOTICE</path>
+                                    <toFile>/opt/sds/connectors/mongodb/NOTICE</toFile>
+                                </copyFile>
 
-								<mkdirs>
-									<path>/opt/sds/connectors/mongodb/bin</path>
-									<attributes>
-										<user>stratio</user>
-										<group>stratio</group>
-									</attributes>
-								</mkdirs>
-								<copyDirectory>
-									<from>target/stratio-connector-mongodb/bin</from>
-									<to>/opt/sds/connectors/mongodb/bin</to>
-									<directoryAttributes>
-										<user>stratio</user>
-										<group>stratio</group>
-									</directoryAttributes>
-								</copyDirectory>
-								<mkdirs>
-									<path>/opt/sds/connectors/mongodb/lib</path>
-									<attributes>
-										<user>stratio</user>
-										<group>stratio</group>
-									</attributes>
-								</mkdirs>
-								<copyDirectory>
-									<from>target/alternateLocation</from>
-									<to>/opt/sds/connectors/mongodb/lib</to>
-									<directoryAttributes>
-										<user>stratio</user>
-										<group>stratio</group>
-									</directoryAttributes>
-								</copyDirectory>
+                                <mkdirs>
+                                    <path>/var/log/sds/connectors</path>
+                                    <attributes>
+                                        <user>stratio</user>
+                                        <group>stratio</group>
+                                    </attributes>
+                                </mkdirs>
 
-								<copyFile>
-									<path>src/main/include/LICENSE</path>
-									<toFile>/opt/sds/connectors/mongodb/LICENSE</toFile>
-								</copyFile>
-								<copyFile>
-									<path>src/main/include/NOTICE</path>
-									<toFile>/opt/sds/connectors/mongodb/NOTICE</toFile>
-								</copyFile>
-
-								<mkdirs>
-									<path>/var/log/sds/connectors</path>
-									<attributes>
-										<user>stratio</user>
-										<group>stratio</group>
-									</attributes>
-								</mkdirs>
-
-			</assembly>
+                            </assembly>
                             <defaults>
                                 <directoryAttributes>
                                     <mode>0755</mode>
