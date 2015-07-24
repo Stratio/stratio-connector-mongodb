@@ -6,7 +6,7 @@
 
 #DEB
 
-mkdir -p /var/sds/stratio-connector-mongo/stratio-connector-mongo-store
-mkdir -p /var/log/sds/stratio-connector-mongo
+#mkdir -p /var/sds/stratio-connector-mongo/stratio-connector-mongo-store
+#mkdir -p /var/log/sds/stratio-connector-mongo
 #mkdir -p /opt/sds/stratio-connector-mongodb/bin/stratio-connector-mongodb
 
