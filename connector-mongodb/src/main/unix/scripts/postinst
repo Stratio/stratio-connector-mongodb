@@ -46,7 +46,7 @@ case "$1" in
   chown root:root /etc/init.d/stratio-connector-mongodb
  
   chown -R ${USER}:${GROUP} $DIR_INSTALL
-  ln -s $DIR_INSTALL/conf $DIR_CONF
+  #ln -s $DIR_INSTALL/conf $DIR_CONF
   chown -R ${USER}:${GROUP} $DIR_CONF
   chown -R ${USER}:${GROUP} $DIR_LOG
   chmod -R 775 $DIR_INSTALL
