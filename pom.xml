@@ -24,10 +24,10 @@
 	<parent>
 		<groupId>com.stratio</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.2.0</version>
+		<version>0.4.0</version>
 	</parent>
 	<properties>
-		<commons.connector.version>0.6.0-SNAPSHOT</commons.connector.version>
+		<commons.connector.version>0.6.0-RC1</commons.connector.version>
 		<mongo.driver.version>2.13.2</mongo.driver.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
