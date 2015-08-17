@@ -76,20 +76,7 @@ Prerequisites
 Configuration
 -------------
 
-In the Crossdata Shell we need to add the Datastore Manifest.
-
-::
-
-       > ADD DATASTORE "<path_to_manifest_folder>/MongoDataStore.xml";
-
-Now we need to add the ConnectorManifest.
-
-::
-
-       > ADD CONNECTOR "<path_to_manifest_folder>/MongoConnector.xml";
-
-At this point we have reported to Crossdata the connector options and
-operations. Now we configure the datastore cluster.
+In the Crossdata Shell configure the datastore cluster.
 
 ::
 
