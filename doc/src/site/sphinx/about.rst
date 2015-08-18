@@ -29,8 +29,8 @@ To generate the executable, run the following commands:
    > mvn package -Ppackage
 ::
 
-Running the Stratio Connector-HDFS
-----------------------------------
+Running the Stratio Connector-MongoDB
+-------------------------------------
 
 Run the executable:
 
