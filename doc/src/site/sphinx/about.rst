@@ -9,23 +9,15 @@ Requirements
 `MongoDB <http://www.mongodb.org/downloads>`_ 2.0 version or later.
 `Crossdata <https://github.com/Stratio/crossdata>`__ is needed to interact with this connector.
 
-
 Compiling Stratio Connector-MongoDB
 -----------------------------------
 To automatically build execute the following command:
 
 ::
 
-   > mvn clean compile install
-   > cd conector-mongodb
-   > mvn crossdata-connector:install
-
-  To run Stratio Connector-MongoDB execute:
-
-::
-
-   > target/stratio-connector-mongodb/bin/stratio-connector-mongodb  
+   > mvn clean install
    
+::
 
 Build an executable Stratio Connector-MongoDB
 ---------------------------------------------
@@ -35,14 +27,13 @@ To generate the executable, run the following commands:
 ::
 
    > mvn package -Ppackage
-   
-   Now to start/stop the connector:
+::
+
+Run the executable:
 
 ::
-    > service stratio-connector-mongodb start
-    > service stratio-connector-mongodb stop
-
-
+    >  target/stratio-connector-mongodb/bin/stratio-connector-mongodb
+::
 
 How to use Stratio Connector-MongoDB
 ------------------------------------
