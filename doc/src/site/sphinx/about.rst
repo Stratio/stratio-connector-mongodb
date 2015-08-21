@@ -17,8 +17,6 @@ To automatically build execute the following command:
 
    > mvn clean install
    
-::
-
 
 Running the Stratio Connector-MongoDB
 -------------------------------------
@@ -38,7 +36,7 @@ It is possible too, to create a RPM or DEB package, as :
 ::
 
    > mvn package -Ppackage
-::
+
 
 Once the package is created, execute this commands to install:
 
@@ -48,7 +46,7 @@ RPM Package:
 
     > rpm -i target/stratio-connector-mongodb-<version>.rpm
 
-::
+
 
 DEB Package:
 
@@ -56,15 +54,15 @@ DEB Package:
 
     > dpkg -i target/stratio-connector-mongodb-<version>.deb
 
-::
+
 
 Now, to start/stop the connector:
 
 ::
 
-    > service stratio-connector-mongodb start
-    > service stratio-connector-mongodb stop
-::
+    > service connector-mongodb start
+    > service connector-mongodb stop
+
 
 How to use Stratio Connector-MongoDB
 ------------------------------------
@@ -80,16 +78,17 @@ A complete tutorial is available `here <First_Steps.rst>`__. The basic commands 
    Attach a cluster on the datastore. The datastore name must be the same
    as the defined in the Datastore manifest.
 
-      ```
-         xdsh:user>  ATTACH CLUSTER <cluster_name> ON DATASTORE <datastore_name> WITH OPTIONS {'Hosts': '[<IPHost_1,IPHost_2,...,IPHost_n>]', 'Port': '[<PortHost_1,PortHost_2,...,PortHost_n>]'};
-      ```
+::
 
-    Attach the connector to the previously defined cluster. The connector name must match the one defined in the
+    xdsh:user>  ATTACH CLUSTER <cluster_name> ON DATASTORE <datastore_name> WITH OPTIONS {'Hosts': '[<IPHost_1,IPHost_2,...,IPHost_n>]', 'Port': '[<PortHost_1,PortHost_2,...,PortHost_n>]'};
+
+
+   Attach the connector to the previously defined cluster. The connector name must match the one defined in the
     Connector Manifest.
 
-        ```
-            xdsh:user>  ATTACH CONNECTOR <connector name> TO <cluster name> WITH OPTIONS {};
-        ```
+::
+
+    xdsh:user>  ATTACH CONNECTOR <connector name> TO <cluster name> WITH OPTIONS {};
 
 At this point, we can start to send queries in the Stratio Crossdata Shell.
 

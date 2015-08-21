@@ -231,8 +231,8 @@
                             </excludeDirectoryAttributes>
                             <assembly>
                                 <copyFile>
-                                    <path>src/main/unix/files_and_dirs/etc/init.d/connector-mongodb</path>
-                                    <toFile>/etc/init.d/connector-mongodb</toFile>
+                                    <path>src/main/unix/files_and_dirs/etc/init.d/connector_mongodb</path>
+                                    <toFile>/etc/init.d/connector_mongodb</toFile>
                                     <attributes>
                                         <user>root</user>
                                         <group>root</group>
@@ -240,8 +240,8 @@
                                     </attributes>
                                 </copyFile>
                                 <copyFile>
-                                    <path>src/main/unix/files_and_dirs/etc/default/connector-mongodb</path>
-                                    <toFile>/etc/default/connector-mongodb</toFile>
+                                    <path>src/main/unix/files_and_dirs/etc/default/mongodb_connector</path>
+                                    <toFile>/etc/default/mongodb_connector</toFile>
                                     <attributes>
                                         <user>root</user>
                                         <group>root</group>

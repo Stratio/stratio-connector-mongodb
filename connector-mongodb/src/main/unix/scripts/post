@@ -31,7 +31,7 @@ case "$1" in
    mkdir $DIR_LOG
   fi
 
-  chown root:root /etc/init.d/connector-mongodb
+  chown root:root /etc/init.d/connector_mongodb
  
   chown -R ${USER}:${GROUP} $DIR_INSTALL
 
@@ -43,13 +43,13 @@ case "$1" in
   ;;
 esac
 
-chmod 755 /etc/init.d/connector-mongodb
+chmod 755 /etc/init.d/connector_mongodb
 chmod 755 /opt/sds/connectors/mongodb/bin/stratio-connector-mongodb
-chmod +x /etc/default/connector-mongodb
+chmod +x /etc/default/mongodb_connector
 export MONGODB_CONNECTOR_LIB=/opt/sds/connectors/mongodb/
 export MONGODB_CONNECTOR_CONF="/etc/sds/connectors/mongodb"
 
-/sbin/chkconfig --add connector-mongodb
+/sbin/chkconfig --add connector_mongodb
 
 exit 0
 
