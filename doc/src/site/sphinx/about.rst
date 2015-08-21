@@ -6,11 +6,11 @@ The Stratio Connector-MongoDB allows [Stratio Crossdata] (<https://github.com/St
 Requirements
 ------------
 
-`MongoDB <http://www.mongodb.org/downloads>`_ 2.0 version or later.
+`MongoDB <http://www.mongodb.org/downloads>`_ 3.0 version or later.
 `Crossdata <https://github.com/Stratio/crossdata>`__ is needed to interact with this connector.
 
-Compiling Stratio Connector-MongoDB
------------------------------------
+Compiling an building an executable Stratio Connector-MongoDB
+-------------------------------------------------------------
 To automatically build execute the following command:
 
 ::
@@ -19,15 +19,6 @@ To automatically build execute the following command:
    
 ::
 
-Build an executable Stratio Connector-MongoDB
----------------------------------------------
-
-To generate the executable, run the following commands:
-
-::
-
-   > mvn package -Ppackage
-::
 
 Running the Stratio Connector-MongoDB
 -------------------------------------
@@ -35,82 +26,63 @@ Running the Stratio Connector-MongoDB
 Run the executable:
 
 ::
+
     >  ./connector-mongodb/target/stratio-connector-mongodb/bin/stratio-connector-mongodb
 ::
 
 Build a redistributable package
 -------------------------------
-It is possible too, to create a RPM or DEB redistributable package.
 
-RPM Package:
-
-::
-
-       > mvn unix:package-rpm -N
-::
-
-DEB Package:
+It is possible too, to create a RPM or DEB package, as :
 
 ::
-   
-       > mvn unix:package-deb -N
+
+   > mvn package -Ppackage
 ::
 
 Once the package is created, execute this commands to install:
 
 RPM Package:
 
-::   
-    
-       > rpm -i target/stratio-connector-mongodb-<version>.rpm
+::
+
+    > rpm -i target/stratio-connector-mongodb-<version>.rpm
+
 ::
 
 DEB Package:
 
-::   
-    
-       > dpkg -i target/stratio-connector-mongodb-<version>.deb
+::
+
+    > dpkg -i target/stratio-connector-mongodb-<version>.deb
 
 ::
 
 Now, to start/stop the connector:
 
-::   
-    
-       > service stratio-connector-mongodb start
-       > service stratio-connector-mongodb stop
+::
+
+    > service stratio-connector-mongodb start
+    > service stratio-connector-mongodb stop
 ::
 
 How to use Stratio Connector-MongoDB
 ------------------------------------
 
-A complete tutorial is available `here <https://github.com/Stratio/stratio-connector-mongodb/blob/master/doc/src/site/sphinx/First_Steps.rst>`__. The basic commands are described below.
+A complete tutorial is available `here <First_Steps.rst>`__. The basic commands are described below.
 
-1. Start `Stratio Crossdata Server and then Stratio Crossdata Shell <http://docs.stratio.com/crossdata>`__.
+1. Start `Stratio Crossdata Server and then Stratio Crossdata Shell <https://github.com/Stratio/crossdata/blob/branch-0.4/README.rst>`__.
 
  2. Start Stratio Connector-MongoDB as it is explained before.
 
 3. In the Stratio Crossdata Shell:
 
-   Add a datastore. We need to specified the XML
-   manifest that defines the data store. The XML manifest can be found
-   in the path of the Stratio Connector-MongoDB in
-   target/stratio-connector-mongo-core-[VERSION]/conf/MongoDataStore.xml
-
-   ``xdsh:user>  ADD DATASTORE <Absolute path to MongoDatastore manifest>;``
-
-   Attach a cluster on that datastore. The datastore name must be the same
+   Attach a cluster on the datastore. The datastore name must be the same
    as the defined in the Datastore manifest.
 
       ```
          xdsh:user>  ATTACH CLUSTER <cluster_name> ON DATASTORE <datastore_name> WITH OPTIONS {'Hosts': '[<IPHost_1,IPHost_2,...,IPHost_n>]', 'Port': '[<PortHost_1,PortHost_2,...,PortHost_n>]'};
       ```
-
-    Add the connector manifest. The XML with the manifest can be found in the path of the Mongo Connector in target/stratio-connector-mongodb-core-[VERSION]/conf/MongoConnector.xml
-
-       ```
-         xdsh:user>  ADD CONNECTOR <Path to MongoDB Connector Manifest>
-       ```
 
     Attach the connector to the previously defined cluster. The connector name must match the one defined in the
     Connector Manifest.

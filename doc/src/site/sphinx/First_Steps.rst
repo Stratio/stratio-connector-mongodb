@@ -71,7 +71,7 @@ Prerequisites
 -  An installation of
    `MongoDB <http://docs.mongodb.org/manual/installation/>`__.
 -  Build an MongoConnector executable and run it following this
-   `guide <https://github.com/Stratio/stratio-connector-mongodb#build-an-executable-connector-mongo>`__.
+   `guide <about.rst>`__.
 
 Configuration
 -------------
