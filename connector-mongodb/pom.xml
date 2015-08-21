@@ -240,8 +240,8 @@
                                     </attributes>
                                 </copyFile>
                                 <copyFile>
-                                    <path>src/main/unix/files_and_dirs/etc/default/stratio-connector-mongodb</path>
-                                    <toFile>/etc/default/stratio-connector-mongodb</toFile>
+                                    <path>src/main/unix/files_and_dirs/etc/default/connector-mongodb</path>
+                                    <toFile>/etc/default/connector-mongodb</toFile>
                                     <attributes>
                                         <user>root</user>
                                         <group>root</group>
