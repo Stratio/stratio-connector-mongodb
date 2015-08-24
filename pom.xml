@@ -60,6 +60,16 @@
 				<role>maintainer</role>
 			</roles>
 		</developer>
+        <developer>
+            <id>ccaballe</id>
+            <name>Cristian Caballero Montiel</name>
+            <email>ccaballero@stratio.com</email>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
 	</developers>
 	<build>
 		<plugins>
