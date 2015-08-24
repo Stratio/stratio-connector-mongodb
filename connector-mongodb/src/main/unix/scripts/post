@@ -10,7 +10,6 @@ DIR_INSTALL='/opt/sds/connectors/mongodb'
 DIR_CONF='/etc/sds/connectors/mongodb'
 DIR_LOG='/var/log/sds/connectors/mongodb'
 
-sed -i 's!"$BASEDIR"/conf!/etc/sds/connectors/mongodb!g' /opt/sds/connectors/mongodb/bin/stratio-connector-mongodb
 
 case "$1" in
   configure)
@@ -47,6 +46,9 @@ esac
 chmod 755 /etc/init.d/connector_mongodb
 chmod 755 /opt/sds/connectors/mongodb/bin/stratio-connector-mongodb
 chmod +x /etc/default/mongodb_connector
+
+sed -i 's!"$BASEDIR"/conf!/etc/sds/connectors/mongodb!g' /opt/sds/connectors/mongodb/bin/stratio-connector-mongodb
+
 export MONGODB_CONNECTOR_LIB=/opt/sds/connectors/mongodb/
 export MONGODB_CONNECTOR_CONF="/etc/sds/connectors/mongodb"
 

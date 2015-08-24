@@ -19,7 +19,6 @@ chmod +x /etc/default/mongodb_connector
 export MONGODB_CONNECTOR_LIB=/opt/sds/connectors/mongodb
 export MONGODB_CONNECTOR_CONF="/etc/sds/connectors/mongodb"
 
-sed -i 's!"$BASEDIR"/conf!/etc/sds/connectors/mongodb!g' /opt/sds/connectors/mongodb/bin/stratio-connector-mongodb
 
 case "$1" in
   configure)
@@ -48,6 +47,9 @@ case "$1" in
   chown -R ${USER}:${GROUP} $DIR_LOG
   chmod -R 775 $DIR_INSTALL
   chmod 775 $DIR_LOG
+
+  sed -i 's!"$BASEDIR"/conf!/etc/sds/connectors/mongodb!g' /opt/sds/connectors/mongodb/bin/stratio-connector-mongodb
+
   update-rc.d connector_mongodb defaults
   ;;
 esac    
