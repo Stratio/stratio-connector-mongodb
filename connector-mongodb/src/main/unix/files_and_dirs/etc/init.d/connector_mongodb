@@ -17,66 +17,20 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 INIT_HOME=`cd "${DIR}/.." >/dev/null; pwd`
-NAME="stratio-connector-mongodb-0.4.1"
-DESC="Description for stratio-connector-mongodb-0.4.1"
+
+NAME="stratio-connector-mongodb"
+DESC="Description for stratio-connector-mongodb"
 BASEDIR=/opt/sds/connectors/mongodb
 CONFDIR=/etc/sds/connectors/mongodb
 LOGFILE=/var/log/sds/connectors/connector_mongodb.log
+RUNFILE=$BASEDIR/bin/stratio-connector-mongodb
 pidDir=/var/run/sds/connectors
 serviceUser=stratio
 serviceGroup=stratio
-javaCommandLineKeyword="MongoConnector"
-connectorClass="com.stratio.connector.mongodb.core.MongoConnector"
-JMXPort="7191"
 PIDFileName=connector_mongodb
-javaOpts=""
 
 # If JAVA_HOME has not been set, try to determine it.ner
 JVM_SEARCH_DIRS="/usr/java/default /usr/java/latest /opt/java"
-
-if [ -z "$JAVA_HOME" ]; then
-	# If java is in PATH, use a JAVA_HOME that corresponds to that.
-	java="`/usr/bin/which java 2>/dev/null`"
-
-	if [ -n "$java" ]; then
-		java=`readlink --canonicalize "$java"`
-		JAVA_HOME=`dirname "\`dirname \$java\`"`
-	else
-		# No JAVA_HOME set and no java found in PATH; search for a JVM.
-		for jdir in $JVM_SEARCH_DIRS; do
-			if [ -x "$jdir/bin/java" ]; then
-				JAVA_HOME="$jdir"
-				break
-			fi
-		done
-	fi
-fi
-
-if [ -z "$JAVA_HOME" ]; then
-	echo "Error: JAVA_HOME is not defined correctly." 1>&2
-	echo " We cannot execute $JAVA" 1>&2
-	exit 1
-fi
-
-export JAVA_HOME
-[ -f "/etc/default/${NAME}" ] && . /etc/default/${NAME}
-CLASSPATH="${CONFDIR}"
-
-for file in $BASEDIR/*; do
-	CLASSPATH="$CLASSPATH:$file"
-done
-
-LIB_CLASSPATH=""
-for file in ${BASEDIR}/lib/*; do
-        LIB_CLASSPATH="${LIB_CLASSPATH}:${file}"
-done
-
-CLASSPATH="${CLASSPATH}:${LIB_CLASSPATH}"
-
-JMX_OPTIONS="-Dcom.sun.management.jmxremote.port=${JMXPort} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false ${javaOpts}"
-
-javaArgs="$javaArgs -classpath $CLASSPATH -Djava.net.preferIPv4Stack=true ${JMX_OPTIONS} ${connectorClass}"
-javaCommandLine="${JAVA_HOME}/bin/java $javaArgs"
 
 if [ ! -d "$pidDir" ]; then
 	mkdir -p "$pidDir"
@@ -119,8 +73,7 @@ function getServicePid {
 function startServiceProcess {
 	cd $BASEDIR || return 1
 	rm -f $pidFile
-	local cmd="$javaCommandLine >>$LOGFILE 2>&1 & echo \$! >$pidFile"
-	#sudo -u $serviceUser $SHELL -c "$cmd" || return 1
+	local cmd="$RUNFILE >>$LOGFILE 2>&1 & echo \$! >$pidFile"
 	echo "Launching service process: ${NAME}"
 	echo ""
 	su $serviceUser -c "$cmd" || return 1
