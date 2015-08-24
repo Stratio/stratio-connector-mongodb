@@ -67,9 +67,9 @@ Now, to start/stop the connector:
 How to use Stratio Connector-MongoDB
 ------------------------------------
 
-A complete tutorial is available `here <First_Steps.rst>`__. The basic commands are described below.
+A complete tutorial is available `here <First_Steps.html>`__. The basic commands are described below.
 
-1. Start `Stratio Crossdata Server and then Stratio Crossdata Shell <https://github.com/Stratio/crossdata/blob/branch-0.4/README.rst>`__.
+1. Start `Stratio Crossdata Server and then Stratio Crossdata Shell <http://docs.stratio.com/modules/crossdata/0.4/index.html>`__.
 
  2. Start Stratio Connector-MongoDB as it is explained before.
 

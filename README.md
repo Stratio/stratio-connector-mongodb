@@ -5,9 +5,9 @@ The Stratio Connector-MongoDB allows [Stratio Crossdata] (<https://github.com/St
 
 ## How to use Stratio Connector-MongoDB ##
 
-Requirements, installation and use of the connector can be found in [about.rst] (<https://github.com/Stratio/stratio-connector-mongodb/blob/branch-0.5/doc/src/site/sphinx/about.rst>)
+Requirements, installation and use of the connector can be found [here] (<http://docs.stratio.com/modules/stratio-connector-mongodb/0.5/index.html>)
 
-There also exists a [First Steps] (<https://github.com/Stratio/stratio-connector-mongodb/blob/branch-0.5/doc/src/site/sphinx/First_Steps.rst>) document where through an easy example the main features of this connector are illustrated.
+There also exists a [First Steps] (<http://docs.stratio.com/modules/stratio-connector-mongodb/0.5/First_Steps.html>) document where through an easy example the main features of this connector are illustrated.
 
 # License #
 

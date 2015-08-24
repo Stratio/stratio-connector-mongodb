@@ -1,14 +1,14 @@
 #!/bin/bash
 
 ### BEGIN INIT INFO
-# Provides: stratio-connector-mongodb-0.4.1
+# Provides: stratio-connector-mongodb
 # Required-Start: $remote_fs
 # Required-Stop: $remote_fs
 # Should-Stop: $all
 # Default-Start: 2 3 4 5
 # Default-Stop: 0 1 6
 # Short-Description: Crossdata connector
-# Description: Description for stratio-connector-mongodb-0.4.1
+# Description: Description for stratio-connector-mongodb
 ### END INIT INFO
 # Developed by pmadrid@stratio.com
 # Broken by alvaro@stratio.com
