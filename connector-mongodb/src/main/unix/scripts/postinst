@@ -19,6 +19,8 @@ chmod +x /etc/default/mongodb_connector
 export MONGODB_CONNECTOR_LIB=/opt/sds/connectors/mongodb
 export MONGODB_CONNECTOR_CONF="/etc/sds/connectors/mongodb"
 
+sed -i 's!"$BASEDIR"/conf!/etc/sds/connectors/mongodb!g' ./opt/sds/connectors/mongodb/bin/stratio-connector-mongodb
+
 case "$1" in
   configure)
 
