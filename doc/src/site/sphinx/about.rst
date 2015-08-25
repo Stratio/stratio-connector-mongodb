@@ -7,7 +7,7 @@ Requirements
 ------------
 
 `MongoDB <http://www.mongodb.org/downloads>`_ 3.0 version or later.
-`Crossdata <https://github.com/Stratio/crossdata>`__ is needed to interact with this connector.
+`Crossdata <http://docs.stratio.com/modules/crossdata/0.4/index.html>`__ is needed to interact with this connector.
 
 Compiling an building an executable Stratio Connector-MongoDB
 -------------------------------------------------------------

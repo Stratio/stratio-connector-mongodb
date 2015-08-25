@@ -1,7 +1,7 @@
 # About #
 
 
-The Stratio Connector-MongoDB allows [Stratio Crossdata] (<https://github.com/Stratio/crossdata>) to interact with MongoDB.
+The Stratio Connector-MongoDB allows [Stratio Crossdata] (<http://docs.stratio.com/modules/crossdata/0.4/index.html>) to interact with MongoDB.
 
 ## How to use Stratio Connector-MongoDB ##
 
