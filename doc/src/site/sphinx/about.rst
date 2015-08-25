@@ -76,7 +76,7 @@ First_Steps.html>`__. The basic commands are described below.
 
 1. Start `Stratio Crossdata Server and then Stratio Crossdata Shell <http://docs.stratio.com/modules/crossdata/0.4/index.html>`__.
 
- 2. Start Stratio Connector-MongoDB as it is explained before.
+2. Start Stratio Connector-MongoDB as it is explained before.
 
 3. In the Stratio Crossdata Shell:
 
