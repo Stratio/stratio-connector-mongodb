@@ -11,37 +11,31 @@ DIR_CONF='/etc/sds/connectors/mongodb'
 DIR_LOG='/var/log/sds/connectors/mongodb'
 
 
-case "$1" in
-  configure)
+# Add stratio group if it doesn't already exists
+if ! getent group $GROUP >/dev/null 2>&1; then
+groupadd ${GROUP}
+fi
 
-  # Add stratio group if it doesn't already exists
-  if ! getent group $GROUP >/dev/null 2>&1; then
-    groupadd ${GROUP} 
-  fi
+# Add stratio user if it doesn't already exists
+if ! getent passwd $USER >/dev/null 2>&1; then
+[ -d /opt ] || mkdir /opt
+useradd -M -d /opt/sds -g ${GROUP} -s /bin/bash ${USER}
+else
+usermod -G $GROUP $USER
+fi
 
-  # Add stratio user if it doesn't already exists
-  if ! getent passwd $USER >/dev/null 2>&1; then
-    [ -d /opt ] || mkdir /opt
-    useradd -M -d /opt/sds -g ${GROUP} -s /bin/bash ${USER}
-  else
-    usermod -G $GROUP $USER
-  fi
+if [! -d "$DIR_LOG" ]; then
+mkdir $DIR_LOG
+fi
 
-  if [ ! -d "$DIR_LOG" ]; then
-   mkdir $DIR_LOG
-  fi
+chown root:root /etc/init.d/connector_mongodb
 
-  chown root:root /etc/init.d/connector_mongodb
- 
-  chown -R ${USER}:${GROUP} $DIR_INSTALL
+chown -R ${USER}:${GROUP} $DIR_INSTALL
 
-  chown -R ${USER}:${GROUP} $DIR_CONF
-  chown -R ${USER}:${GROUP} $DIR_LOG
-  chmod -R 775 $DIR_INSTALL
-  chmod 775 $DIR_LOG
-  
-  ;;
-esac
+chown -R ${USER}:${GROUP} $DIR_CONF
+chown -R ${USER}:${GROUP} $DIR_LOG
+chmod -R 775 $DIR_INSTALL
+chmod 775 $DIR_LOG
 
 chmod 755 /etc/init.d/connector_mongodb
 chmod 755 /opt/sds/connectors/mongodb/bin/stratio-connector-mongodb
