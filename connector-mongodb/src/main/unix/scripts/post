@@ -24,7 +24,7 @@ else
 usermod -G $GROUP $USER
 fi
 
-if [! -d "$DIR_LOG" ]; then
+if [ ! -d "$DIR_LOG" ]; then
 mkdir $DIR_LOG
 fi
 
