@@ -27,7 +27,7 @@
 		<version>0.4.0</version>
 	</parent>
 	<properties>
-		<commons.connector.version>0.6.0-RC1</commons.connector.version>
+		<commons.connector.version>0.6.1</commons.connector.version>
 		<mongo.driver.version>2.13.2</mongo.driver.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -60,6 +60,16 @@
 				<role>maintainer</role>
 			</roles>
 		</developer>
+        <developer>
+            <id>ccaballe</id>
+            <name>Cristian Caballero Montiel</name>
+            <email>ccaballero@stratio.com</email>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
 	</developers>
 	<build>
 		<plugins>
@@ -72,6 +82,6 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-		</plugins>
+        </plugins>
 	</build>
 </project>

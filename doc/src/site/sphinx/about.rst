@@ -1,86 +1,99 @@
 About
 =====
 
-The Stratio Connector-MongoDB allows [Stratio Crossdata] (<https://github.com/Stratio/crossdata>) to interact with MongoDB.
+The Stratio Connector-MongoDB allows `Stratio Crossdata <http://docs.stratio.com/modules/crossdata/0.4/index.html>`_ to interact with MongoDB.
 
 Requirements
 ------------
 
-`MongoDB <http://www.mongodb.org/downloads>`_ 2.0 version or later.
-`Crossdata <https://github.com/Stratio/crossdata>`__ is needed to interact with this connector.
+`MongoDB <http://www.mongodb.org/downloads>`_ 3.0 version or later.
+`Crossdata <http://docs.stratio.com/modules/crossdata/0.4/index.html>`__ is needed to interact with this connector.
+rpm is needed to generate executable connector. You can install it as follow:
+::
 
+ > sudo apt-get install rpm
 
-Compiling Stratio Connector-MongoDB
------------------------------------
+Compiling an building an executable Stratio Connector-MongoDB
+-------------------------------------------------------------
 To automatically build execute the following command:
 
 ::
 
-   > mvn clean compile install
-   > cd conector-mongodb
-   > mvn crossdata-connector:install
+   > mvn clean install
+   
 
-  To run Stratio Connector-MongoDB execute:
+Running the Stratio Connector-MongoDB
+-------------------------------------
+
+Run the executable:
 
 ::
 
-   > target/stratio-connector-mongodb/bin/stratio-connector-mongodb  
-   
+    >  ./connector-mongodb/target/stratio-connector-mongodb/bin/stratio-connector-mongodb
+::
 
-Build an executable Stratio Connector-MongoDB
----------------------------------------------
+Build a redistributable package
+-------------------------------
 
-To generate the executable, run the following commands:
+It is possible too, to create a RPM or DEB package, as :
 
 ::
 
    > mvn package -Ppackage
-   
-   Now to start/stop the connector:
+
+
+Once the package is created, execute this commands to install:
+
+RPM Package:
 
 ::
-    > service stratio-connector-mongodb start
-    > service stratio-connector-mongodb stop
 
+    > rpm -i target/stratio-connector-mongodb-<version>.rpm
+
+
+
+DEB Package:
+
+::
+
+    > dpkg -i target/stratio-connector-mongodb-<version>.deb
+
+
+
+Now, to start/stop the connector:
+
+::
+
+    > service connector-mongodb start
+    > service connector-mongodb stop
 
 
 How to use Stratio Connector-MongoDB
 ------------------------------------
 
-A complete tutorial is available `here <https://github.com/Stratio/stratio-connector-mongodb/blob/master/doc/src/site/sphinx/First_Steps.rst>`__. The basic commands are described below.
+A complete tutorial is available `here <http://docs.stratio.com/modules/stratio-connector-mongodb/0.5/
+First_Steps.html>`__. The basic commands are described below.
 
-1. Start `Stratio Crossdata Server and then Stratio Crossdata Shell <http://docs.stratio.com/crossdata>`__.
+1. Start `Stratio Crossdata Server and then Stratio Crossdata Shell <http://docs.stratio.com/modules/crossdata/0.4/index.html>`__.
 
- 2. Start Stratio Connector-MongoDB as it is explained before.
+2. Start Stratio Connector-MongoDB as it is explained before.
 
 3. In the Stratio Crossdata Shell:
 
-   Add a datastore. We need to specified the XML
-   manifest that defines the data store. The XML manifest can be found
-   in the path of the Stratio Connector-MongoDB in
-   target/stratio-connector-mongo-core-[VERSION]/conf/MongoDataStore.xml
-
-   ``xdsh:user>  ADD DATASTORE <Absolute path to MongoDatastore manifest>;``
-
-   Attach a cluster on that datastore. The datastore name must be the same
+   Attach a cluster on the datastore. The datastore name must be the same
    as the defined in the Datastore manifest.
 
-      ```
-         xdsh:user>  ATTACH CLUSTER <cluster_name> ON DATASTORE <datastore_name> WITH OPTIONS {'Hosts': '[<IPHost_1,IPHost_2,...,IPHost_n>]', 'Port': '[<PortHost_1,PortHost_2,...,PortHost_n>]'};
-      ```
+::
 
-    Add the connector manifest. The XML with the manifest can be found in the path of the Mongo Connector in target/stratio-connector-mongodb-core-[VERSION]/conf/MongoConnector.xml
+    xdsh:user>  ATTACH CLUSTER <cluster_name> ON DATASTORE <datastore_name> WITH OPTIONS {'Hosts': '[<IPHost_1,IPHost_2,...,IPHost_n>]', 'Port': '[<PortHost_1,PortHost_2,...,PortHost_n>]'};
 
-       ```
-         xdsh:user>  ADD CONNECTOR <Path to MongoDB Connector Manifest>
-       ```
 
-    Attach the connector to the previously defined cluster. The connector name must match the one defined in the
+   Attach the connector to the previously defined cluster. The connector name must match the one defined in the
     Connector Manifest.
 
-        ```
-            xdsh:user>  ATTACH CONNECTOR <connector name> TO <cluster name> WITH OPTIONS {};
-        ```
+::
+
+    xdsh:user>  ATTACH CONNECTOR <connector name> TO <cluster name> WITH OPTIONS {};
 
 At this point, we can start to send queries in the Stratio Crossdata Shell.
 

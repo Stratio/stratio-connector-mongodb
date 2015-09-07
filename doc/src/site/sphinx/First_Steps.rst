@@ -66,30 +66,17 @@ Before you start
 Prerequisites
 -------------
 
--  First of all `Stratio Crossdata <https://github.com/Stratio/crossdata>`__ is needed and must be
+-  First of all `Stratio Crossdata <http://docs.stratio.com/modules/crossdata/0.4/index.html>`__ is needed and must be
    installed. The server and the shell must be running.
 -  An installation of
    `MongoDB <http://docs.mongodb.org/manual/installation/>`__.
 -  Build an MongoConnector executable and run it following this
-   `guide <https://github.com/Stratio/stratio-connector-mongodb#build-an-executable-connector-mongo>`__.
+   `guide <http://docs.stratio.com/modules/stratio-connector-mongodb/0.5/about.html>`__.
 
 Configuration
 -------------
 
-In the Crossdata Shell we need to add the Datastore Manifest.
-
-::
-
-       > ADD DATASTORE "<path_to_manifest_folder>/MongoDataStore.xml";
-
-Now we need to add the ConnectorManifest.
-
-::
-
-       > ADD CONNECTOR "<path_to_manifest_folder>/MongoConnector.xml";
-
-At this point we have reported to Crossdata the connector options and
-operations. Now we configure the datastore cluster.
+In the Crossdata Shell configure the datastore cluster.
 
 ::
 
@@ -636,4 +623,4 @@ Where to go from here
 
 To learn more about Stratio Crossdata, we recommend you to visit the
 `Stratio Crossdata
-Reference <https://github.com/Stratio/crossdata/tree/master/doc/src/site/sphinx>`__.
+Reference <http://docs.stratio.com/modules/crossdata/0.4/index.html>`__.

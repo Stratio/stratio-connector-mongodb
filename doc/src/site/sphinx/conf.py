@@ -197,7 +197,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'StreamingCEPdoc'
+htmlhelp_basename = 'connector-mongodb-doc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -249,8 +249,8 @@ latex_elements = {
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('about', 'Grammar', u'GettingStarted',
-     [u'Juanjo Lopez, Daniel Higuero, Migel Angel Fernandez'], 1)
+    ('about', 'About', u'GettingStarted',
+     [u''], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -263,8 +263,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('about', 'Grammar', u'GettingStarted',
-     'Juanjo Lopez, Daniel Higuero, Miguel Angel Fernandez'),
+    ('about', 'About', u'GettingStarted',
+     ''),
 ]
 
 # Documents to append as an appendix to all manuals.
