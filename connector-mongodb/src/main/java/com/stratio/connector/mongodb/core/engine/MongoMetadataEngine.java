@@ -301,12 +301,9 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
             sampleNumber = ConfigurationOptions.SAMPLE_PROBABILITY.getDefaultValue()[0];
         }
 
+        boolean firstField = true;
         // Add columns
         for (Map.Entry<String, String> entry : DiscoverMetadataUtils.discoverFieldsWithType(collection, sampleNumber).entrySet()) {
-            if (entry.getValue() == null) {
-                tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.TEXT));
-                continue;
-            }
 
             if (entry.getValue().equals("string")) {
                 tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.TEXT));
@@ -315,16 +312,25 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
             } else if (entry.getValue().equals("number")) {
                 tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.INT));
             } else {
-                tableMetadataBuilder.addColumn(entry.getKey(), null);
+                continue;
             }
+            // Add pkey
+            if(firstField){
+                tableMetadataBuilder.withPartitionKey(entry.getKey());
+                firstField = false;
+            }
+
+
+
+
         }
+
         // Add indexes and column with indexes
         for (IndexMetadata indexMetadata : DiscoverMetadataUtils.discoverIndexes(collection)) {
             tableMetadataBuilder.withColumns(new ArrayList<ColumnMetadata>(indexMetadata.getColumns().values()));
             tableMetadataBuilder.addIndex(indexMetadata);
         }
-        // Add pkey
-        tableMetadataBuilder.withPartitionKey("_id");
+
         return tableMetadataBuilder.build();
 
     }

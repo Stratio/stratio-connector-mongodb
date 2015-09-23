@@ -384,7 +384,7 @@ public class MongoMetadataEngineTest {
                         .getCatalogName().getName());
         // pKey
         Assert.assertEquals("The primary key must have only one field", 1, tableMetadataProvided.getPrimaryKey().size());
-        Assert.assertEquals("The primary key must be _id", "_id", tableMetadataProvided.getPrimaryKey().get(0)
+        Assert.assertEquals("The primary key must be the first field", tableMetadataProvided.getColumns().entrySet().iterator().next().getKey().getName(), tableMetadataProvided.getPrimaryKey().get(0)
                         .getName());
 
         // columns
