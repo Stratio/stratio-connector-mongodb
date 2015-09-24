@@ -56,9 +56,8 @@ public final class DiscoverMetadataUtils {
      */
     public static Map<String, String> discoverFieldsWithType(DBCollection collection, String sample_probability) {
 
-        //String map = "function() {  if(Math.random() <= sample_number) {for (var key in this) {var type = typeof(this[key]); if(type == \"object\"){type = \"string\";};emit(key, type);}} } ";
         // map excluding unkown types
-        String map = "function() {  if(Math.random() <= sample_number) {for (var key in this) {var type = typeof(this[key]); if(type == \"object\"){type = \"null\";};emit(key, type);}} } ";
+        String map = "function() {  if(Math.random() <= sample_number) {for (var key in this) {var type = typeof(this[key]); if(type == \"object\"){type = \"native\";};emit(key, type);}} } ";
         String reduce = "function(key, values) { var result = \"\"; for (var i = 0; i < values.length; i++){ var v = values[i];if(v == \"string\"){result = \"string\"; break;} if(v == \"number\"){result = \"number\"} if(v == \"boolean\" && result == \"number\"){result = \"string\"; break;}if(v == \"number\" && result == \"boolean\"){result = \"string\"; break;} if(v==\"boolean\"){result = \"boolean\"}};return result; }";
         MapReduceCommand mapReduceCommand = new MapReduceCommand(collection, map, reduce, null, OutputType.INLINE, null);
         HashMap<String, Object> scope = new HashMap<>();

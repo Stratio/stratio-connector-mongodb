@@ -310,11 +310,14 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
             } else if (entry.getValue().equals("boolean")) {
                 tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.BOOLEAN));
             } else if (entry.getValue().equals("number")) {
-                tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.INT));
+                tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.DOUBLE));
+            } else if (entry.getValue().equals("native")) {
+                tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.NATIVE));
             } else {
                 continue;
             }
-            // Add pkey
+
+            // Add first field as pkey
             if(firstField){
                 tableMetadataBuilder.withPartitionKey(entry.getKey());
                 firstField = false;

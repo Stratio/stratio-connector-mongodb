@@ -19,6 +19,7 @@ package com.stratio.connector.mongodb.core.engine.query.utils;
 
 import java.util.*;
 
+import com.mongodb.BasicDBList;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -51,6 +52,9 @@ public class MetaResultUtilTest {
     public static final String OTHER_COLUMN_VALUE = "other_value";
     public static final String TABLE = "table_unit_test";
     public static final String CATALOG = "catalog_unit_test";
+    public static final String VALUE_1 = "value1";
+    public static final String VALUE_2 = "value2";
+
 
     @Test
     public void createRowWithAliasTest() throws ExecutionException {
@@ -101,6 +105,7 @@ public class MetaResultUtilTest {
 
     }
 
+
     private Select getSelect(List<ConnectorField> fields) {
         Select select;
         Map<Selector, String> mapping = new LinkedHashMap<>();
@@ -122,6 +127,8 @@ public class MetaResultUtilTest {
         return select;
 
     }
+
+
 
     class ConnectorField {
         public String name;

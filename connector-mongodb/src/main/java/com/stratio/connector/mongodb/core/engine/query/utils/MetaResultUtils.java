@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import com.stratio.connector.commons.util.SelectorHelper;
 import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
@@ -88,10 +89,15 @@ public final class MetaResultUtils {
      *            the column type
      */
     private static Object castValue(Object value, ColumnType columnType) {
+        if(value == null)
+            return value;
         Object castedValue = value;
         switch (columnType.getDataType()) {
         case FLOAT:
             castedValue = ((Double) value).floatValue();
+            break;
+        case NATIVE:
+            castedValue = value.toString();
             break;
         case SET:
         case LIST:
@@ -172,4 +178,5 @@ public final class MetaResultUtils {
         return colType;
 
     }
+
 }
