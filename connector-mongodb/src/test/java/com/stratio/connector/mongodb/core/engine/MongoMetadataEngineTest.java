@@ -388,12 +388,12 @@ public class MongoMetadataEngineTest {
                         .getName());
 
         // columns
-        Assert.assertEquals("The columns must have two columns", 2, tableMetadataProvided.getColumns().size());
+        Assert.assertEquals("The columns must have one column", 1, tableMetadataProvided.getColumns().size());
         Assert.assertTrue("The column found in existing bson is not the expected", tableMetadataProvided.getColumns()
                         .keySet().contains(new ColumnName(DB_NAME, TABLE_NAME, COLUMN_NAME)));
         Assert.assertTrue("The column found in existing index is not the expected",
 
-        tableMetadataProvided.getColumns().keySet().contains(new ColumnName(DB_NAME, TABLE_NAME, COLUMN_NAME2)));
+        tableMetadataProvided.getColumns().keySet().contains(new ColumnName(DB_NAME, TABLE_NAME, COLUMN_NAME)));
         // index
         Assert.assertEquals("There must be a single index", 1, tableMetadataProvided.getIndexes().size());
         Assert.assertTrue("The index name is not the expected",
