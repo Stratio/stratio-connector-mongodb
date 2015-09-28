@@ -313,7 +313,7 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
                 tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.DOUBLE));
             } else if (entry.getValue().equals("native")) {
                 tableMetadataBuilder.addColumn(entry.getKey(), new ColumnType(DataType.NATIVE));
-            } else {
+                } else {
                 continue;
             }
 
@@ -328,9 +328,8 @@ public class MongoMetadataEngine extends CommonsMetadataEngine<MongoClient> {
 
         }
 
-        // Add indexes and column with indexes
+        // Add indexes
         for (IndexMetadata indexMetadata : DiscoverMetadataUtils.discoverIndexes(collection)) {
-            tableMetadataBuilder.withColumns(new ArrayList<ColumnMetadata>(indexMetadata.getColumns().values()));
             tableMetadataBuilder.addIndex(indexMetadata);
         }
 
