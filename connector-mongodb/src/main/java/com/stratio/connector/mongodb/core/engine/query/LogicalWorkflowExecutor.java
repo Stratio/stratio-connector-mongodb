@@ -21,6 +21,7 @@ package com.stratio.connector.mongodb.core.engine.query;
 import java.util.List;
 
 import com.stratio.connector.commons.TimerJ;
+import com.stratio.connector.commons.connection.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,13 +81,13 @@ public abstract class LogicalWorkflowExecutor {
     /**
      * Execute the query.
      *
-     * @param mongoClient
-     *            the MongoDB client.
+     * @param connection
+     *            the Connection that holds the client.
      * @throws ExecutionException
      *             if the execution fails or the query specified in the logical workflow is not supported.
      * @return the Crossdata ResultSet.
      */
-    public abstract ResultSet executeQuery(MongoClient mongoClient) throws ExecutionException;
+    public abstract ResultSet executeQuery(Connection<MongoClient> connection) throws ExecutionException;
 
     /**
      * Builds the group by.

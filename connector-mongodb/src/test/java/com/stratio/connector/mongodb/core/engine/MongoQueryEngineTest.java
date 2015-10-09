@@ -76,22 +76,21 @@ public class MongoQueryEngineTest {
         Project project = mock(Project.class);
         LogicalWorkflowExecutor logicalWorkflowExecutor = mock(LogicalWorkflowExecutor.class);
         Connection<MongoClient> connection = mock(Connection.class);
-        MongoClient mongoClient = mock(MongoClient.class);
-        when(connection.getNativeConnection()).thenReturn(mongoClient);
+
         ProjectParsed projectParsed = mock(ProjectParsed.class);
         PowerMockito.whenNew(ProjectParsed.class).withAnyArguments().thenReturn(projectParsed);
         PowerMockito.mockStatic(LogicalWorkflowExecutorFactory.class);
         PowerMockito.when(LogicalWorkflowExecutorFactory.getLogicalWorkflowExecutor(Matchers.any(ProjectParsed.class)))
                 .thenReturn(logicalWorkflowExecutor);
         ResultSet resultSet = mock(ResultSet.class);
-        when(logicalWorkflowExecutor.executeQuery(mongoClient)).thenReturn(resultSet);
+        when(logicalWorkflowExecutor.executeQuery(connection)).thenReturn(resultSet);
         QueryResult queryResult = mock(QueryResult.class);
         PowerMockito.mockStatic(QueryResult.class);
         PowerMockito.when(QueryResult.createQueryResult(resultSet, 0, true)).thenReturn(queryResult);
 
         QueryResult returnQueryResult = mongoQueryEngine.execute(project, connection);
 
-        verify(logicalWorkflowExecutor, times(1)).executeQuery(mongoClient);
+        verify(logicalWorkflowExecutor, times(1)).executeQuery(connection);
 
         PowerMockito.verifyStatic(times(1));
         QueryResult.createQueryResult(resultSet, 0, true);

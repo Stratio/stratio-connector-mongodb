@@ -81,7 +81,9 @@ public class MongoQueryEngine extends SingleProjectQueryEngine<MongoClient> {
         ProjectParsed logicalWorkfloParsed = new ProjectParsed(project, new MongoLogicalWorkflowValidator());
         LogicalWorkflowExecutor executor = LogicalWorkflowExecutorFactory
                         .getLogicalWorkflowExecutor(logicalWorkfloParsed);
-        ResultSet resultSet = executor.executeQuery((MongoClient) connection.getNativeConnection());
+
+
+        ResultSet resultSet = executor.executeQuery(connection);
         return QueryResult.createQueryResult(resultSet, 0, true);
 
     }

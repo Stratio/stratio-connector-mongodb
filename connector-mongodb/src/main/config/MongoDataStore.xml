@@ -55,6 +55,11 @@
             <PropertyName>mongo.connectTimeout</PropertyName>
             <Description>the connection timeout(ms). A zero value indicates no timeout</Description>
         </Property>
+
+        <Property>
+            <PropertyName>default_limit</PropertyName>
+            <Description>A positive integer used to limit the query results.</Description>
+        </Property>
     </OptionalProperties>
     <Behaviors>
         <Behavior>UPSERT_ON_INSERT</Behavior>
