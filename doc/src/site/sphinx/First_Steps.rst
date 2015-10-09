@@ -97,10 +97,11 @@ etc... All options available are described in the MongoDataStore.xml
 Now we run the connector.
 
 The last step is to attach the connector to the cluster created before.
+(If default_limit doesn't provided, the default limit is 100.)
 
 ::
 
-      >  ATTACH CONNECTOR MongoConnector TO mongoCluster  WITH OPTIONS {};
+      >  ATTACH CONNECTOR MongoConnector TO mongoCluster  WITH OPTIONS {"default_limit" :'1000'};
 
 The output must be:
 
