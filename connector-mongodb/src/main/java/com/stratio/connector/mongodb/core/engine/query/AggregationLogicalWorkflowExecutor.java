@@ -107,7 +107,7 @@ public class AggregationLogicalWorkflowExecutor extends LogicalWorkflowExecutor 
 
         if (logicalWorkflowData.getLimit() == null){
             int limit =  Integer.parseInt(connection.getSessionObject(String.class, DEFAULT_LIMIT.getOptionName()));
-            Limit limitObj = new Limit(Collections.singleton(Operations.SELECT_GROUP_BY),limit);
+            Limit limitObj = new Limit(Collections.singleton(Operations.SELECT_LIMIT),limit);
             query.add(new LimitDBObjectBuilder(limitObj).build());
         }
         // AggregationOptions aggOptions = AggregationOptions.builder()

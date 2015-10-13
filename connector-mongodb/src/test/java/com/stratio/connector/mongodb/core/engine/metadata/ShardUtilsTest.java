@@ -90,7 +90,7 @@ public class ShardUtilsTest {
 
         Mockito.verify(database, Mockito.times(1)).command(new BasicDBObject("enableSharding", DB_NAME));
         BasicDBObject commandExpected = new BasicDBObject("shardCollection", DB_NAME + "." + COLLECTION_NAME);
-        commandExpected.put("key", new BasicDBObject("_id", 1));
+        commandExpected.put("key", new BasicDBObject("._id", 1));
         Mockito.verify(database, Mockito.times(1)).command(commandExpected);
 
     }

@@ -38,6 +38,7 @@ import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.statements.structures.ColumnSelector;
 import com.stratio.crossdata.common.statements.structures.Selector;
 import com.stratio.crossdata.common.statements.structures.SelectorType;
+import org.bson.types.ObjectId;
 
 /**
  * The utility class MetaResultUtils.
@@ -74,10 +75,19 @@ public final class MetaResultUtils {
                 field = colInfo.getValue();
             }
 
+            value = convertIfRequieredObjectId(value);
+
             row.addCell(field, new Cell(value));
         }
 
         return row;
+    }
+
+    private static Object convertIfRequieredObjectId(Object value) {
+        if (value instanceof ObjectId){
+            value = value.toString();
+        }
+        return value;
     }
 
     /**
