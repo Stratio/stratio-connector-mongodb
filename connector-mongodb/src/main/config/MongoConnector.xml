@@ -29,6 +29,11 @@
             <Description>Number between 0 and 1 with the probability of take part of the import process .
             </Description>
         </Property>
+
+        <Property>
+            <PropertyName>default_limit</PropertyName>
+            <Description>A positive integer used to limit the query results.</Description>
+        </Property>
     </OptionalProperties>
     <SupportedOperations>
         <operation>DROP_CATALOG</operation>

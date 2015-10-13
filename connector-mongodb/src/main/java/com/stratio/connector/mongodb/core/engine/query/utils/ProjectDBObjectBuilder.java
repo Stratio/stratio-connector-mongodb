@@ -72,12 +72,16 @@ public class ProjectDBObjectBuilder extends DBObjectBuilder {
         if (columnNameList == null || columnNameList.isEmpty()) {
             throw new MongoValidationException("The query has to request at least one field");
         } else {
-
+            boolean includeId = false;
             for (ColumnName columnName : columnNameList) {
                 projectQuery.put(columnName.getName(), 1);
+                if (columnName.getName().equals("_id")){
+                    includeId = true;
+                }
             }
-            projectQuery.put("_id", 0);
-
+            if (!includeId){
+                projectQuery.put("_id", 0);
+            }
         }
 
     }

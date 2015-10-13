@@ -27,10 +27,12 @@ import com.mongodb.DBObject;
 import com.mongodb.MapReduceCommand;
 import com.mongodb.MapReduceCommand.OutputType;
 import com.stratio.connector.commons.metadata.IndexMetadataBuilder;
+import com.stratio.connector.mongodb.core.configuration.ConfigurationOptions;
 import com.stratio.crossdata.common.connector.ConnectorClusterConfig;
 import com.stratio.crossdata.common.metadata.IndexMetadata;
 import com.stratio.crossdata.common.metadata.IndexType;
 
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.DEFAULT_LIMIT;
 import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.SAMPLE_PROBABILITY;
 
 /**
@@ -143,12 +145,25 @@ public final class DiscoverMetadataUtils {
      * @return the sample property if exists, else the default value.
      */
     public static String recoveredSampleProperty(ConnectorClusterConfig connectorClusterConfig) {
-        String sampleProperty;
-        if(connectorClusterConfig.getConnectorOptions() == null ||  !connectorClusterConfig.getConnectorOptions().containsKey(SAMPLE_PROBABILITY.getOptionName()) || connectorClusterConfig.getConnectorOptions().get(SAMPLE_PROBABILITY.getOptionName()) == null) {
-            sampleProperty = SAMPLE_PROBABILITY.getDefaultValue()[0];
+        return recoverValue(connectorClusterConfig, SAMPLE_PROBABILITY);
+    }
+
+
+    /**
+     * Recover the sample property.
+     * @param connectorClusterConfig the connector config send from crossdata.
+     * @return the sample property if exists, else the default value.
+     */
+    public static String recoveredDefaultLimit(ConnectorClusterConfig connectorClusterConfig) {
+        return recoverValue(connectorClusterConfig, DEFAULT_LIMIT);
+    }
+
+
+    public static String recoverValue(ConnectorClusterConfig connectorClusterConfig, ConfigurationOptions configurationOptions) {
+        if(connectorClusterConfig.getConnectorOptions() == null ||  !connectorClusterConfig.getConnectorOptions().containsKey(configurationOptions.getOptionName()) || connectorClusterConfig.getConnectorOptions().get(configurationOptions.getOptionName()) == null) {
+            return configurationOptions.getDefaultValue()[0];
         }else{
-            sampleProperty = connectorClusterConfig.getConnectorOptions().get(SAMPLE_PROBABILITY.getOptionName());
+            return connectorClusterConfig.getConnectorOptions().get(configurationOptions.getOptionName());
         }
-        return sampleProperty;
     }
 }

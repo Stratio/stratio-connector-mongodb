@@ -25,6 +25,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
+import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.query.ProjectParsed;
 import com.stratio.connector.mongodb.core.engine.query.utils.MetaResultUtils;
 import com.stratio.connector.mongodb.core.exceptions.MongoExecutionException;
@@ -32,6 +33,8 @@ import com.stratio.connector.mongodb.core.exceptions.MongoValidationException;
 import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
+
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.DEFAULT_LIMIT;
 
 /**
  * The LogicalWorkflowExecutor for non-aggregation queries.
@@ -68,15 +71,16 @@ public class BasicLogicalWorkflowExecutor extends LogicalWorkflowExecutor {
     /**
      * Execute an usual query.
      *
-     * @param mongoClient
-     *            the MongoDB client.
+     * @param connection
+     *            the Connection that holds the mongodb client.
      * @return the Crossdata ResultSet.
      * @throws MongoValidationException .
      * @throws ExecutionException
      *             if the execution fails or the query specified in the logical workflow is not supported.
      */
-    public ResultSet executeQuery(MongoClient mongoClient) throws ExecutionException {
+    public ResultSet executeQuery(Connection<MongoClient> connection) throws ExecutionException {
 
+        MongoClient mongoClient = connection.getNativeConnection();
         DB db = mongoClient.getDB(logicalWorkflowData.getProject().getCatalogName());
         DBCollection collection = db.getCollection(logicalWorkflowData.getProject().getTableName().getName());
         ResultSet resultSet = new ResultSet();
@@ -95,6 +99,9 @@ public class BasicLogicalWorkflowExecutor extends LogicalWorkflowExecutor {
 
         if (logicalWorkflowData.getLimit() != null) {
             cursor = cursor.limit(logicalWorkflowData.getLimit().getLimit());
+        }else{
+            String limit = connection.getSessionObject(String.class, DEFAULT_LIMIT.getOptionName());
+            cursor = cursor.limit(Integer.parseInt(limit));
         }
 
         DBObject rowDBObject;

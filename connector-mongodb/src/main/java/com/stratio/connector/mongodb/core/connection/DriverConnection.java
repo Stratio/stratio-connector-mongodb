@@ -61,7 +61,11 @@ public class DriverConnection extends Connection<MongoClient> {
         MongoClientConfiguration mongoClientConfiguration = new MongoClientConfiguration(connectorClusterConfig);
         String sampleProperty = DiscoverMetadataUtils.recoveredSampleProperty(connectorClusterConfig);
 
+        String defaultLimit = DiscoverMetadataUtils.recoveredDefaultLimit(connectorClusterConfig);
+
         addObjectToSession(SAMPLE_PROBABILITY.getOptionName(), sampleProperty);
+        addObjectToSession(DEFAULT_LIMIT.getOptionName(), defaultLimit);
+
         if (credentials == null) {
             mongoClient = new MongoClient(mongoClientConfiguration.getSeeds(),
                             mongoClientConfiguration.getMongoClientOptions());

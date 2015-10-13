@@ -18,6 +18,7 @@
 package com.stratio.connector.mongodb.core.engine.query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.mongodb.AggregationOutput;
 import com.mongodb.DB;
@@ -25,12 +26,18 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
+import com.stratio.connector.commons.connection.Connection;
 import com.stratio.connector.commons.engine.query.ProjectParsed;
+import com.stratio.connector.mongodb.core.engine.query.utils.LimitDBObjectBuilder;
 import com.stratio.connector.mongodb.core.engine.query.utils.MetaResultUtils;
 import com.stratio.connector.mongodb.core.exceptions.MongoExecutionException;
 import com.stratio.crossdata.common.data.ResultSet;
 import com.stratio.crossdata.common.exceptions.ExecutionException;
 import com.stratio.crossdata.common.exceptions.UnsupportedException;
+import com.stratio.crossdata.common.logicalplan.Limit;
+import com.stratio.crossdata.common.metadata.Operations;
+
+import static com.stratio.connector.mongodb.core.configuration.ConfigurationOptions.DEFAULT_LIMIT;
 
 /**
  * The LogicalWorkflowExecutor for the MongoDB aggregation framework.
@@ -82,14 +89,15 @@ public class AggregationLogicalWorkflowExecutor extends LogicalWorkflowExecutor 
     /**
      * Execute an aggregation query.
      *
-     * @param mongoClient
-     *            the MongoDB client.
+     * @param connection
+     *            the Connection that holds the MongoDB client.
      * @return the Crossdata ResultSet.
      * @throws ExecutionException
      *             if the execution fails.
      */
     @Override
-    public ResultSet executeQuery(MongoClient mongoClient) throws ExecutionException {
+    public ResultSet executeQuery(Connection<MongoClient> connection) throws ExecutionException {
+        MongoClient mongoClient = connection.getNativeConnection();
 
         DB db = mongoClient.getDB(logicalWorkflowData.getProject().getCatalogName());
         DBCollection collection = db.getCollection(logicalWorkflowData.getProject().getTableName().getName());
@@ -97,6 +105,11 @@ public class AggregationLogicalWorkflowExecutor extends LogicalWorkflowExecutor 
         resultSet.setColumnMetadata(MetaResultUtils.createMetadata(logicalWorkflowData.getProject(),
                         logicalWorkflowData.getSelect()));
 
+        if (logicalWorkflowData.getLimit() == null){
+            int limit =  Integer.parseInt(connection.getSessionObject(String.class, DEFAULT_LIMIT.getOptionName()));
+            Limit limitObj = new Limit(Collections.singleton(Operations.SELECT_LIMIT),limit);
+            query.add(new LimitDBObjectBuilder(limitObj).build());
+        }
         // AggregationOptions aggOptions = AggregationOptions.builder()
         // .allowDiskUse(true)
         // .batchSize(size)
