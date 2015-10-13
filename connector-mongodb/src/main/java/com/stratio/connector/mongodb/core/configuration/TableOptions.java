@@ -32,7 +32,7 @@ public enum TableOptions {
     /** The shard key type. */
     SHARD_KEY_TYPE("shard_key_type", SelectorType.STRING, ShardKeyType.ASC),
     /** The shard key fields. */
-    SHARD_KEY_FIELDS("shard_key_fields", SelectorType.STRING, new String[] { "._id" });
+    SHARD_KEY_FIELDS("shard_key_fields", SelectorType.STRING, new String[] { "_id" });
 
     /** The option name. */
     private final String optionName;
