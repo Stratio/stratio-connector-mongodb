@@ -671,7 +671,7 @@ public class MongoStorageEngineTest {
         operations.add(Operations.FILTER_INDEXED_EQ);
 
         Collection<Filter> whereClauses = Arrays.asList(new Filter(operations, getBasicRelation(
-                COLUMN_NAME, Operator.DISTINCT, 20)));
+                COLUMN_NAME, Operator.NOT_EQ, 20)));
 
         mongoStorageEngine.delete(tableName, whereClauses, connection);
 
@@ -709,7 +709,7 @@ public class MongoStorageEngineTest {
         operations2.add(Operations.FILTER_NON_INDEXED_LET);
 
         Collection<Filter> whereClauses = Arrays.asList(
-                new Filter(operations, getBasicRelation(COLUMN_NAME, Operator.DISTINCT, 20)),
+                new Filter(operations, getBasicRelation(COLUMN_NAME, Operator.NOT_EQ, 20)),
                 new Filter(operations2, getBasicRelation(OTHER_COLUMN_NAME, Operator.LET,
                         "b")));
 

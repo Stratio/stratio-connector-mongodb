@@ -117,8 +117,8 @@ public class FilterDBObjectBuilderTest {
     public void addMultipleFiltersTest() throws Exception {
 
         Filter filtergte = buildFilter(Operations.FILTER_NON_INDEXED_GET, CATALOG, TABLE, COLUMN_1, Operator.GET, 5);
-        Filter filterdi = buildFilter(Operations.FILTER_NON_INDEXED_DISTINCT, CATALOG, TABLE, COLUMN_1,
-                        Operator.DISTINCT, "five");
+        Filter filterdi = buildFilter(Operations.FILTER_NON_INDEXED_NOT_EQ, CATALOG, TABLE, COLUMN_1,
+                        Operator.NOT_EQ, "five");
         FilterDBObjectBuilder filterDBObjectBuilder = new FilterDBObjectBuilder(false, Arrays.asList(filtergte,
                         filterdi));
         assertFalse("useAggregations should be false",
