@@ -148,7 +148,7 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
      *
      * @param operator
      *            the operator
-     * @param selType
+     * @param selectorType
      *            the selector type
      * @throws MongoValidationException
      *             if the operator is not supported by the specified selector type
@@ -210,11 +210,11 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
      *             if the operator is not supported
      */
     private String getMongoOperator(Operator operator) throws MongoValidationException, UnsupportedException {
-        String mongoOperator = null;
+        String mongoOperator;
 
         switch (operator) {
 
-        case DISTINCT:
+        case NOT_EQ:
             mongoOperator = "$ne";
             break;
         case GET:
@@ -245,7 +245,6 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         case MATCH:
         default:
             throw new UnsupportedException("The operator: " + operator.toString() + " is not supported");
-
         }
         return mongoOperator;
 
