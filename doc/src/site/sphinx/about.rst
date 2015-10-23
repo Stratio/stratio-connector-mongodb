@@ -7,7 +7,7 @@ Requirements
 ------------
 
 `MongoDB <http://www.mongodb.org/downloads>`_ 3.0 version or later.
-`Crossdata <http://docs.stratio.com/modules/crossdata/0.4/index.html>`__ is needed to interact with this connector.
+`Crossdata <http://docs.stratio.com/modules/crossdata/0.5/index.html>`__ is needed to interact with this connector.
 rpm is needed to generate executable connector. You can install it as follow:
 ::
 
@@ -74,7 +74,7 @@ How to use Stratio Connector-MongoDB
 A complete tutorial is available `here <http://docs.stratio.com/modules/stratio-connector-mongodb/0.5/
 First_Steps.html>`__. The basic commands are described below.
 
-1. Start `Stratio Crossdata Server and then Stratio Crossdata Shell <http://docs.stratio.com/modules/crossdata/0.4/index.html>`__.
+1. Start `Stratio Crossdata Server and then Stratio Crossdata Shell <http://docs.stratio.com/modules/crossdata/0.5/index.html>`__.
 
 2. Start Stratio Connector-MongoDB as it is explained before.
 

@@ -3,6 +3,7 @@
 ## 0.5.3 (October 2015)
 
 * Adapted to Stratio Crossdata 0.5.0
+* Fixed bug with import catalogs
 
 ## 0.5.2 (September 2015)
 
