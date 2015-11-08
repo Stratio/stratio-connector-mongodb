@@ -17,8 +17,11 @@
  */
 package com.stratio.connector.mongodb.core.engine.storage;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,18 +196,32 @@ public class MongoInsertHandler {
 
         String catalog = targetTable.getName().getCatalogName().getName();
         String tableName = targetTable.getName().getName();
+        List<ColumnName> primaryKeys = targetTable.getPrimaryKey();
+
         BasicDBObject doc = new BasicDBObject();
         String cellName;
         Object cellValue;
 
+
         for (Map.Entry<String, Cell> entry : row.getCells().entrySet()) {
             cellName = entry.getKey();
             cellValue = entry.getValue().getValue();
+            if(isPrimaryKey(cellName, primaryKeys))
+                continue;
             ColumnName cName = new ColumnName(catalog, tableName, cellName);
             validateDataType(targetTable.getColumns().get(cName).getColumnType());
             doc.put(entry.getKey(), cellValue);
         }
         return doc;
+    }
+
+    private boolean isPrimaryKey(String column, List<ColumnName> primaryKeys){
+        boolean result = false;
+        for(ColumnName cn : primaryKeys){
+            if(cn.getName().equals(column))
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -225,6 +242,7 @@ public class MongoInsertHandler {
         case VARCHAR:
         case DOUBLE:
         case FLOAT:
+        case NATIVE:
             break;
         case SET:
         case LIST:
@@ -234,7 +252,7 @@ public class MongoInsertHandler {
             validateDataType(columnType.getDBInnerType());
             validateDataType(columnType.getDBInnerValueType());
             break;
-        case NATIVE:
+
         default:
             throw new MongoValidationException("Type not supported: " + columnType.toString());
         }

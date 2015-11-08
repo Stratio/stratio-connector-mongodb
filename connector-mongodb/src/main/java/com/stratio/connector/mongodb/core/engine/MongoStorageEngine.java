@@ -100,7 +100,7 @@ public class MongoStorageEngine extends CommonsStorageEngine<MongoClient> {
     @Override
     protected void insert(TableMetadata targetTable, Row row, boolean isNotExists, Connection<MongoClient> connection)
                     throws MongoInsertException, MongoValidationException {
-
+        System.out.println("asdfa");
         MongoClient mongoClient = connection.getNativeConnection();
         DBCollection collection = mongoClient.getDB(targetTable.getName().getCatalogName().getName()).getCollection(
                         targetTable.getName().getName());

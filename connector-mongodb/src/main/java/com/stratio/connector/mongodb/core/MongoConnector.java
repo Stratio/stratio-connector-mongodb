@@ -69,7 +69,7 @@ public class MongoConnector extends CommonsConnector {
     }
 
     /**
-     * REstar the connector.
+     * Restart the connector.
      * @throws ExecutionException if an exception happens.
      */
     @Override

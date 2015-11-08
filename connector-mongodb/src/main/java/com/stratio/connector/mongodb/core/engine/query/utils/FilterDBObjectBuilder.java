@@ -20,6 +20,7 @@ package com.stratio.connector.mongodb.core.engine.query.utils;
 
 import java.util.Collection;
 
+import com.stratio.crossdata.common.metadata.Operations;
 import org.bson.types.BasicBSONList;
 
 import com.mongodb.BasicDBObject;
@@ -36,6 +37,7 @@ import com.stratio.crossdata.common.statements.structures.Relation;
 import com.stratio.crossdata.common.statements.structures.Selector;
 import com.stratio.crossdata.common.statements.structures.SelectorType;
 import com.stratio.crossdata.common.statements.structures.StringSelector;
+import org.bson.types.ObjectId;
 
 /**
  * The Class FilterDBObjectBuilder.
@@ -105,6 +107,13 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
      *             if the specified operation is not supported
      */
     private DBObject getFilterQuery(Filter filter) throws MongoValidationException, UnsupportedException {
+        boolean isPrimaryKey = false;
+        for (Operations operations: filter.getOperations()){
+            // check if is primary key and type is native
+            if(checkPrimaryKey(operations)){
+                isPrimaryKey = true;
+            }
+        }
 
         Relation relation = filter.getRelation();
         Operator operator = relation.getOperator();
@@ -115,12 +124,33 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
         String mongoOperator = getMongoOperator(operator);
 
         if (mongoOperator.equals("$eq") && !useAggregationPipeline()) {
-            return new BasicDBObject(fieldName, getMongoRightTerm(rightSelector));
+            return new BasicDBObject(fieldName, getMongoRightTerm(rightSelector, isPrimaryKey));
         } else {
-            DBObject fieldQuery = new BasicDBObject(mongoOperator, getMongoRightTerm(rightSelector));
+            DBObject fieldQuery = new BasicDBObject(mongoOperator, getMongoRightTerm(rightSelector, isPrimaryKey));
             return new BasicDBObject(fieldName, fieldQuery);
         }
 
+    }
+
+    private boolean checkPrimaryKey(Operations operations){
+        switch (operations) {
+            case FILTER_PK_BETWEEN:
+            case FILTER_PK_EQ:
+            case FILTER_PK_GET:
+            case FILTER_PK_GT:
+            case FILTER_PK_IN:
+            case FILTER_PK_LET:
+            case FILTER_PK_LIKE:
+            case FILTER_PK_LT:
+            case FILTER_PK_MATCH:
+            case FILTER_PK_NOT_BETWEEN:
+            case FILTER_PK_NOT_EQ:
+            case FILTER_PK_NOT_IN:
+            case FILTER_PK_NOT_LIKE:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
@@ -166,11 +196,13 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
      *
      * @param rightSelector
      *            the right selector
+     * @param isPrimaryKey
+                   true if the selector is primary key, false otherwise
      * @return the filter right term
      * @throws MongoValidationException
      *             if the selector is not supported
      */
-    private Object getMongoRightTerm(Selector rightSelector) throws MongoValidationException {
+    private Object getMongoRightTerm(Selector rightSelector, boolean isPrimaryKey) throws MongoValidationException {
 
         Object value;
         switch (rightSelector.getType()) {
@@ -182,6 +214,8 @@ public class FilterDBObjectBuilder extends DBObjectBuilder {
             break;
         case STRING:
             value = ((StringSelector) rightSelector).getValue();
+            if(isPrimaryKey)
+                value = new ObjectId(value.toString());
             break;
         case FLOATING_POINT:
             value = ((FloatingPointSelector) rightSelector).getValue();

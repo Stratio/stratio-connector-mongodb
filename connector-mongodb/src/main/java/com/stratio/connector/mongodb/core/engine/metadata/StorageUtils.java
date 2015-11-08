@@ -27,6 +27,7 @@ import com.stratio.crossdata.common.data.ColumnName;
 import com.stratio.crossdata.common.data.Row;
 import com.stratio.crossdata.common.metadata.ColumnType;
 import com.stratio.crossdata.common.metadata.TableMetadata;
+import org.bson.types.ObjectId;
 
 /**
  * The Class StorageUtils.
@@ -60,24 +61,7 @@ public final class StorageUtils {
 
         List<ColumnName> primaryKeyList = tableMetadata.getPrimaryKey();
 
-        // Building the pk to insert in Mongo
-        if (!primaryKeyList.isEmpty()) {
-            if (primaryKeyList.size() == 1) {
-                cellValue = row.getCell(primaryKeyList.get(0).getName()).getValue();
-                validatePKDataType(tableMetadata.getColumns().get(primaryKeyList.get(0)).getColumnType());
-                pk = cellValue;
-            } else {
-
-                bsonPK = new BasicDBObject();
-                for (ColumnName columnName : primaryKeyList) {
-                    cellValue = row.getCell(columnName.getName()).getValue();
-                    validatePKDataType(tableMetadata.getColumns().get(columnName).getColumnType());
-                    bsonPK.put(columnName.getName(), cellValue);
-                }
-                pk = bsonPK;
-            }
-        }
-
+        pk = new ObjectId();
         return pk;
     }
 
@@ -100,10 +84,10 @@ public final class StorageUtils {
         case FLOAT:
             break;
         case BOOLEAN:
+        case NATIVE:
         case SET:
         case LIST:
         case MAP:
-        case NATIVE:
         default:
             throw new MongoValidationException("Type not supported as PK: " + columnType.toString());
 
