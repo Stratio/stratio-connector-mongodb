@@ -1,3 +1,6 @@
+
+*This project has been discontinued in favour of [Stratio Crossdata](https://github.com/Stratio/Crossdata), which is a data federation system leveraging Apache Spark capabilities.*
+
 # About #
 
 
